@@ -2,8 +2,20 @@
 
 The official website at **https://gitworkbench.github.io/**.
 
-Source is maintained in [`GitWorkbench/workbench/website`](https://github.com/GitWorkbench/workbench/tree/main/website). This repository contains the published static snapshot and its GitHub Pages workflow. Update the source there, then copy the reviewed page files, screenshots, logo, and `website/pages.yml` here as documented in the [publishing guide](https://github.com/GitWorkbench/workbench/blob/main/docs/website.md).
+This repository owns the complete website source, screenshots, tests, and GitHub Pages deployment. The desktop application is maintained separately in [GitWorkbench/workbench](https://github.com/GitWorkbench/workbench).
 
-Every push to `main` deploys automatically with GitHub Actions. The workflow uploads only `index.html`, `styles.css`, `site.js`, and `assets/`; no desktop source or credentials enter the Pages artifact.
+## Develop and publish
 
-App releases and downloads remain at [GitWorkbench/workbench](https://github.com/GitWorkbench/workbench/releases). Screenshots show the actual renderer with disposable demonstration repository data, as labeled on the site.
+Use Node 22 and npm:
+
+```bash
+npm ci
+npm test
+python3 -m http.server 4173 --bind 127.0.0.1
+```
+
+Open http://127.0.0.1:4173. Edit `index.html`, `styles.css`, and `site.js` directly here. Use relative asset paths and review the desktop and narrow layouts before publishing. Push reviewed changes to `main`; the Pages workflow runs the tests, then publishes only the allowlisted page files and `assets/`. Settings → Pages must use GitHub Actions as Source.
+
+App releases and downloads remain at [GitWorkbench/workbench](https://github.com/GitWorkbench/workbench/releases). The site selects actual public stable release assets and keeps release-page fallbacks for missing builds, API failures, and unpublished releases.
+
+Screenshots show the actual renderer with disposable demo repository data, as labeled on the site. Review new captures for secrets and personal data, preserve their aspect ratio, and update the HTML dimensions when replacing them. No desktop source or credentials belong in the Pages artifact.
