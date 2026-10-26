@@ -6,6 +6,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { assetUrl, findAsset, loadRelease, mountWebsite, RELEASES_URL } from '../site.js';
 
 const html = readFileSync(path.resolve('index.html'), 'utf8');
+const installerWrapper = readFileSync(path.resolve('install.sh'), 'utf8');
+const pagesWorkflow = readFileSync(path.resolve('.github/workflows/pages.yml'), 'utf8');
 const asset = (name: string) => ({ name, browser_download_url: `${RELEASES_URL}/download/v1.0.0/${name}` });
 const assets = [
   'git-workbench-1.0.0-x86_64.AppImage', 'git-workbench-1.0.0-amd64.deb', 'git-workbench-1.0.0-x86_64.rpm',
@@ -90,6 +92,14 @@ describe('website screenshot gallery', () => {
     expect(html).not.toMatch(/(?:src|href)="\/(?!\/)/);
     expect(document.body).toHaveTextContent('Actual application interface');
     expect(document.body).toHaveTextContent('macOS builds are unsigned');
+  });
+  it('shows and publishes the Linux quick installer and points to its source', () => {
+    expect(document.querySelector('.quick-install-command code')).toHaveTextContent('curl -fsSL https://gitworkbench.github.io/install.sh | bash');
+    expect(document.querySelector('.quick-install-command a')).toHaveAttribute('href', 'https://github.com/GitWorkbench/workbench/blob/main/scripts/install-linux.sh');
+    expect(document.querySelector('.quick-install-note')).toHaveTextContent('Current official Linux builds are x86_64');
+    expect(installerWrapper).toContain('https://raw.githubusercontent.com/GitWorkbench/workbench/main/scripts/install-linux.sh | bash -s -- "$@"');
+    expect(installerWrapper).not.toContain('+  https://');
+    expect(pagesWorkflow).toContain('cp index.html styles.css site.js install.sh _site/');
   });
 });
 
