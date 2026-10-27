@@ -6,8 +6,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { assetUrl, findAsset, loadRelease, mountWebsite, RELEASES_URL } from '../site.js';
 
 const html = readFileSync(path.resolve('index.html'), 'utf8');
+const styles = readFileSync(path.resolve('styles.css'), 'utf8');
 const installerWrapper = readFileSync(path.resolve('install.sh'), 'utf8');
 const pagesWorkflow = readFileSync(path.resolve('.github/workflows/pages.yml'), 'utf8');
+const robots = readFileSync(path.resolve('robots.txt'), 'utf8');
+const sitemap = readFileSync(path.resolve('sitemap.xml'), 'utf8');
 const asset = (name: string) => ({ name, browser_download_url: `${RELEASES_URL}/download/v1.0.0/${name}` });
 const assets = [
   'git-workbench-1.0.0-x86_64.AppImage', 'git-workbench-1.0.0-amd64.deb', 'git-workbench-1.0.0-x86_64.rpm',
@@ -16,6 +19,7 @@ const assets = [
   'git-workbench-1.0.0-universal.dmg', 'git-workbench-1.0.0-universal.zip', 'git-workbench-setup-1.0.0.exe'
 ].map(asset);
 beforeEach(() => {
+  document.head.innerHTML = html.match(/<head>([\s\S]*)<\/head>/i)![1];
   document.body.innerHTML = html.match(/<body>([\s\S]*)<\/body>/)![1];
 });
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
@@ -61,7 +65,7 @@ describe('website screenshot gallery', () => {
     tabs[2].dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     expect(tabs[2]).toHaveAttribute('aria-selected', 'true');
   });
-  it('shows real local screenshots with full-size links and demo-data disclosure', () => {
+  it('shows real desktop app screenshots with full-size links and demo-data disclosure', () => {
     const screenshots = [...document.querySelectorAll<HTMLImageElement>('.screenshot-gallery img')];
     expect(screenshots).toHaveLength(3);
     for (const screenshot of screenshots) {
@@ -69,12 +73,32 @@ describe('website screenshot gallery', () => {
       expect(source).toMatch(/^\.\/assets\/screenshots\/(history|diff|merge)\.jpg$/);
       expect(readFileSync(path.resolve(source)).subarray(0, 2).toString('hex')).toBe('ffd8');
       expect(screenshot.alt.length).toBeGreaterThan(30);
+      expect(screenshot).toHaveAttribute('width', '1440');
+      expect(screenshot).toHaveAttribute('height', '900');
       expect(screenshot.closest('a')).toHaveAttribute('href', source);
       expect(screenshot.closest('a')).toHaveAttribute('rel', 'noopener');
     }
-    expect(document.body).toHaveTextContent('browser preview with disposable demo repository data');
+    expect(document.body).toHaveTextContent('captured directly from the desktop app');
+    expect(document.body).toHaveTextContent('fictional demo repositories and identities');
     expect(document.querySelectorAll('[data-commit], [data-merge]')).toHaveLength(0);
     expect(html).toContain('<link rel="canonical" href="https://gitworkbench.github.io/">');
+  });
+  it('opens, closes, and keyboard-dismisses the mobile navigation', () => {
+    mountWebsite();
+    const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
+    const navigation = document.getElementById('site-navigation')!;
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    toggle.click();
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(navigation).toHaveAttribute('data-open', 'true');
+    navigation.querySelector<HTMLAnchorElement>('a[href="#how-it-works"]')!.click();
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    toggle.click();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(toggle).toHaveFocus();
+    expect(styles).toMatch(/@media \(max-width:760px\)/);
+    expect(styles).toContain('.site-header nav[data-open="true"] { display: flex; }');
   });
   it.each([['MacIntel', 'mac'], ['Win32', 'windows'], ['Linux x86_64', 'linux'], ['iPhone', null]])('highlights %s without hiding other platforms', (platform, expected) => {
     vi.spyOn(navigator, 'platform', 'get').mockReturnValue(platform);
@@ -90,8 +114,10 @@ describe('website screenshot gallery', () => {
       if (id) expect(document.getElementById(id)).not.toBeNull();
     }
     expect(html).not.toMatch(/(?:src|href)="\/(?!\/)/);
-    expect(document.body).toHaveTextContent('Actual application interface');
+    expect(document.body).toHaveTextContent('Screenshots captured directly from the desktop app');
     expect(document.body).toHaveTextContent('macOS builds are unsigned');
+    expect(document.body).toHaveTextContent('self-hosted GitLab');
+    expect(document.body).toHaveTextContent('Gitea');
   });
   it('shows and publishes the Linux quick installer and points to its source', () => {
     expect(document.querySelector('.quick-install-command code')).toHaveTextContent('curl -fsSL https://gitworkbench.github.io/install.sh | bash');
@@ -99,7 +125,24 @@ describe('website screenshot gallery', () => {
     expect(document.querySelector('.quick-install-note')).toHaveTextContent('Current official Linux builds are x86_64');
     expect(installerWrapper).toContain('https://raw.githubusercontent.com/GitWorkbench/workbench/main/scripts/install-linux.sh | bash -s -- "$@"');
     expect(installerWrapper).not.toContain('+  https://');
-    expect(pagesWorkflow).toContain('cp index.html styles.css site.js install.sh _site/');
+    expect(pagesWorkflow).toContain('cp index.html styles.css site.js install.sh robots.txt sitemap.xml _site/');
+  });
+});
+
+describe('website search metadata', () => {
+  it('publishes canonical product and FAQ metadata with a crawlable sitemap', () => {
+    expect(document.querySelector('title')).toHaveTextContent('Visual Git Client for Linux, macOS & Windows');
+    expect(document.querySelector('meta[name="description"]')?.getAttribute('content')).toContain('stage changes line by line');
+    expect(document.querySelector('meta[name="robots"]')).toHaveAttribute('content', 'index, follow, max-image-preview:large');
+    expect(document.querySelector('meta[property="og:image"]')).toHaveAttribute('content', 'https://gitworkbench.github.io/assets/screenshots/history.jpg');
+    const structuredData = [...document.querySelectorAll<HTMLScriptElement>('script[type="application/ld+json"]')].map(script => JSON.parse(script.textContent || '{}'));
+    expect(structuredData.map(data => data['@type'])).toEqual(['SoftwareApplication', 'FAQPage']);
+    expect(structuredData[0].operatingSystem).toContain('Windows');
+    expect(structuredData[0].offers.price).toBe('0');
+    expect(structuredData[1].mainEntity.some((question: { name: string }) => question.name.includes('hosting providers'))).toBe(true);
+    expect(robots).toContain('Sitemap: https://gitworkbench.github.io/sitemap.xml');
+    expect(sitemap).toContain('<loc>https://gitworkbench.github.io/</loc>');
+    expect(sitemap).toContain('xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"');
   });
 });
 

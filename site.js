@@ -25,6 +25,27 @@ export function findAsset(assets, format, architecture = 'x64') {
 }
 
 export function mountWebsite(root = document) {
+  const menuToggle = root.querySelector('[data-menu-toggle]');
+  const navigation = root.getElementById('site-navigation');
+  if (menuToggle && navigation) {
+    const setMenuOpen = open => {
+      menuToggle.setAttribute('aria-expanded', String(open));
+      menuToggle.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+      navigation.dataset.open = String(open);
+    };
+    setMenuOpen(false);
+    menuToggle.addEventListener('click', () => setMenuOpen(menuToggle.getAttribute('aria-expanded') !== 'true'));
+    navigation.addEventListener('click', event => {
+      if (event.target instanceof Element && event.target.closest('a')) setMenuOpen(false);
+    });
+    root.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && menuToggle.getAttribute('aria-expanded') === 'true') {
+        setMenuOpen(false);
+        menuToggle.focus();
+      }
+    });
+  }
+
   const tabs = [...root.querySelectorAll('[data-preview]')];
   const showPanel = tab => {
     for (const item of tabs) {
