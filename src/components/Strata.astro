@@ -1,81 +1,79 @@
 ---
 /**
- * Decorative strata art for the hero: oversized commit lanes sweeping off
- * the page edge, with floating refs and tags. Pure SVG, aria-hidden — it
- * carries no information the copy doesn't.
+ * Decorative strata band for the hero: horizontal commit lanes flowing
+ * left to right — geological strata, drawn as a git river. Full-bleed,
+ * sits beneath the hero copy. Pure SVG, aria-hidden.
  */
-const lanes = ['#38bdf8', '#a78bfa', '#34d399', '#fbbf24', '#f87171'];
 ---
-
-<svg viewBox="0 0 1240 740" fill="none" aria-hidden="true">
-  <!-- faint lane guides -->
-  <path d="M1180 0 C 900 130, 980 250, 706 330 C 470 400, 420 520, 210 640" stroke="#1c222c" stroke-width="18" stroke-linecap="round" opacity="0.5" />
-  <path d="M1240 120 C 1000 200, 940 330, 760 420 C 560 520, 470 570, 330 740" stroke="#1c222c" stroke-width="18" stroke-linecap="round" opacity="0.5" />
-
-  <!-- lane: main (cyan) -->
-  <path d="M1120 30 C 940 140, 960 280, 700 360 C 460 434, 420 560, 190 680" stroke={lanes[0]} stroke-width="2.4" opacity="0.9" />
-  <!-- lane: feature (violet), forks off main, merges back -->
-  <path d="M930 218 C 820 268, 780 330, 700 360" stroke={lanes[1]} stroke-width="2.2" opacity="0.85" />
-  <path d="M700 360 C 620 388, 600 470, 560 530 C 520 590, 470 620, 400 660" stroke={lanes[1]} stroke-width="2.2" opacity="0.85" stroke-dasharray="7 9" />
-  <!-- lane: fix (green) -->
-  <path d="M1180 250 C 1020 300, 980 420, 830 470 C 660 526, 640 610, 520 680" stroke={lanes[2]} stroke-width="2.2" opacity="0.8" />
-  <!-- lane: chore (amber), short branch -->
-  <path d="M1062 120 C 980 170, 990 280, 930 342" stroke={lanes[3]} stroke-width="2" opacity="0.75" />
-  <!-- lane: reverted (red), terminates -->
-  <path d="M1150 470 C 1080 500, 1030 560, 990 620" stroke={lanes[4]} stroke-width="2" opacity="0.7" />
-
-  <!-- nodes: main -->
-  <g opacity="0.9">
-    <circle cx="960" cy="281" r="14" fill={lanes[0]} opacity="0.16" />
-    <circle cx="960" cy="281" r="5" fill={lanes[0]} />
+<svg viewBox="0 0 1440 170" fill="none" aria-hidden="true">
+  <!-- sediment guides -->
+  <g stroke="#141a22" stroke-width="1">
+    <path d="M0 30h1440" />
+    <path d="M0 56h1440" opacity="0.6" />
+    <path d="M0 118h1440" opacity="0.6" />
+    <path d="M0 144h1440" />
   </g>
-  <circle cx="700" cy="360" r="5" fill={lanes[0]} />
-  <circle cx="420" cy="558" r="5" fill={lanes[0]} />
+
+  <!-- main river (cyan), spans the full width -->
+  <path d="M-12 88H1452" stroke="#38bdf8" stroke-width="2.6" />
+  <!-- violet tributary merges in -->
+  <path d="M-12 132 C 240 132, 520 132, 754 90" stroke="#a78bfa" stroke-width="2.3" />
+  <!-- green tributary merges in further right -->
+  <path d="M-12 42 C 300 42, 660 42, 1034 88" stroke="#34d399" stroke-width="2.3" />
+  <!-- red side branch diverges and goes stale (dashed tail) -->
+  <path d="M984 88 C 1032 92, 1052 122, 1108 138 C 1158 152, 1240 152, 1288 148" stroke="#f87171" stroke-width="2" />
+  <path d="M1288 148 C 1320 146, 1350 144, 1376 142" stroke="#f87171" stroke-width="2" stroke-dasharray="5 8" opacity="0.7" />
+  <!-- amber short-lived branch -->
+  <path d="M150 140 H 452" stroke="#fbbf24" stroke-width="2" stroke-dasharray="7 9" opacity="0.85" />
+
+  <!-- nodes on main -->
+  <circle cx="180" cy="88" r="5" fill="#38bdf8" />
+  <circle cx="420" cy="88" r="5" fill="#38bdf8" />
   <g>
-    <circle cx="190" cy="680" r="6" fill={lanes[0]} />
-    <circle cx="190" cy="680" r="14" stroke={lanes[0]} stroke-width="1.4" opacity="0.5" />
+    <circle cx="760" cy="88" r="6.4" fill="#38bdf8" />
+    <circle cx="760" cy="88" r="15" stroke="#38bdf8" stroke-width="1.3" opacity="0.4" />
   </g>
-
-  <!-- nodes: feature -->
-  <circle cx="930" cy="218" r="4.6" fill={lanes[1]} />
-  <circle cx="560" cy="530" r="4.6" fill={lanes[1]} />
-  <circle cx="400" cy="660" r="4.6" fill={lanes[1]} />
-
-  <!-- nodes: fix -->
-  <circle cx="1120" cy="276" r="4.4" fill={lanes[2]} />
-  <circle cx="830" cy="470" r="4.4" fill={lanes[2]} />
-  <circle cx="520" cy="680" r="4.4" fill={lanes[2]} />
-
-  <!-- nodes: chore + revert -->
-  <circle cx="1062" cy="120" r="4" fill={lanes[3]} />
-  <circle cx="930" cy="342" r="4" fill={lanes[3]} />
-  <circle cx="990" cy="620" r="4" fill={lanes[4]} />
+  <g>
+    <circle cx="1040" cy="88" r="6.4" fill="#38bdf8" />
+    <circle cx="1040" cy="88" r="15" stroke="#38bdf8" stroke-width="1.3" opacity="0.4" />
+  </g>
+  <circle cx="1240" cy="88" r="5" fill="#38bdf8" />
+  <!-- tributary nodes -->
+  <circle cx="150" cy="132" r="4.6" fill="#a78bfa" />
+  <circle cx="430" cy="132" r="4.6" fill="#a78bfa" />
+  <circle cx="640" cy="42" r="4.4" fill="#34d399" />
+  <circle cx="880" cy="42" r="4.4" fill="#34d399" />
+  <circle cx="150" cy="140" r="4" fill="#fbbf24" />
+  <circle cx="452" cy="140" r="4" fill="#fbbf24" />
+  <circle cx="1322" cy="146" r="4.2" fill="#f87171" />
 
   <!-- floating refs -->
-  <g font-family="ui-monospace, monospace" font-size="12.5" font-weight="600">
+  <g font-family="ui-monospace, monospace" font-size="11.5" font-weight="600">
     <g>
-      <rect x="992" y="255" width="66" height="22" rx="11" fill="#232a35" />
-      <text x="1025" y="270" text-anchor="middle" fill="#38bdf8">HEAD</text>
+      <rect x="1378" y="61" width="56" height="21" rx="10.5" fill="#1a1d24" stroke="#2d3340" />
+      <text x="1406" y="75.5" text-anchor="middle" fill="#38bdf8">HEAD</text>
     </g>
     <g>
-      <rect x="836" y="182" width="58" height="22" rx="11" fill="#232a35" />
-      <text x="865" y="197" text-anchor="middle" fill="#a78bfa">stack</text>
+      <rect x="212" y="60" width="64" height="21" rx="10.5" fill="#1a1d24" stroke="#2d3340" />
+      <text x="244" y="74.5" text-anchor="middle" fill="#94a3b8">v1.3.4</text>
     </g>
     <g>
-      <rect x="148" y="710" width="82" height="22" rx="11" fill="#232a35" />
-      <text x="189" y="725" text-anchor="middle" fill="#94a3b8">v1.3.4</text>
+      <rect x="492" y="106" width="92" height="21" rx="10.5" fill="#1a1d24" stroke="#2d3340" />
+      <text x="538" y="120.5" text-anchor="middle" fill="#a78bfa">feat/stack</text>
     </g>
     <g>
-      <rect x="700" y="500" width="92" height="22" rx="11" fill="#232a35" />
-      <text x="746" y="515" text-anchor="middle" fill="#94a3b8">rerere</text>
+      <rect x="1168" y="104" width="74" height="21" rx="10.5" fill="#1a1d24" stroke="#2d3340" />
+      <text x="1205" y="118.5" text-anchor="middle" fill="#94a3b8">stash/1</text>
     </g>
   </g>
 
   <!-- hash dust -->
-  <g font-family="ui-monospace, monospace" font-size="10.5" fill="#5c6a7e">
-    <text x="1106" y="106" opacity="0.85">9a4f21c</text>
-    <text x="742" y="336" opacity="0.7">b17e4d0</text>
-    <text x="462" y="600" opacity="0.7">3c8fa92</text>
-    <text x="880" y="500" opacity="0.6">e02b517</text>
+  <g font-family="ui-monospace, monospace" font-size="10" fill="#5c6a7e">
+    <text x="60" y="80" opacity="0.8">9a4f21c</text>
+    <text x="330" y="80" opacity="0.65">b17e4d0</text>
+    <text x="560" y="80" opacity="0.65">3c8fa92</text>
+    <text x="860" y="80" opacity="0.6">e02b517</text>
+    <text x="1100" y="80" opacity="0.6">5fa1d38</text>
+    <text x="700" y="128" opacity="0.5">c73ea01</text>
   </g>
 </svg>

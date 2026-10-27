@@ -104,7 +104,10 @@ check(
 );
 check('the hero install command is advertised', document.querySelector('.hero-install .quick-install-command code')?.textContent.includes('gitworkbench.github.io/install.sh'));
 check('the hero links to both releases and the repository', [...document.querySelectorAll('.hero-actions a')].some((a) => a.href.startsWith(releases)) && [...document.querySelectorAll('.hero-actions a')].some((a) => a.href.includes('workbench')));
-check('hero facts are sourced', document.querySelector('.hero-stats') !== null);
+check(
+  'the hero install note names package formats',
+  document.querySelector('.hero-install .install-note')?.textContent.includes('AppImage'),
+);
 
 // Hero strata art
 const heroArt = document.querySelector('.hero-art svg');
@@ -114,7 +117,7 @@ check('the strata art is decorative', heroArt?.getAttribute('aria-hidden') === '
 
 // Commit-log features
 const rows = [...document.querySelectorAll('.commit-log .commit-row')];
-check('features render as a commit log with nine rows', rows.length === 9);
+check('features render as a commit log with twelve rows', rows.length === 12);
 check('commit rows expose lane colors for the strata motif', rows.every((row) => row.style.getPropertyValue('--lane')));
 check('commit rows carry a fake short hash', rows.every((row) => /^[0-9a-f]{7}$/.test(row.querySelector('.commit-hash')?.textContent ?? '')));
 for (const row of rows) {

@@ -45,17 +45,10 @@ export const HERO = {
     'Git Workbench is a desktop Git client for Linux, macOS, and Windows that maps your history as colored commit strata — and keeps staging, merging, reviewing, and recovery one keystroke away. It drives your system git, so hooks, SSH keys, GPG signing, and .gitconfig keep working untouched.',
 } as const;
 
-export const HERO_STATS = [
-  { value: '9 themes', label: 'from onyx to Studio Light' },
-  { value: '4 providers', label: 'GitHub, GitLab, Bitbucket, Gitea' },
-  { value: '28 topics', label: 'in the built-in guide' },
-] as const;
-
 export interface Feature {
   title: string;
   description: string;
   detail: string;
-  size?: 'wide';
 }
 
 export const FEATURES: Feature[] = [
@@ -64,7 +57,6 @@ export const FEATURES: Feature[] = [
     description:
       'Every branch travels its own color lane, curves drawn by hand in the graph. Select a node to open its files, parent hashes, and patch. HEAD, local and remote branches, and tags sit inline beside each summary.',
     detail: 'Cubic Bézier lanes · Parent links · Adjustable row density',
-    size: 'wide',
   },
   {
     title: 'Hunk-level staging',
@@ -82,8 +74,19 @@ export const FEATURES: Feature[] = [
     title: 'Pull & merge requests',
     description:
       'Browse open requests for any remote, read conversations and CI checks, post line comments, and approve or request changes. Create a request straight from the checked-out branch.',
+    detail: 'Conversations · CI checks · Approvals',
+  },
+  {
+    title: 'Connected to four providers',
+    description:
+      'Sign in to GitHub, GitLab.com, self-hosted GitLab with nested groups and HTTPS ports, Bitbucket Cloud, or Gitea — the request and review features work over each one the same way.',
     detail: 'GitHub · GitLab · Bitbucket Cloud · Gitea',
-    size: 'wide',
+  },
+  {
+    title: 'Nine themes, live previewed',
+    description:
+      'Built-in palettes from the onyx Git Workbench Dark to Clean Studio Light, repainted live as you choose — with per-area typography and text-size presets and graph-density controls.',
+    detail: 'git-workbench-dark default · Individual resets',
   },
   {
     title: 'A real terminal',
@@ -110,11 +113,16 @@ export const FEATURES: Feature[] = [
     detail: 'Async, non-blocking · Your config, untouched',
   },
   {
+    title: 'A built-in guide, 28 topics deep',
+    description:
+      'An interactive guide on board walks from first-run setup through rebases, worktrees, rerere memory, and sparse checkout — read the topic and apply it in the same window.',
+    detail: 'First-run setup · Advanced workflows · In-app',
+  },
+  {
     title: 'Tools for bigger repositories',
     description:
       'Split commits by file or hunk with a preview, retarget stacked branches with isolated restack previews, manage Git LFS rules and transfers, and pick sparse-checkout folders you can save as layouts.',
     detail: 'Git 2.37–2.38+ features · Clearly listed limits',
-    size: 'wide',
   },
 ] as const;
 
