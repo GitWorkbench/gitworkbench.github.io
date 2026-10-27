@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import { PAGE_META } from '../data/pages';
 import { pageSchema } from '../data/schema';
-import { SITE, URLS } from '../data/site';
+import { SITE, TRADEMARK_NOTICE, URLS } from '../data/site';
 const meta = PAGE_META.about;
 const breadcrumbs = [{label:'Home',href:'/'},{label:'About',href:meta.path}];
 ---
@@ -13,6 +13,13 @@ const breadcrumbs = [{label:'Home',href:'/'},{label:'About',href:meta.path}];
     <section><h2>Your repository stays a Git repository</h2><p>The application calls the system Git command and reads your repository directly. Existing SSH keys, credential helpers, hooks, signing configuration, and .gitconfig remain part of the workflow. Local operations do not require a hosting account.</p><p>A visual commit graph, file and hunk diffs, three-pane conflict resolution, and restore points support daily work. Optional provider connections bring pull and merge requests into the app, while AI assistance can use a hosted provider or a local model server.</p><a class="text-link" href="/features/">Explore how the features work →</a></section>
     <section><h2>Two public projects, one workbench</h2><p>The desktop application, its documentation, issue tracker, and packaged releases live in the <a href={URLS.repository}>GitWorkbench/workbench repository</a>. This website is maintained separately in <a href="https://github.com/GitWorkbench/gitworkbench.github.io">GitWorkbench/gitworkbench.github.io</a>.</p><p>The app uses Electron, React, and TypeScript. Its test suite exercises UI behavior, provider adapters, and real Git operations in temporary repositories. This website uses Astro to publish static pages on GitHub Pages.</p></section>
     <section><h2>Free to use and improve</h2><p>Git Workbench is available under the <a href={URLS.license}>MIT license</a> for personal and commercial use. The project is maintained by <a href={SITE.author.url}>{SITE.author.name}</a>, with development and feedback on GitHub.</p><p>Bug reports, focused feature requests, documentation improvements, and code contributions are welcome. When reporting a problem, include the app version, operating system, reproduction steps, and the visible error. Remove private repository data and credentials from screenshots and logs.</p><p>For code changes, read the repository conventions, create a focused branch, validate the change, and open a pull request explaining the resulting behavior.</p><div class="page-actions"><a class="button button-outline" href={URLS.issues}>Report an issue</a><a class="text-link" href="/guides/build-from-source/">Developer setup →</a><a class="text-link" href={URLS.contributing}>Contributor conventions ↗</a></div></section>
+    <section id="trademarks" aria-labelledby="trademarks-heading">
+      <h2 id="trademarks-heading">Trademark notice</h2>
+      <p>{TRADEMARK_NOTICE.independence}</p>
+      <p>{TRADEMARK_NOTICE.git} See the <a href="https://git-scm.com/about/trademark.html">Git trademark policy</a>.</p>
+      <p>{TRADEMARK_NOTICE.ownership} This includes third-party brands referenced in our feature descriptions, integrations, theme names, screenshots, and platform downloads, such as GitHub, GitLab, Bitbucket, Gitea, Windows, macOS, and Linux.</p>
+      <p>These references identify the products and platforms Git Workbench works with or discusses. They do not indicate that those products' owners develop, sponsor, or endorse Git Workbench.</p>
+    </section>
     <footer class="document-sources"><h2>Project references</h2><ul><li><a href="https://github.com/GitWorkbench/">GitWorkbench organization README</a></li><li><a href={URLS.docs}>Application README</a></li></ul></footer>
   </article>
 </BaseLayout>

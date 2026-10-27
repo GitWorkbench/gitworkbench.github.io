@@ -1678,6 +1678,25 @@ samp {
   color: var(--accent);
 }
 
+.footer-trademark {
+  max-width: 62rem;
+  margin: 0;
+  padding-bottom: 1.8rem;
+  color: var(--faint);
+  font-size: 0.74rem;
+  line-height: 1.8;
+}
+
+.footer-trademark a {
+  color: var(--dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-trademark a:hover {
+  color: var(--accent);
+}
+
 /* ── 404 ───────────────────────────────────────────────────── */
 
 .not-found {

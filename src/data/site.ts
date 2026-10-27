@@ -31,6 +31,15 @@ export const URLS = {
 
 export const INSTALL_COMMAND = 'curl -fsSL https://gitworkbench.github.io/install.sh | bash';
 
+export const TRADEMARK_NOTICE = {
+  independence:
+    'Git Workbench is an independent open-source project. References to third-party products do not imply affiliation, sponsorship, or endorsement.',
+  ownership:
+    'Third-party product names, logos, and trademarks belong to their respective owners.',
+  git:
+    'Git and the Git logo are trademarks of Software Freedom Conservancy, Inc.',
+} as const;
+
 export const NAVIGATION = [
   { label: 'Features', href: '/features/' },
   { label: 'Guides', href: '/guides/' },
