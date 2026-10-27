@@ -4,16 +4,22 @@ import { DOWNLOAD_FORMATS, INSTALL_COMMAND, URLS } from '../data/site';
 const linuxFormats = DOWNLOAD_FORMATS.filter((f) => ['AppImage', 'deb', 'rpm', 'pacman'].includes(f.format));
 const macFormats = DOWNLOAD_FORMATS.filter((f) => ['dmg', 'zip'].includes(f.format));
 const winFormats = DOWNLOAD_FORMATS.filter((f) => f.format === 'exe');
+
+const platforms = [
+  { id: 'linux', name: 'linux', meta: 'x86_64 · 4 formats', formats: linuxFormats, note: null },
+  { id: 'mac', name: 'macos', meta: 'Intel + Apple silicon', formats: macFormats, note: 'Unsigned builds — install and update manually from the release page.' },
+  { id: 'windows', name: 'windows', meta: 'NSIS installer', formats: winFormats, note: 'Supports in-app software updates.' },
+] as const;
 ---
 
 <section id="download" class="section">
   <div class="wrap">
-    <header class="section-head download-hero" data-reveal>
-      <p class="kicker">// install</p>
-      <h2>Pick the package your system speaks.</h2>
+    <header class="section-head" data-reveal>
+      <p class="kicker"><span class="kicker-hash">7e9f1a3</span> // checkout</p>
+      <h2>Get the binary.<br />Keep the package manager.</h2>
       <p class="section-lead">
-        The one-liner resolvers below always point at the latest public release. With JavaScript
-        on, every card also links straight to the current release asset, size included.
+        The one-liner below resolves your distribution and hands off to its package manager —
+        checksums verified, prompt intact.
       </p>
     </header>
 
@@ -38,59 +44,31 @@ const winFormats = DOWNLOAD_FORMATS.filter((f) => f.format === 'exe');
       Download cards link to the public release page. Enable JavaScript for direct asset links.
     </p>
 
-    <div class="download-grid">
-      <article class="download-card" data-platform="linux" data-reveal>
-        <h3>Linux <em>x86_64 · 4 formats</em></h3>
-        <div class="asset-list">
-          {
-            linuxFormats.map((format) => (
-              <a class="asset-link" href={URLS.releases} data-download={format.format}>
-                {format.label}
-                <span data-download-size />
-                <svg class="asset-spacer" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4 10L10 4M5.5 4H10v4.5" />
-                </svg>
-              </a>
-            ))
-          }
-        </div>
-      </article>
-
-      <article class="download-card" data-platform="mac" data-reveal>
-        <h3>macOS <em>Intel + Apple silicon</em></h3>
-        <div class="asset-list">
-          {
-            macFormats.map((format) => (
-              <a class="asset-link" href={URLS.releases} data-download={format.format}>
-                {format.label}
-                <span data-download-size />
-                <svg class="asset-spacer" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4 10L10 4M5.5 4H10v4.5" />
-                </svg>
-              </a>
-            ))
-          }
-        </div>
-        <p class="install-note">Universal builds are unsigned — install and update manually from the release page.</p>
-      </article>
-
-      <article class="download-card" data-platform="windows" data-reveal>
-        <h3>Windows <em>NSIS · 10 (1809+)</em></h3>
-        <div class="asset-list">
-          {
-            winFormats.map((format) => (
-              <a class="asset-link" href={URLS.releases} data-download={format.format}>
-                {format.label}
-                <span data-download-size />
-                <svg class="asset-spacer" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4 10L10 4M5.5 4H10v4.5" />
-                </svg>
-              </a>
-            ))
-          }
-        </div>
-        <p class="install-note">Windows, plus every Linux format above, supports in-app software updates.</p>
-      </article>
+    <div class="platform-list">
+      {
+        platforms.map((platform) => (
+          <article class="platform-row" data-platform={platform.id} data-reveal>
+            <div class="platform-meta">
+              <h3 class="platform-name">{platform.name}</h3>
+              <small>{platform.meta}</small>
+            </div>
+            <div>
+              <div class="asset-list">
+                {platform.formats.map((format) => (
+                  <a class="asset-link" href={URLS.releases} data-download={format.format}>
+                    {format.label}
+                    <span data-download-size />
+                    <svg class="asset-spacer" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M4 10L10 4M5.5 4H10v4.5" />
+                    </svg>
+                  </a>
+                ))}
+              </div>
+              {platform.note && <p class="install-note platform-note">{platform.note}</p>}
+            </div>
+          </article>
+        ))
+      }
     </div>
 
     <ul class="download-notes">

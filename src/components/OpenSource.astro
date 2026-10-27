@@ -4,18 +4,18 @@ import { URLS } from '../data/site';
 
 <section class="section" aria-labelledby="oss-heading">
   <div class="wrap">
-    <div class="oss-layout">
+    <div class="merge-layout">
       <div data-reveal>
-        <p class="kicker">// open source</p>
-        <h2 id="oss-heading">MIT licensed, from install script to IPC.</h2>
+        <p class="kicker"><span class="kicker-hash">08b4c62</span> // merge --into open-source</p>
+        <h2 id="oss-heading">One license. Every line of it.</h2>
         <p class="section-lead">
           The whole app — React renderer, Electron main process, packaging pipeline, and this
-          website — lives in the open, covered by 100% statement, branch, and function test
-          coverage enforced in CI.
+          website — is MIT licensed, with 100% statement, branch, and function test coverage
+          enforced in CI.
         </p>
-        <ul class="oss-points">
+        <ul class="merge-points">
           <li>Contributions follow a short guide: fork, branch, commit, pull request.</li>
-          <li>Disposable demo repositories are one command away (<code>npm run demo:create</code>) — realistic history, stashes, tags, conflicts, and submodules.</li>
+          <li>Disposable demo repositories are one command away (<code>npm run demo:create</code>).</li>
           <li>Everything runs against real git in temporary repositories during testing.</li>
         </ul>
         <div class="hero-actions">
@@ -24,20 +24,41 @@ import { URLS } from '../data/site';
         </div>
       </div>
 
-      <div class="architecture" data-reveal aria-label="Architecture outline">
-        <pre><code>┌──────────────────────────────────────┐
-│        <span class="arch-hl">Electron main process</span>         │
-│  Frameless chrome · native dialogs   │
-│  Async <span class="arch-hl">git engine</span> (simple-git/exec) │
-└──────────────┬───────────────────────┘
-               │ contextBridge · typed IPC
-┌──────────────▼───────────────────────┐
-│        <span class="arch-hl">React 19 renderer</span>             │
-│  Commit strata SVG · diff viewer     │
-│  Zustand tabs · theme engine (CSS)   │
-└──────────────────────────────────────┘
-<span class="arch-dim">// no native bindings — your system git,
-// your hooks, your SSH keys, your config.</span></code></pre>
+      <div data-reveal>
+        <svg
+          class="merge-art"
+          viewBox="0 0 560 360"
+          fill="none"
+          role="img"
+          aria-label="Two commit lanes merging into a single node — the merge of independent work into the open-source project."
+        >
+          <path d="M20 60 C 160 60, 200 150, 300 190" stroke="#38bdf8" stroke-width="2.4" />
+          <path d="M20 320 C 160 320, 200 230, 300 190" stroke="#a78bfa" stroke-width="2.4" />
+          <path d="M300 190 C 380 190, 420 190, 520 190" stroke="#34d399" stroke-width="2.4" />
+
+          <circle cx="110" cy="60" r="5" fill="#38bdf8" />
+          <circle cx="110" cy="320" r="5" fill="#a78bfa" />
+          <circle cx="220" cy="128" r="5" fill="#38bdf8" />
+          <circle cx="220" cy="254" r="5" fill="#a78bfa" />
+
+          <g>
+            <circle cx="300" cy="190" r="8" fill="#34d399" />
+            <circle cx="300" cy="190" r="18" stroke="#34d399" stroke-width="1.4" opacity="0.5" />
+          </g>
+
+          <g font-family="ui-monospace, monospace" font-size="13" font-weight="600">
+            <rect x="30" y="18" width="118" height="24" rx="12" fill="#1a1d24" />
+            <text x="89" y="34" text-anchor="middle" fill="#38bdf8">your work</text>
+            <rect x="30" y="332" width="150" height="24" rx="12" fill="#1a1d24" />
+            <text x="105" y="348" text-anchor="middle" fill="#a78bfa">community work</text>
+            <rect x="420" y="152" width="96" height="24" rx="12" fill="#1a1d24" />
+            <text x="468" y="168" text-anchor="middle" fill="#34d399">merged</text>
+          </g>
+
+          <g font-family="ui-monospace, monospace" font-size="10.5" fill="#5c6a7e">
+            <text x="258" y="216">git merge --no-ff</text>
+          </g>
+        </svg>
       </div>
     </div>
   </div>

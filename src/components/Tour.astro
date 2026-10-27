@@ -34,12 +34,13 @@ const shots = [
 
 <section id="tour" class="section">
   <div class="wrap">
-    <div class="section-head-row">
-      <header class="section-head">
-        <p class="kicker">// inside the workspace</p>
-        <h2>Real captures, straight from the app.</h2>
+    <div class="section-head-row" style="display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; flex-wrap:wrap;">
+      <header class="section-head" style="max-width:46rem; margin-bottom:0;" data-reveal>
+        <p class="kicker"><span class="kicker-hash">d92b6e4</span> // worktrees</p>
+        <h2>Three checkouts of<br />the real thing.</h2>
         <p class="section-lead">
-          No mockups here — swipe or scroll the strip, click any capture to open it at full size.
+          Captured straight from the app, not staged mockups. Scroll the strip, click a frame to
+          open it at full size.
         </p>
       </header>
       <div class="gallery-hint" data-reveal>
@@ -55,7 +56,7 @@ const shots = [
 
     <div class="screenshot-gallery gallery" data-gallery tabindex="0" role="region" aria-label="App screenshots — scrollable strip">
       {
-        shots.map((shot) => (
+        shots.map((shot, index) => (
           <figure>
             <a
               href={`/assets/screenshots/${shot.id}.jpg`}
@@ -75,7 +76,10 @@ const shots = [
                 decoding={shot.eager ? 'sync' : 'async'}
               />
             </a>
-            <figcaption>{shot.caption}</figcaption>
+            <figcaption>
+              <span class="shot-index" aria-hidden="true">{`[${String(index + 1).padStart(2, '0')}]`}</span>
+              {shot.caption}
+            </figcaption>
           </figure>
         ))
       }

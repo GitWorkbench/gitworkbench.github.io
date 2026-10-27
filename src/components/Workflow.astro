@@ -5,31 +5,37 @@ import { SHORTCUTS, WORKFLOWS } from '../data/site';
 <section id="how-it-works" class="section">
   <div class="wrap">
     <header class="section-head" data-reveal>
-      <p class="kicker">// workflow</p>
-      <h2>From first launch to a pushed request.</h2>
+      <p class="kicker"><span class="kicker-hash">f18a2b9</span> // reflog</p>
+      <h2>Four moves, read<br />like a reflog.</h2>
       <p class="section-lead">
-        The safe path is built in: choices are reversible, and destructive actions snapshot
-        first.
+        The safe path is built in: choices are reversible, destructive actions snapshot first, and
+        rewrites stay local until you push.
       </p>
     </header>
 
-    <ol class="steps">
+    <ol class="reflog">
       {
-        WORKFLOWS.map((flow) => (
-          <li class="step" data-reveal>
-            <span class="step-number" aria-hidden="true">{flow.step}</span>
-            <div>
-              <h3>{flow.title}</h3>
-              <p>{flow.description}</p>
-            </div>
-          </li>
-        ))
+        WORKFLOWS.map((flow, index) => {
+          const ref = 3 - index;
+          return (
+            <li class="reflog-row" data-reveal>
+              <span class="reflog-ref">
+                {`HEAD@{${ref}}`}
+                <small>step {flow.step}</small>
+              </span>
+              <div>
+                <h3>{flow.title}</h3>
+                <p>{flow.description}</p>
+              </div>
+            </li>
+          );
+        })
       }
     </ol>
 
-    <div class="section-head" style="margin-top: 3rem;" data-reveal>
-      <p class="kicker">// keyboard-first</p>
-      <h2>Everywhere without a mouse.</h2>
+    <div class="section-head" style="margin-top: 3.4rem;" data-reveal>
+      <p class="kicker"><span class="kicker-hash">4c2d5e8</span> // keyboard-first</p>
+      <h2>Everywhere without<br />a mouse.</h2>
     </div>
     <div class="shortcut-grid" data-reveal data-shortcuts>
       {

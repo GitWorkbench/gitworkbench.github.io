@@ -6,9 +6,8 @@ import { NAVIGATION, SITE, URLS } from '../data/site';
   <div class="wrap">
     <div class="footer-grid">
       <div class="footer-brand">
-        <a class="brand" href="/">
-          <span class="brand-logo" aria-hidden="true">⑂</span>
-          <span class="brand-name">{SITE.name}</span>
+        <a class="brand" href="/" aria-label={`${SITE.name} — home`}>
+          <span aria-hidden="true">git-workbench</span><span class="brand-cursor" aria-hidden="true"></span>
         </a>
         <p>
           Visual commit strata and an effortless git workflow — free and open source for Linux,
@@ -54,7 +53,7 @@ import { NAVIGATION, SITE, URLS } from '../data/site';
     <div class="footer-bottom">
       <span>{SITE.author.name} · MIT license</span>
       <span>
-        Website built with <a href="https://astro.build">Astro</a> · source of this site:{' '}
+        built with <a href="https://astro.build">astro</a> · site source:{' '}
         <a href="https://github.com/GitWorkbench/gitworkbench.github.io">gitworkbench.github.io</a>
       </span>
     </div>

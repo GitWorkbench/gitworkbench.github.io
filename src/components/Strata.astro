@@ -1,0 +1,81 @@
+---
+/**
+ * Decorative strata art for the hero: oversized commit lanes sweeping off
+ * the page edge, with floating refs and tags. Pure SVG, aria-hidden — it
+ * carries no information the copy doesn't.
+ */
+const lanes = ['#38bdf8', '#a78bfa', '#34d399', '#fbbf24', '#f87171'];
+---
+
+<svg viewBox="0 0 1240 740" fill="none" aria-hidden="true">
+  <!-- faint lane guides -->
+  <path d="M1180 0 C 900 130, 980 250, 706 330 C 470 400, 420 520, 210 640" stroke="#1c222c" stroke-width="18" stroke-linecap="round" opacity="0.5" />
+  <path d="M1240 120 C 1000 200, 940 330, 760 420 C 560 520, 470 570, 330 740" stroke="#1c222c" stroke-width="18" stroke-linecap="round" opacity="0.5" />
+
+  <!-- lane: main (cyan) -->
+  <path d="M1120 30 C 940 140, 960 280, 700 360 C 460 434, 420 560, 190 680" stroke={lanes[0]} stroke-width="2.4" opacity="0.9" />
+  <!-- lane: feature (violet), forks off main, merges back -->
+  <path d="M930 218 C 820 268, 780 330, 700 360" stroke={lanes[1]} stroke-width="2.2" opacity="0.85" />
+  <path d="M700 360 C 620 388, 600 470, 560 530 C 520 590, 470 620, 400 660" stroke={lanes[1]} stroke-width="2.2" opacity="0.85" stroke-dasharray="7 9" />
+  <!-- lane: fix (green) -->
+  <path d="M1180 250 C 1020 300, 980 420, 830 470 C 660 526, 640 610, 520 680" stroke={lanes[2]} stroke-width="2.2" opacity="0.8" />
+  <!-- lane: chore (amber), short branch -->
+  <path d="M1062 120 C 980 170, 990 280, 930 342" stroke={lanes[3]} stroke-width="2" opacity="0.75" />
+  <!-- lane: reverted (red), terminates -->
+  <path d="M1150 470 C 1080 500, 1030 560, 990 620" stroke={lanes[4]} stroke-width="2" opacity="0.7" />
+
+  <!-- nodes: main -->
+  <g opacity="0.9">
+    <circle cx="960" cy="281" r="14" fill={lanes[0]} opacity="0.16" />
+    <circle cx="960" cy="281" r="5" fill={lanes[0]} />
+  </g>
+  <circle cx="700" cy="360" r="5" fill={lanes[0]} />
+  <circle cx="420" cy="558" r="5" fill={lanes[0]} />
+  <g>
+    <circle cx="190" cy="680" r="6" fill={lanes[0]} />
+    <circle cx="190" cy="680" r="14" stroke={lanes[0]} stroke-width="1.4" opacity="0.5" />
+  </g>
+
+  <!-- nodes: feature -->
+  <circle cx="930" cy="218" r="4.6" fill={lanes[1]} />
+  <circle cx="560" cy="530" r="4.6" fill={lanes[1]} />
+  <circle cx="400" cy="660" r="4.6" fill={lanes[1]} />
+
+  <!-- nodes: fix -->
+  <circle cx="1120" cy="276" r="4.4" fill={lanes[2]} />
+  <circle cx="830" cy="470" r="4.4" fill={lanes[2]} />
+  <circle cx="520" cy="680" r="4.4" fill={lanes[2]} />
+
+  <!-- nodes: chore + revert -->
+  <circle cx="1062" cy="120" r="4" fill={lanes[3]} />
+  <circle cx="930" cy="342" r="4" fill={lanes[3]} />
+  <circle cx="990" cy="620" r="4" fill={lanes[4]} />
+
+  <!-- floating refs -->
+  <g font-family="ui-monospace, monospace" font-size="12.5" font-weight="600">
+    <g>
+      <rect x="992" y="255" width="66" height="22" rx="11" fill="#232a35" />
+      <text x="1025" y="270" text-anchor="middle" fill="#38bdf8">HEAD</text>
+    </g>
+    <g>
+      <rect x="836" y="182" width="58" height="22" rx="11" fill="#232a35" />
+      <text x="865" y="197" text-anchor="middle" fill="#a78bfa">stack</text>
+    </g>
+    <g>
+      <rect x="148" y="710" width="82" height="22" rx="11" fill="#232a35" />
+      <text x="189" y="725" text-anchor="middle" fill="#94a3b8">v1.3.4</text>
+    </g>
+    <g>
+      <rect x="700" y="500" width="92" height="22" rx="11" fill="#232a35" />
+      <text x="746" y="515" text-anchor="middle" fill="#94a3b8">rerere</text>
+    </g>
+  </g>
+
+  <!-- hash dust -->
+  <g font-family="ui-monospace, monospace" font-size="10.5" fill="#5c6a7e">
+    <text x="1106" y="106" opacity="0.85">9a4f21c</text>
+    <text x="742" y="336" opacity="0.7">b17e4d0</text>
+    <text x="462" y="600" opacity="0.7">3c8fa92</text>
+    <text x="880" y="500" opacity="0.6">e02b517</text>
+  </g>
+</svg>

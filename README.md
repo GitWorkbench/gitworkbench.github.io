@@ -31,6 +31,7 @@ Run `npm run verify` before pushing. CI runs the same checks and will not publis
 ```text
 src/
   components/       Header, footer, and each homepage section
+                    (Strata.astro is the hero art, Seo.astro the meta block)
   data/site.ts      Product copy, navigation, features, FAQ, URLs
   layouts/          BaseLayout.astro (document shell and fonts)
   pages/
@@ -57,9 +58,18 @@ Edit product copy in `src/data/site.ts` — it drives navigation, features, work
 
 ## Design system
 
-The site uses the desktop application's own palette so the two read as one product: onyx surfaces (`#0b0e13` page, `#14171d` base, `#1a1d24`–`#2a303d` panels), `#38bdf8` electric cyan accent, and the `#34d399` / `#f87171` / `#fbbf24` diff-signature colors. Typography is Inter (body), Outfit (display), and JetBrains Mono (labels, code, chips), all self-hosted via Fontsource. Tokens live in `src/styles/global.css`.
+The site is a concept piece: **the page itself reads like a repository history**. Colors and fonts still come straight from the desktop application's Tailwind theme (onyx surfaces, `#38bdf8` electric cyan diff-lane colors), with Inter (body), Outfit (display), and JetBrains Mono (labels, hashes, chips), all self-hosted via Fontsource. Tokens live in `src/styles/global.css`.
 
-Homepage sections, in order: `Hero` (copy, install one-liner, and a hand-drawn app mock in `AppMock.astro`), `Features` (bento grid of nine real app features), `Tour` (scroll-snap screenshot gallery), `ThemeGallery` (live previewer for the app's nine palettes), `Workflow` (four steps plus keyboard shortcuts), `Downloads`, `Faq`, `OpenSource`, and the footer.
+The homepage sections carry that idea through:
+
+- `Hero` — oversized editorial headline with `Strata.astro`, an abstract SVG commit-lane field that bleeds off the page edge, plus the install one-liner;
+- `Features` — the bento grid is gone: nine features render as a **commit log**, each row a lane dot, a short hash, a title, and its description;
+- `Tour` — scroll-snap strip of real screenshots;
+- `ThemeGallery` — live previewer for the app's nine palettes;
+- `Workflow` — steps read as a **reflog** (`HEAD@{3}` → `HEAD@{0}`) plus keyboard shortcut chips;
+- `Downloads` — platform rows (`linux` / `macos` / `windows`) with per-format asset links;
+- `Faq` — hairline accordion; `OpenSource` — a merge-band visual (two lanes merging into one node) instead of a diagram;
+- A 1px "history rail" runs the full page height on wide screens, and every section pins a commit node onto it.
 
 ## SEO and discoverability
 

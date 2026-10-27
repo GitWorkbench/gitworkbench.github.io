@@ -106,19 +106,19 @@ check('the hero install command is advertised', document.querySelector('.hero-in
 check('the hero links to both releases and the repository', [...document.querySelectorAll('.hero-actions a')].some((a) => a.href.startsWith(releases)) && [...document.querySelectorAll('.hero-actions a')].some((a) => a.href.includes('workbench')));
 check('hero facts are sourced', document.querySelector('.hero-stats') !== null);
 
-// Application mock
-const mock = document.querySelector('.app-mock');
-check('hero shows the app mock', mock !== null);
-check('the app mock is described', mock?.getAttribute('role') === 'img' && (mock?.getAttribute('aria-label') ?? '').length > 40);
-check('the strata graph is drawn', [...document.querySelectorAll('.app-mock svg path')].length >= 4);
-check('mock commit files carry change badges', [...document.querySelectorAll('.app-mock .mock-badge')].length >= 3);
+// Hero strata art
+const heroArt = document.querySelector('.hero-art svg');
+check('hero renders the strata art', heroArt !== null);
+check('the strata art draws several commit lanes', [...heroArt?.querySelectorAll('path') ?? []].length >= 6);
+check('the strata art is decorative', heroArt?.getAttribute('aria-hidden') === 'true');
 
-// Features bento
-const cards = [...document.querySelectorAll('.bento-card')];
-check('the bento grid has feature cards', cards.length >= 8);
-check('feature cards have wide and narrow spans', cards.some((card) => card.classList.contains('is-wide')));
-for (const card of cards) {
-  check('feature card includes a kebab-case detail line', (card.querySelector('.bento-detail')?.textContent ?? '').length > 5);
+// Commit-log features
+const rows = [...document.querySelectorAll('.commit-log .commit-row')];
+check('features render as a commit log with nine rows', rows.length === 9);
+check('commit rows expose lane colors for the strata motif', rows.every((row) => row.style.getPropertyValue('--lane')));
+check('commit rows carry a fake short hash', rows.every((row) => /^[0-9a-f]{7}$/.test(row.querySelector('.commit-hash')?.textContent ?? '')));
+for (const row of rows) {
+  check('commit row has a title, description, and detail line', (row.querySelector('h3')?.textContent ?? '').length > 5 && (row.querySelector('.commit-detail')?.textContent ?? '').length > 5);
 }
 
 // Screenshots (scroll-snap gallery)
@@ -156,11 +156,12 @@ check(
   document.body.textContent.includes('Settings → Typography'),
 );
 
-// Workflow + shortcuts
-const steps = [...document.querySelectorAll('.step')];
-check('the workflow has four steps', steps.length === 4);
+// Workflow + shortcuts (reflog)
+const steps = [...document.querySelectorAll('.reflog-row')];
+check('the workflow reads as a four-entry reflog', steps.length === 4);
+check('reflog entries carry HEAD@{n} refs', steps.every((step) => /^HEAD@\{\d\}/.test(step.querySelector('.reflog-ref')?.textContent.trim() ?? '')));
 for (const step of steps) {
-  check('each step is numbered and titled', step.querySelector('.step-number')?.textContent && step.querySelector('h3'));
+  check('each reflog entry is titled and explained', step.querySelector('h3')?.textContent && step.querySelector('p')?.textContent);
 }
 const shortcuts = [...document.querySelectorAll('.shortcut')];
 check('shortcuts are listed as chips', shortcuts.length >= 5);
