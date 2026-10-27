@@ -1,10 +1,10 @@
 export const SITE = {
   name: 'Git Workbench',
   url: 'https://gitworkbench.github.io',
-  title: 'Git Workbench: Visual Git Client for Linux, macOS & Windows',
+  title: 'Git Workbench: Visual Commit Graph Git Client',
   description:
-    'A free, open-source desktop Git client with a visual commit graph, line-by-line staging, a three-pane merge editor, worktrees, and pull request reviews.',
-  tagline: 'See the whole story. Work from one Git workspace.',
+    'An open-source desktop Git client that renders history as commit strata, with hunk-level staging, a three-pane merge editor, PR reviews, and safe recovery.',
+  tagline: 'Complex Git history, rendered as clear strata.',
   repository: 'GitWorkbench/workbench',
   author: {
     name: 'Naowas Morshed Eimon',
@@ -19,157 +19,202 @@ export const URLS = {
   latestRelease: `https://github.com/${SITE.repository}/releases/latest`,
   issues: `https://github.com/${SITE.repository}/issues`,
   license: `https://github.com/${SITE.repository}/blob/main/LICENSE`,
-  docs: `https://github.com/${SITE.repository}#readme`,
+  docs: `https://github.com/${SITE.repository}/blob/main/README.md`,
+  source: `https://github.com/${SITE.repository}/tree/main/src`,
+  contributing: `https://github.com/${SITE.repository}/blob/main/AGENTS.md`,
+  advanced: `https://github.com/${SITE.repository}/blob/main/docs/advanced-features.md`,
   firstRun: `https://github.com/${SITE.repository}/blob/main/docs/first-run-setup.md`,
+  branding: `https://github.com/${SITE.repository}/blob/main/docs/branding.md`,
   installerSource: `https://github.com/${SITE.repository}/blob/main/scripts/install-linux.sh`,
   socialImage: '/assets/screenshots/history.jpg',
 } as const;
 
+export const INSTALL_COMMAND = 'curl -fsSL https://gitworkbench.github.io/install.sh | bash';
+
 export const NAVIGATION = [
-  { label: 'Screenshots', href: '/#workspace' },
   { label: 'Features', href: '/#features' },
-  { label: 'How to use', href: '/#how-it-works' },
-  { label: 'Downloads', href: '/#download' },
+  { label: 'Tour', href: '/#tour' },
+  { label: 'Themes', href: '/#themes' },
+  { label: 'Workflow', href: '/#how-it-works' },
+  { label: 'Install', href: '/#download' },
 ] as const;
 
-export const FEATURES = [
+export const HERO = {
+  eyebrow: 'Free and open source · MIT licensed',
+  lead:
+    'Git Workbench is a desktop Git client for Linux, macOS, and Windows that maps your history as colored commit strata — and keeps staging, merging, reviewing, and recovery one keystroke away. It drives your system git, so hooks, SSH keys, GPG signing, and .gitconfig keep working untouched.',
+} as const;
+
+export const HERO_STATS = [
+  { value: '9 themes', label: 'from onyx to Studio Light' },
+  { value: '4 providers', label: 'GitHub, GitLab, Bitbucket, Gitea' },
+  { value: '28 topics', label: 'in the built-in guide' },
+] as const;
+
+export interface Feature {
+  title: string;
+  description: string;
+  detail: string;
+  size?: 'wide';
+}
+
+export const FEATURES: Feature[] = [
   {
-    icon: '⑂',
-    title: 'A graph-first Git workspace',
+    title: 'Interactive commit strata',
     description:
-      'Read branches, tags, and commit history together. Select a commit to see its files, author, date, and patch in context.',
-    detail: 'Resizable columns · Search · Blame',
+      'Every branch travels its own color lane, curves drawn by hand in the graph. Select a node to open its files, parent hashes, and patch. HEAD, local and remote branches, and tags sit inline beside each summary.',
+    detail: 'Cubic Bézier lanes · Parent links · Adjustable row density',
+    size: 'wide',
   },
   {
-    icon: '±',
-    title: 'Focused staging and review',
+    title: 'Hunk-level staging',
     description:
-      'Inspect unified or split diffs, then stage only the files, hunks, or lines that belong in the next commit.',
-    detail: 'Working tree · Line staging · File history',
+      'Read unified or side-by-side diffs with syntax highlighting, then stage, unstage, or discard individual hunks. Flat path lists and expandable folder trees both mark added, modified, deleted, and renamed files.',
+    detail: 'A/M/D/R badges · Line counts · Zip through the tree',
   },
   {
-    icon: '⋈',
-    title: 'Conflicts with room to think',
+    title: 'Three-pane conflict editor',
     description:
-      'Compare Current and Incoming beside an editable result. Review each conflict block and apply only when you are satisfied.',
-    detail: 'Three-pane editor · Base view · rerere memory',
+      'Current and Incoming flank an editable result, with the read-only common ancestor on demand. Repeated conflicts offer remembered resolutions backed by git rerere – preview first, apply explicitly.',
+    detail: 'Gutter arrows · keep both · Alt+↑/↓ between blocks',
   },
   {
-    icon: '↗',
-    title: 'Pull requests and merge requests',
+    title: 'Pull & merge requests',
     description:
-      'Browse requests, inspect conversations and CI checks, review diffs, and create requests from the checked-out branch.',
+      'Browse open requests for any remote, read conversations and CI checks, post line comments, and approve or request changes. Create a request straight from the checked-out branch.',
     detail: 'GitHub · GitLab · Bitbucket Cloud · Gitea',
+    size: 'wide',
   },
   {
-    icon: '↶',
-    title: 'Parallel work and safer recovery',
+    title: 'A real terminal',
     description:
-      'Open worktrees, use reflog and restore points, and compare rebases before choosing to apply a history rewrite.',
-    detail: 'Worktrees · Restore points · Range-diff',
+      'Ctrl+` opens xterm.js over a native pseudoterminal: full login shell, tab completion, ANSI color. Each repository keeps its own session and recent output, even while the drawer stays closed.',
+    detail: 'Per-repo sessions · Resize or maximize · Restart on demand',
   },
   {
-    icon: '⌘',
-    title: 'Tools that fit your workflow',
+    title: 'History that can be undone',
     description:
-      'Keep an interactive terminal, optional AI assistance, multiple repository tabs, and repository tools close to your work.',
-    detail: 'Terminal · AI drafts · Themes · LFS',
+      'Restore points snapshot HEAD, the staged and unstaged split, and untracked files before resets, discards, and rewrites. Browse the reflog and branch off any entry to pull lost work back.',
+    detail: 'Private refs · Safety branches · Range-diff comparison',
+  },
+  {
+    title: 'Optional AI, on your terms',
+    description:
+      'Recompose a commit message or explain a whole branch from its base. Choose any provider — including a local Ollama model — and nothing is ever pushed: drafts apply to local commits behind a restore point.',
+    detail: 'Explicit apply · Encrypted keys · Local-first',
+  },
+  {
+    title: 'Native git, zero relearning',
+    description:
+      'Workbench shells out to the git binary you already installed and reads your .git folder directly. No proprietary database, no second login, no surprise rewrite of your settings.',
+    detail: 'Async, non-blocking · Your config, untouched',
+  },
+  {
+    title: 'Tools for bigger repositories',
+    description:
+      'Split commits by file or hunk with a preview, retarget stacked branches with isolated restack previews, manage Git LFS rules and transfers, and pick sparse-checkout folders you can save as layouts.',
+    detail: 'Git 2.37–2.38+ features · Clearly listed limits',
+    size: 'wide',
   },
 ] as const;
 
-export const WHY_POINTS = [
+export const WORKFLOWS = [
   {
-    title: 'Understand before acting',
+    step: '01',
+    title: 'A short first run',
     description:
-      'Keep branch relationships and commit details visible while you inspect a patch or plan a history change.',
+      'Pick a commit profile, preview your theme, and configure AI only if you want it. Skipping the setup changes nothing — every choice lives in Settings and can be redone later.',
   },
   {
-    title: 'Build precise commits',
+    step: '02',
+    title: 'Open a repository',
     description:
-      'Choose individual lines and hunks, then see exactly what is staged before creating a commit.',
+      'Open an existing project or create one from the Home dashboard, pin it, and switch tabs between projects. Workbench reads .git through the system git, not a hidden index of its own.',
   },
   {
-    title: 'Choose your own services',
+    step: '03',
+    title: 'Read, stage, and commit',
     description:
-      'Use local Git without signing in. Connect a hosted provider or AI model only when you want those features.',
-  },
-] as const;
-
-export const STEPS = [
-  {
-    title: 'Set up your workspace',
-    description:
-      'Choose the commit profile and theme you want. AI setup is optional, and every choice can be changed later.',
+      'Follow the lanes to the commit you need, inspect its files, stage lines, hunks, or whole files, and write the commit message with or without an AI draft.',
   },
   {
-    title: 'Open a local repository',
+    step: '04',
+    title: 'Push, review, and recover',
     description:
-      'Open an existing project or create a repository. Git Workbench uses system Git and your configured SSH keys or credential helper.',
-  },
-  {
-    title: 'Read the graph and changes',
-    description:
-      'Follow branches, select a commit, inspect its files, and compare the working tree with the history around it.',
-  },
-  {
-    title: 'Stage, commit, and sync',
-    description:
-      'Stage a file, hunk, or line; review the staged patch; write a commit; then fetch, pull, or push when ready.',
-  },
-  {
-    title: 'Review with your team',
-    description:
-      'Connect a provider to browse or create pull requests and merge requests. Provider access stays optional for local Git work.',
+      'Fetch, pull, and push through your existing SSH keys or credential helper. Review requests with checks and approvals, and lean on restore points before any history rewrite — rewrites stay local until you push.',
   },
 ] as const;
 
-export const PLATFORMS = ['Linux', 'macOS', 'Windows'] as const;
-export const PROVIDERS = ['GitHub', 'GitLab', 'Bitbucket Cloud', 'Gitea'] as const;
+export const SHORTCUTS = [
+  { keys: ['Ctrl', ','], label: 'Open settings' },
+  { keys: ['Ctrl', 'F'], label: 'Filter commits & branches' },
+  { keys: ['Ctrl', 'R'], label: 'Refresh repository status' },
+  { keys: ['Ctrl', 'T'], label: 'Jump to Home & dashboard' },
+  { keys: ['Ctrl', 'Space'], label: 'Toggle the terminal' },
+  { keys: ['Esc'], label: 'Close viewer or dialog' },
+] as const;
+
+export const THEMES = [
+  { id: 'git-workbench-dark', name: 'Git Workbench Dark', bg: '#14171d', panel: '#1a1d24', fg: '#e2e8f0', accent: '#38bdf8', mood: 'Default · sleek onyx with electric cyan' },
+  { id: 'github-dark-dimmed', name: 'GitHub Dark Dimmed', bg: '#2d333b', panel: '#373e47', fg: '#adbac7', accent: '#539bf5', mood: 'Low-contrast calm' },
+  { id: 'dracula', name: 'Dracula', bg: '#282a36', panel: '#343746', fg: '#f8f8f2', accent: '#bd93f9', mood: 'Vivid purples' },
+  { id: 'nord', name: 'Nord', bg: '#2e3440', panel: '#3b4252', fg: '#eceff4', accent: '#88c0d0', mood: 'Frost blue' },
+  { id: 'cyberpunk', name: 'Cyberpunk', bg: '#0d0221', panel: '#1b0a3a', fg: '#f3e9ff', accent: '#ff2a6d', mood: 'Neon nights' },
+  { id: 'monokai-pro', name: 'Monokai Pro', bg: '#272822', panel: '#34352f', fg: '#f8f8f2', accent: '#a9dc76', mood: 'Classic warm dark' },
+  { id: 'one-dark-pro', name: 'One Dark Pro', bg: '#282c34', panel: '#3e4451', fg: '#abb2bf', accent: '#61afef', mood: 'Editor favourite' },
+  { id: 'solarized-dark', name: 'Solarized Dark', bg: '#002b36', panel: '#073642', fg: '#eee8d5', accent: '#268bd2', mood: 'Muted desert' },
+  { id: 'clean-studio-light', name: 'Clean Studio Light', bg: '#fafbfc', panel: '#eef1f4', fg: '#24292f', accent: '#0969da', mood: 'A true daylight mode' },
+] as const;
 
 export const FAQ = [
   {
     question: 'Is Git Workbench free?',
     answer:
-      'Yes. Git Workbench is open source under the MIT license. You can inspect the code, report issues, and contribute on GitHub.',
+      'Yes. Git Workbench is open source under the MIT license: free for personal and commercial use. The source lives on GitHub, where you can file issues and contribute.',
   },
   {
-    question: 'Does it replace my Git setup?',
+    question: 'Do I have to sign in to anything?',
     answer:
-      'Git Workbench uses your installed system Git and standard repositories. Pushes and pulls use your configured SSH keys or Git credential helper. Provider sign-in separately authorizes hosted pull request APIs.',
+      'No. Local Git work needs no account at all. Provider sign-in is only needed for pull and merge request features, and AI assistance is configured separately if you want it.',
+  },
+  {
+    question: 'Does it interfere with my Git setup?',
+    answer:
+      'Git Workbench shells out to your installed system git and reads the repository directly. Your hooks, SSH keys, GPG signing, credential helper, and .gitconfig all keep working as they do on the command line.',
   },
   {
     question: 'Which hosting providers can I connect?',
     answer:
-      'GitHub, GitLab.com, self-hosted GitLab, Bitbucket Cloud, and Gitea are supported for pull request and merge request workflows. GitHub Enterprise and Bitbucket Data Center are not supported yet.',
+      'GitHub, GitLab.com, self-hosted GitLab (including nested groups and HTTPS ports), Bitbucket Cloud, and Gitea are supported for request and review workflows. GitHub Enterprise and Bitbucket Data Center are not supported yet.',
   },
   {
-    question: 'What happens to my code with AI features?',
+    question: 'Are there minimum Git versions?',
     answer:
-      'AI assistance is optional. Local Git features do not need an AI account. When you request AI help, the relevant prompt or selected code is sent to the model provider you configured, including a local Ollama instance if you choose one. Keys are stored encrypted outside renderer preferences.',
+      'The basics work with any recent git. Optional tools have floors: stacked-branch restacks need Git 2.38+, sparse-checkout editing needs 2.37+, and range-diff comparisons need 2.19+. The tools tell you when a prerequisite is missing.',
   },
   {
-    question: 'What do I need before installing?',
+    question: 'What does the one-line installer do?',
     answer:
-      'Install system Git and make sure it is available on your PATH. Git Workbench uses your usual SSH keys and credential helper for Git operations. Provider login and AI configuration are optional.',
+      'It detects Debian-based, RPM-based, and Arch-based distributions, downloads the matching package from the public GitHub release, verifies its SHA-512 checksum, and hands off to your package manager, which keeps its usual confirmation prompt. Other distributions get a per-user AppImage with a desktop entry. Current Linux builds are x86_64.',
   },
   {
     question: 'How do updates work on each platform?',
     answer:
-      'Linux AppImage, deb, rpm, and Pacman packages and the Windows installer support explicit in-app updates. Unsigned macOS builds are downloaded and installed manually from the release page.',
+      'The Windows installer and the Linux AppImage, deb, rpm, and Pacman builds can download and install updates from About → Software updates; package formats may ask for system authorization. Unsigned macOS builds are always updated manually from the release page.',
   },
   {
-    question: 'Is macOS supported even though builds are unsigned?',
+    question: 'What happens to my code with AI features?',
     answer:
-      'Yes. Git Workbench provides a universal DMG and ZIP for Intel and Apple silicon. macOS warns that the app is unsigned; installation and updates are manual. Review the current release notes for platform-specific instructions.',
+      'AI help is optional and configured per provider you choose — including a local Ollama instance, which keeps prompts on your machine. Requested prompts or selected code are sent only to that provider. Keys are stored encrypted outside renderer preferences and are never attached to commits.',
   },
 ] as const;
 
 export const DOWNLOAD_FORMATS = [
   { format: 'AppImage', label: 'AppImage' },
-  { format: 'deb', label: '.deb' },
-  { format: 'rpm', label: '.rpm' },
-  { format: 'pacman', label: '.pkg.tar.zst' },
-  { format: 'dmg', label: 'Download for macOS' },
-  { format: 'zip', label: 'Prefer a ZIP?' },
-  { format: 'exe', label: 'Download for Windows' },
+  { format: 'deb', label: '.deb package' },
+  { format: 'rpm', label: '.rpm package' },
+  { format: 'pacman', label: '.pkg.tar.zst (Arch)' },
+  { format: 'dmg', label: 'macOS .dmg' },
+  { format: 'zip', label: 'macOS .zip' },
+  { format: 'exe', label: 'Windows installer' },
 ] as const;

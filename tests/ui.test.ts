@@ -4,22 +4,29 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountWebsite } from '../src/scripts/ui';
 
 const fixture = `
-  <header class="site-header wrap">
+  <header class="site-header">
     <a class="brand" href="/">Git Workbench</a>
     <button class="mobile-menu-toggle" type="button" data-menu-toggle aria-controls="site-navigation" aria-expanded="false">Menu</button>
-    <nav id="site-navigation" aria-label="Main navigation">
-      <a href="/#workspace">Screenshots</a>
-      <a href="/#how-it-works">How to use</a>
+    <nav id="site-navigation" aria-label="Main navigation" data-nav>
+      <ul>
+        <li><a href="/#features">Features</a></li>
+        <li><a href="/#download">Install</a></li>
+      </ul>
     </nav>
+    <div class="scroll-progress" data-progress aria-hidden="true"></div>
   </header>
-  <div class="preview-tabs" role="tablist" aria-label="App screenshots">
-    <button id="tab-history" type="button" role="tab" data-preview aria-selected="true" aria-controls="panel-history" tabindex="0">Commit graph</button>
-    <button id="tab-diff" type="button" role="tab" data-preview aria-selected="false" aria-controls="panel-diff" tabindex="-1">Diff &amp; staging</button>
-    <button id="tab-merge" type="button" role="tab" data-preview aria-selected="false" aria-controls="panel-merge" tabindex="-1">Merge editor</button>
+  <section id="features"><h2>Features</h2></section>
+  <button class="copy-btn" type="button" data-copy="curl -fsSL https://gitworkbench.github.io/install.sh | bash">
+    <svg></svg><span data-copy-label>Copy</span>
+  </button>
+  <button class="gallery-arrow" type="button" data-gallery-nav="1">→</button>
+  <div class="screenshot-gallery gallery" data-gallery></div>
+  <div class="app-preview" data-theme-preview style="--pv-accent:#38bdf8"></div>
+  <div class="theme-grid">
+    <button class="theme-swatch" type="button" data-theme-swatch data-theme-bg="#002b36" data-theme-panel="#073642" data-theme-fg="#eee8d5" data-theme-accent="#268bd2" aria-pressed="false">Solarized</button>
+    <button class="theme-swatch" type="button" data-theme-swatch data-theme-bg="#2e3440" data-theme-panel="#3b4252" data-theme-fg="#eceff4" data-theme-accent="#88c0d0" aria-pressed="false">Nord</button>
   </div>
-  <div id="panel-history" role="tabpanel"></div>
-  <div id="panel-diff" role="tabpanel" hidden></div>
-  <div id="panel-merge" role="tabpanel" hidden></div>
+  <kbd class="key" data-mod-key>Ctrl</kbd>
   <article data-platform="linux"></article>
   <article data-platform="mac"></article>
   <article data-platform="windows"></article>
@@ -31,39 +38,6 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.restoreAllMocks();
-});
-
-describe('screenshot tablist', () => {
-  it('switches panels with clicks and complete keyboard navigation', () => {
-    mountWebsite();
-    const tabs = [...document.querySelectorAll<HTMLButtonElement>('[data-preview]')];
-
-    tabs[1].click();
-    expect(tabs[1]).toHaveAttribute('aria-selected', 'true');
-    expect(tabs[1]).toHaveAttribute('tabindex', '0');
-    expect(tabs[0]).toHaveAttribute('tabindex', '-1');
-    expect(document.getElementById('panel-diff')).not.toHaveAttribute('hidden');
-    expect(document.getElementById('panel-history')).toHaveAttribute('hidden');
-
-    for (const [source, key, next] of [
-      [1, 'ArrowRight', 2],
-      [2, 'ArrowRight', 0],
-      [0, 'ArrowLeft', 2],
-      [2, 'Home', 0],
-      [0, 'End', 2],
-    ] as const) {
-      tabs[source].dispatchEvent(
-        new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }),
-      );
-      expect(tabs[next]).toHaveAttribute('aria-selected', 'true');
-      expect(tabs[next]).toHaveFocus();
-    }
-  });
-
-  it('does nothing when a page has no interactive tabs', () => {
-    document.body.innerHTML = '<p>Static page</p>';
-    expect(() => mountWebsite()).not.toThrow();
-  });
 });
 
 describe('mobile navigation', () => {
@@ -78,7 +52,7 @@ describe('mobile navigation', () => {
     expect(toggle).toHaveAttribute('aria-label', 'Close navigation menu');
     expect(navigation).toHaveAttribute('data-open', 'true');
 
-    navigation.querySelector<HTMLAnchorElement>('a[href="/#how-it-works"]')!.click();
+    navigation.querySelector<HTMLAnchorElement>('a[href="/#download"]')!.click();
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
     expect(navigation).toHaveAttribute('data-open', 'false');
 
@@ -86,6 +60,75 @@ describe('mobile navigation', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
     expect(toggle).toHaveFocus();
+  });
+
+  it('does nothing on a page without navigation markup', () => {
+    document.body.innerHTML = '<p>Static page</p>';
+    expect(() => mountWebsite()).not.toThrow();
+  });
+});
+
+describe('scroll progress', () => {
+  it('preps the bar for scroll updates without breaking on tiny pages', () => {
+    mountWebsite();
+    expect(document.querySelector('[data-progress]')).toHaveClass('is-ready');
+    const style = document.querySelector<HTMLElement>('[data-progress]')!.style;
+    expect(style.getPropertyValue('--progress')).toBeTruthy();
+  });
+});
+
+describe('copy buttons', () => {
+  it('reports a successful copy and restores the label', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+
+    mountWebsite();
+    const button = document.querySelector<HTMLButtonElement>('[data-copy]')!;
+    button.click();
+    await Promise.resolve();
+
+    expect(writeText).toHaveBeenLastCalledWith('curl -fsSL https://gitworkbench.github.io/install.sh | bash');
+    expect(button).toHaveClass('is-copied');
+    expect(button.querySelector('[data-copy-label]')?.textContent).toBe('Copied!');
+  });
+
+  it('leaves the label untouched when the clipboard is unavailable', async () => {
+    Object.defineProperty(navigator, 'clipboard', { value: undefined, configurable: true });
+
+    mountWebsite();
+    const button = document.querySelector<HTMLButtonElement>('[data-copy]')!;
+    button.click();
+    await Promise.resolve();
+
+    expect(button).not.toHaveClass('is-copied');
+    expect(button.querySelector('[data-copy-label]')?.textContent).toBe('Copy');
+  });
+});
+
+describe('theme previewer', () => {
+  it('repaints the preview with the selected palette', () => {
+    mountWebsite();
+    const preview = document.querySelector<HTMLElement>('[data-theme-preview]')!;
+    const swatches = [...document.querySelectorAll<HTMLButtonElement>('[data-theme-swatch]')];
+
+    swatches[0].click();
+    expect(preview.style.getPropertyValue('--pv-bg')).toBe('#002b36');
+    expect(preview.style.getPropertyValue('--pv-accent')).toBe('#268bd2');
+    expect(swatches[0]).toHaveAttribute('aria-pressed', 'true');
+    expect(swatches[1]).toHaveAttribute('aria-pressed', 'false');
+
+    swatches[1].click();
+    expect(preview.style.getPropertyValue('--pv-bg')).toBe('#2e3440');
+    expect(swatches[1]).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('moves between swatches with arrow keys', () => {
+    mountWebsite();
+    const swatches = [...document.querySelectorAll<HTMLButtonElement>('[data-theme-swatch]')];
+
+    swatches[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    expect(document.activeElement).toBe(swatches[1]);
+    expect(swatches[1]).toHaveAttribute('aria-pressed', 'true');
   });
 });
 
@@ -95,12 +138,23 @@ describe('platform detection', () => {
     ['Win32', 'windows'],
     ['Linux x86_64', 'linux'],
     ['iPhone', null],
-  ])('highlights %s without hiding other platforms', (platform, expected) => {
+  ])('marks %s without hiding other platforms', (platform, expected) => {
     vi.spyOn(navigator, 'platform', 'get').mockReturnValue(platform);
     mountWebsite();
-    expect(document.querySelectorAll('[data-platform]')).toHaveLength(3);
-    expect(document.querySelector('[data-detected="true"]')?.getAttribute('data-platform') ?? null).toBe(
-      expected,
-    );
+
+    const detected = (document.querySelector('[data-detected="true"]') as HTMLElement | null) ?? null;
+    expect(detected?.getAttribute('data-platform') ?? null).toBe(expected);
+  });
+
+  it('swaps Ctrl for the command key on macOS and mentions it', () => {
+    vi.spyOn(navigator, 'platform', 'get').mockReturnValue('MacIntel');
+    mountWebsite();
+    expect(document.querySelector('[data-mod-key]')?.textContent).toBe('⌘');
+  });
+
+  it('keeps Ctrl elsewhere', () => {
+    vi.spyOn(navigator, 'platform', 'get').mockReturnValue('Win32');
+    mountWebsite();
+    expect(document.querySelector('[data-mod-key]')?.textContent).toBe('Ctrl');
   });
 });

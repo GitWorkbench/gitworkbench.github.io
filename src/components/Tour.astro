@@ -1,0 +1,89 @@
+---
+import { Picture } from 'astro:assets';
+import history from '../assets/screenshots/history.jpg';
+import diff from '../assets/screenshots/diff.jpg';
+import merge from '../assets/screenshots/merge.jpg';
+
+const sizes = '(max-width: 480px) calc(100vw - 40px), (max-width: 880px) calc(100vw - 40px), (max-width: 1304px) calc(100vw - 64px), 1240px';
+const widths = [480, 720, 1080, 1440];
+
+const shots = [
+  {
+    id: 'history',
+    image: history,
+    alt: 'Git Workbench commit graph with parallel branch lanes, commit authors, short hashes, and a selected commit detail panel.',
+    caption: 'The strata view — lanes, badges, and the selected commit at a glance.',
+    eager: true,
+  },
+  {
+    id: 'diff',
+    image: diff,
+    alt: 'Git Workbench side-by-side repository and code diff view, showing a staged file and line-level patch controls.',
+    caption: 'Diff & staging — hunk by hunk, before the commit ever lands.',
+    eager: false,
+  },
+  {
+    id: 'merge',
+    image: merge,
+    alt: 'Git Workbench conflict editor showing Current and Incoming versions beside an editable Merge result pane.',
+    caption: 'The three-pane conflict editor — decide with the full context.',
+    eager: false,
+  },
+];
+---
+
+<section id="tour" class="section">
+  <div class="wrap">
+    <div class="section-head-row">
+      <header class="section-head">
+        <p class="kicker">// inside the workspace</p>
+        <h2>Real captures, straight from the app.</h2>
+        <p class="section-lead">
+          No mockups here — swipe or scroll the strip, click any capture to open it at full size.
+        </p>
+      </header>
+      <div class="gallery-hint" data-reveal>
+        <button class="gallery-arrow" type="button" data-gallery-nav="-1" aria-label="Scroll the screenshots backwards">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5" /></svg>
+        </button>
+        <button class="gallery-arrow" type="button" data-gallery-nav="1" aria-label="Scroll the screenshots forwards">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
+        </button>
+        <p aria-hidden="true">01 — 03</p>
+      </div>
+    </div>
+
+    <div class="screenshot-gallery gallery" data-gallery tabindex="0" role="region" aria-label="App screenshots — scrollable strip">
+      {
+        shots.map((shot) => (
+          <figure>
+            <a
+              href={`/assets/screenshots/${shot.id}.jpg`}
+              target="_blank"
+              rel="noopener"
+              aria-label={`Open the ${shot.id} screenshot at full size`}
+            >
+              <Picture
+                src={shot.image}
+                alt={shot.alt}
+                widths={widths}
+                sizes={sizes}
+                formats={['avif', 'webp']}
+                quality={82}
+                loading={shot.eager ? 'eager' : 'lazy'}
+                fetchpriority={shot.eager ? 'high' : 'auto'}
+                decoding={shot.eager ? 'sync' : 'async'}
+              />
+            </a>
+            <figcaption>{shot.caption}</figcaption>
+          </figure>
+        ))
+      }
+    </div>
+
+    <p class="install-note">
+      Captured with fictional demo repositories and identities — no customer repositories or
+      credentials are shown.
+    </p>
+  </div>
+</section>

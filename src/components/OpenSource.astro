@@ -2,21 +2,43 @@
 import { URLS } from '../data/site';
 ---
 
-<section class="open-source wrap" aria-labelledby="open-source-title">
-  <div>
-    <p class="eyebrow">BUILT IN THE OPEN</p>
-    <h2 id="open-source-title">A better workflow.<br />A shared workbench.</h2>
-    <p>
-      Git Workbench is MIT-licensed and developed in public. Read the source, report an issue, or
-      suggest what should improve next.
-    </p>
-  </div>
-  <div class="open-source-actions">
-    <a class="button button-primary" href={URLS.repository}>
-      View the source <span aria-hidden="true">↗</span>
-    </a>
-    <a class="button button-secondary" href={URLS.issues}>
-      Report an issue <span aria-hidden="true">↗</span>
-    </a>
+<section class="section" aria-labelledby="oss-heading">
+  <div class="wrap">
+    <div class="oss-layout">
+      <div data-reveal>
+        <p class="kicker">// open source</p>
+        <h2 id="oss-heading">MIT licensed, from install script to IPC.</h2>
+        <p class="section-lead">
+          The whole app — React renderer, Electron main process, packaging pipeline, and this
+          website — lives in the open, covered by 100% statement, branch, and function test
+          coverage enforced in CI.
+        </p>
+        <ul class="oss-points">
+          <li>Contributions follow a short guide: fork, branch, commit, pull request.</li>
+          <li>Disposable demo repositories are one command away (<code>npm run demo:create</code>) — realistic history, stashes, tags, conflicts, and submodules.</li>
+          <li>Everything runs against real git in temporary repositories during testing.</li>
+        </ul>
+        <div class="hero-actions">
+          <a class="button button-primary" href={URLS.repository}>Open the repository</a>
+          <a class="button button-outline" href={URLS.contributing}>Read the agent guide</a>
+        </div>
+      </div>
+
+      <div class="architecture" data-reveal aria-label="Architecture outline">
+        <pre><code>┌──────────────────────────────────────┐
+│        <span class="arch-hl">Electron main process</span>         │
+│  Frameless chrome · native dialogs   │
+│  Async <span class="arch-hl">git engine</span> (simple-git/exec) │
+└──────────────┬───────────────────────┘
+               │ contextBridge · typed IPC
+┌──────────────▼───────────────────────┐
+│        <span class="arch-hl">React 19 renderer</span>             │
+│  Commit strata SVG · diff viewer     │
+│  Zustand tabs · theme engine (CSS)   │
+└──────────────────────────────────────┘
+<span class="arch-dim">// no native bindings — your system git,
+// your hooks, your SSH keys, your config.</span></code></pre>
+      </div>
+    </div>
   </div>
 </section>

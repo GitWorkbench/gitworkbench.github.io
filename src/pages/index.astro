@@ -1,15 +1,14 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
-import Showcase from '../components/Showcase.astro';
-import PlatformStrip from '../components/PlatformStrip.astro';
 import Features from '../components/Features.astro';
-import Why from '../components/Why.astro';
-import HowItWorks from '../components/HowItWorks.astro';
+import Tour from '../components/Tour.astro';
+import ThemeGallery from '../components/ThemeGallery.astro';
+import Workflow from '../components/Workflow.astro';
 import Downloads from '../components/Downloads.astro';
 import Faq from '../components/Faq.astro';
 import OpenSource from '../components/OpenSource.astro';
-import { FAQ, FEATURES, SITE, URLS } from '../data/site';
+import { FAQ, FEATURES, SITE, THEMES, URLS, WORKFLOWS } from '../data/site';
 
 const absolute = (path: string) => new URL(path, SITE.url).href;
 
@@ -27,7 +26,7 @@ const structuredData = [
     license: URLS.license,
     description: SITE.description,
     screenshot: absolute(URLS.socialImage),
-    featureList: FEATURES.map((feature) => feature.title),
+    featureList: [...FEATURES.map((feature) => feature.title), ...WORKFLOWS.map((flow) => flow.title)],
     author: {
       '@type': 'Person',
       name: SITE.author.name,
@@ -63,20 +62,25 @@ const structuredData = [
       acceptedAnswer: { '@type': 'Answer', text: item.answer },
     })),
   },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: `${SITE.name} theme palettes`,
+    itemListElement: THEMES.map((theme, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: theme.name,
+    })),
+  },
 ];
 ---
 
-<BaseLayout
-  title={SITE.title}
-  description={SITE.description}
-  structuredData={structuredData}
->
+<BaseLayout title={SITE.title} description={SITE.description} structuredData={structuredData}>
   <Hero />
-  <Showcase />
-  <PlatformStrip />
   <Features />
-  <Why />
-  <HowItWorks />
+  <Tour />
+  <ThemeGallery />
+  <Workflow />
   <Downloads />
   <Faq />
   <OpenSource />

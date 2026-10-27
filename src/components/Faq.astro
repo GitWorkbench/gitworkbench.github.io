@@ -2,22 +2,33 @@
 import { FAQ, URLS } from '../data/site';
 ---
 
-<section class="faq section wrap" aria-labelledby="faq-title">
-  <div>
-    <p class="eyebrow">A FEW USEFUL DETAILS</p>
-    <h2 id="faq-title">Before you jump in.</h2>
-    <p>
-      More questions? <a href={URLS.issues}>Start a conversation on GitHub ↗</a>
+<section id="faq" class="section">
+  <div class="wrap">
+    <header class="section-head" data-reveal>
+      <p class="kicker">// answers</p>
+      <h2>Things people check first.</h2>
+    </header>
+    <ul class="faq-list faq" data-reveal>
+      {
+        FAQ.map((entry) => (
+          <li>
+            <details>
+              <summary>
+                {entry.question}
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M6 3.5L10.5 8 6 12.5" />
+                </svg>
+              </summary>
+              <p>{entry.answer}</p>
+            </details>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="themes-note" data-reveal>
+      Deeper questions are covered in the
+      <a href={URLS.advanced}>advanced workflows guide</a> and the
+      <a href={URLS.issues}>issue tracker</a>.
     </p>
-  </div>
-  <div class="faq-list">
-    {
-      FAQ.map((item) => (
-        <details>
-          <summary>{item.question}</summary>
-          <p>{item.answer}</p>
-        </details>
-      ))
-    }
   </div>
 </section>

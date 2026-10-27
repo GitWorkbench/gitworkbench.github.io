@@ -1,6 +1,7 @@
 ---
-import '@fontsource-variable/dm-sans';
-import '@fontsource-variable/space-grotesk';
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/outfit';
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -22,7 +23,7 @@ const {
   description,
   noindex = false,
   image = URLS.socialImage,
-  imageAlt = 'Git Workbench showing a visual commit graph, branches, authors, and commit details',
+  imageAlt = 'Git Workbench showing the commit strata graph with branch lanes, authors, and the selected commit in a dark workspace',
   structuredData = [],
   canonicalPath = Astro.url.pathname,
 } = Astro.props;
@@ -49,7 +50,7 @@ const socialImage = new URL(image, Astro.site ?? SITE.url).href;
     <link rel="icon" type="image/png" sizes="128x128" href="/assets/icon.png" />
     <link rel="apple-touch-icon" href="/assets/icon.png" />
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
-    <meta name="theme-color" content="#0c1015" />
+    <meta name="theme-color" content="#0b0e13" />
     <meta name="color-scheme" content="dark" />
     <meta name="author" content={SITE.author.name} />
     <meta name="application-name" content={SITE.name} />

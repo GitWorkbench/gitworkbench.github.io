@@ -1,18 +1,62 @@
 ---
-import { SITE, URLS } from '../data/site';
+import { NAVIGATION, SITE, URLS } from '../data/site';
 ---
 
-<footer class="site-footer wrap">
-  <a class="brand" href="/" aria-label={`${SITE.name} home`}>
-    <img src="/assets/icon.png" width="28" height="28" alt="" />
-    <span>{SITE.name}</span>
-  </a>
-  <p>
-    Created by <a href={SITE.author.url}>{SITE.author.name}</a>.
-  </p>
-  <nav aria-label="Footer">
-    <a href={URLS.repository}>Source</a>
-    <a href={URLS.issues}>Feedback</a>
-    <a href={URLS.license}>MIT License</a>
-  </nav>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/">
+          <span class="brand-logo" aria-hidden="true">⑂</span>
+          <span class="brand-name">{SITE.name}</span>
+        </a>
+        <p>
+          Visual commit strata and an effortless git workflow — free and open source for Linux,
+          macOS, and Windows.
+        </p>
+        <a class="button button-outline button-sm" href={URLS.releases}>Get the latest release</a>
+      </div>
+
+      <nav aria-label="Site sections">
+        <h2 class="footer-heading">Site</h2>
+        <ul class="footer-list">
+          {
+            NAVIGATION.map((item) => (
+              <li>
+                <a href={item.href}>{item.label}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav aria-label="Project links">
+        <h2 class="footer-heading">Project</h2>
+        <ul class="footer-list">
+          <li><a href={URLS.repository}>Source repository</a></li>
+          <li><a href={URLS.releases}>Releases</a></li>
+          <li><a href={URLS.issues}>Issue tracker</a></li>
+          <li><a href={URLS.license}>License (MIT)</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Documentation links">
+        <h2 class="footer-heading">Guides</h2>
+        <ul class="footer-list">
+          <li><a href={URLS.docs}>Full README</a></li>
+          <li><a href={URLS.advanced}>Advanced workflows</a></li>
+          <li><a href={URLS.firstRun}>First-run setup</a></li>
+          <li><a href={URLS.branding}>Branding &amp; data locations</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-bottom">
+      <span>{SITE.author.name} · MIT license</span>
+      <span>
+        Website built with <a href="https://astro.build">Astro</a> · source of this site:{' '}
+        <a href="https://github.com/GitWorkbench/gitworkbench.github.io">gitworkbench.github.io</a>
+      </span>
+    </div>
+  </div>
 </footer>

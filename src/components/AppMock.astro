@@ -1,0 +1,112 @@
+---
+/**
+ * A hand-drawn, app-aware illustration of the Git Workbench workspace —
+ * window chrome, repository tabs, branch sidebar, the commit strata graph,
+ * and a commit detail panel. Decorative but described for screen readers.
+ */
+const laneColors = ['#38bdf8', '#a78bfa', '#34d399', '#fbbf24'];
+---
+
+<div class="app-mock" role="img" aria-label="Illustration of the Git Workbench workspace: several repository tabs, a branch list on the left, a strata graph with parallel colored lanes and commit nodes, and a commit detail panel listing changed files on the right.">
+  <div class="mock-titlebar" aria-hidden="true">
+    <span class="mock-dots"><i></i><i></i><i></i></span>
+    <div class="mock-tabs">
+      <span class="mock-tab is-active"><i></i>git-workbench</span>
+      <span class="mock-tab"><i></i>api-gateway</span>
+      <span class="mock-tab"><i></i>dotfiles</span>
+    </div>
+  </div>
+
+  <div class="mock-body" aria-hidden="true">
+    <div class="mock-sidebar">
+      <div class="mock-repo">
+        ~/dev/git-workbench
+        <small>● main · 3 ahead, 1 behind</small>
+      </div>
+      <div class="mock-sections">
+        <span class="mock-section is-active">History <em>214</em></span>
+        <span class="mock-section">Changes <em>2</em></span>
+        <span class="mock-section">Stashes <em>1</em></span>
+        <span class="mock-section">Requests <em>4</em></span>
+      </div>
+      <div class="mock-branches">
+        <span class="mock-branch is-checked"><i style={'background:' + laneColors[0]}></i>main ↑3 ↓1</span>
+        <span class="mock-branch"><i style={'background:' + laneColors[1]}></i>feat/split-commit</span>
+        <span class="mock-branch"><i style={'background:' + laneColors[2]}></i>fix/rerere-memory</span>
+        <span class="mock-branch"><i style={'background:' + laneColors[3]}></i>chore/deps <b>PR</b></span>
+      </div>
+    </div>
+
+    <div class="mock-graph">
+      <div class="mock-graph-grid"></div>
+      <svg viewBox="0 0 226 316" preserveAspectRatio="xMidYMid slice" fill="none">
+        <!-- lanes -->
+        <path class="strata-lane" d="M30 8 V 308" stroke={laneColors[0]} stroke-width="2" />
+        <path class="strata-lane" style="animation-delay:150ms" d="M30 66 C 52 66, 66 86, 66 104 V 196 C 66 214, 52 234, 30 254" stroke={laneColors[1]} stroke-width="2" stroke-dasharray="240" />
+        <path class="strata-lane" style="animation-delay:300ms" d="M66 132 C 88 132, 100 152, 100 170 V 264" stroke={laneColors[2]} stroke-width="2" stroke-dasharray="240" />
+        <path class="strata-lane" style="animation-delay:450ms" d="M100 196 C 122 196, 134 216, 134 234 V 296" stroke={laneColors[3]} stroke-width="2" stroke-dasharray="240" />
+
+        <!-- halos + nodes on main -->
+        <g>
+          <circle class="strata-node-halo" cx="30" cy="34" r="9" fill={laneColors[0]} />
+          <circle cx="30" cy="34" r="4.4" fill={laneColors[0]} />
+          <rect x="44" y="26" width="52" height="16" rx="8" fill="#2a303d" />
+          <text x="70" y="37.5" text-anchor="middle" fill="#e2e8f0" font-family="monospace" font-size="10">HEAD</text>
+        </g>
+        <circle cx="30" cy="98" r="4.4" fill={laneColors[0]} />
+        <g>
+          <circle cx="30" cy="162" r="4.4" fill={laneColors[0]} />
+          <rect x="44" y="152" width="46" height="16" rx="8" fill="#2a303d" />
+          <text x="67" y="163.5" text-anchor="middle" fill="#38bdf8" font-family="monospace" font-size="10">main</text>
+        </g>
+        <circle cx="30" cy="226" r="4.4" fill={laneColors[0]} />
+        <g>
+          <circle cx="30" cy="290" r="4.4" fill={laneColors[0]} />
+          <rect x="44" y="280" width="34" height="16" rx="8" fill="#2a303d" />
+          <text x="61" y="291.5" text-anchor="middle" fill="#94a3b8" font-family="monospace" font-size="10">v1.3</text>
+        </g>
+
+        <!-- feature lane nodes -->
+        <circle cx="66" cy="104" r="4.2" fill={laneColors[1]} />
+        <g>
+          <circle cx="66" cy="168" r="4.2" fill={laneColors[1]} />
+          <rect x="80" y="158" width="70" height="16" rx="8" fill="#2a303d" />
+          <text x="115" y="169.5" text-anchor="middle" fill="#a78bfa" font-family="monospace" font-size="10">feat/stack</text>
+        </g>
+        <circle cx="66" cy="232" r="4.2" fill={laneColors[1]} />
+
+        <!-- fix lane -->
+        <circle cx="100" cy="170" r="4" fill={laneColors[2]} />
+        <circle cx="100" cy="210" r="4" fill={laneColors[2]} />
+        <g>
+          <circle cx="100" cy="254" r="4" fill={laneColors[2]} />
+          <rect x="114" y="245" width="72" height="16" rx="8" fill="#2a303d" />
+          <text x="150" y="256.5" text-anchor="middle" fill="#34d399" font-family="monospace" font-size="9.5">fix/rerere</text>
+        </g>
+
+        <!-- chore lane -->
+        <g>
+          <circle cx="134" cy="234" r="3.8" fill={laneColors[3]} />
+          <circle cx="134" cy="284" r="3.8" fill={laneColors[3]} />
+          <rect x="148" y="274" width="58" height="16" rx="8" fill="#2a303d" />
+          <text x="177" y="285.5" text-anchor="middle" fill="#fbbf24" font-family="monospace" font-size="9.5">chore/deps</text>
+        </g>
+
+        <!-- selected commit focus ring on main HEAD -->
+        <circle cx="30" cy="34" r="12" stroke={laneColors[0]} stroke-opacity="0.5" stroke-width="1.4" fill="none" />
+      </svg>
+    </div>
+
+    <div class="mock-panel">
+      <span class="mock-commit-label">Commit</span>
+      <span class="mock-hash">a61b0c3 · 2 hours ago</span>
+      <span class="mock-summary">Hunk staging: rework the diff cache before rendering</span>
+      <div class="mock-files">
+        <span class="mock-file"><span class="mock-badge is-mod">M</span><span>renderer/DiffViewer.tsx</span></span>
+        <span class="mock-file"><span class="mock-badge is-add">A</span><span>renderer/stageHunks.ts</span></span>
+        <span class="mock-file"><span class="mock-badge is-ren">R</span><span>shared/diffTypes.ts</span></span>
+        <span class="mock-file"><span class="mock-badge is-del">−</span><span>renderer/hunkCache.ts</span></span>
+      </div>
+    </div>
+  </div>
+</div>

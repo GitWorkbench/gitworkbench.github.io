@@ -1,25 +1,30 @@
 ---
 import { FEATURES } from '../data/site';
+
+const glyphs = ['⑂', '±', '⋈', '⤴', '❐', '⧗', '✦', '◧', '⬡'];
 ---
 
-<section id="features" class="section wrap" aria-labelledby="features-title">
-  <div class="section-heading">
-    <div>
-      <p class="eyebrow">FROM FIRST COMMIT TO FINAL REVIEW</p>
-      <h2 id="features-title">Less switching.<br />More understanding.</h2>
+<section id="features" class="section">
+  <div class="wrap">
+    <header class="section-head" data-reveal>
+      <p class="kicker">// features</p>
+      <h2>Built around the graph, wired to the rest of it.</h2>
+      <p class="section-lead">
+        Each tool opens into the same workspace, next to the strata that show you where you are.
+      </p>
+    </header>
+
+    <div class="bento">
+      {
+        FEATURES.map((feature, index) => (
+          <article class={`bento-card${feature.size === 'wide' ? ' is-wide' : ''}`} data-reveal>
+            <span class="bento-glyph" aria-hidden="true">{glyphs[index]}</span>
+            <h3>{feature.title}</h3>
+            <p>{feature.description}</p>
+            <p class="bento-detail">{feature.detail}</p>
+          </article>
+        ))
+      }
     </div>
-    <p>Stay close to your code, see what Git is doing, and choose the next action with context.</p>
-  </div>
-  <div class="feature-grid">
-    {
-      FEATURES.map((feature) => (
-        <article>
-          <span class="feature-icon" aria-hidden="true">{feature.icon}</span>
-          <h3>{feature.title}</h3>
-          <p>{feature.description}</p>
-          <span class="feature-detail">{feature.detail}</span>
-        </article>
-      ))
-    }
   </div>
 </section>

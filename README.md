@@ -40,7 +40,8 @@ src/
     sitemap.xml.ts  Generated sitemap.xml
   scripts/
     release.ts      GitHub Releases lookup and safe asset selection
-    ui.ts           Navigation menu, screenshot tabs, platform detection
+    ui.ts           Navigation, scroll progress, scrollspy, reveal-on-scroll,
+                    copy buttons, gallery arrows, theme previewer, platform keys
   styles/global.css Design tokens, layout, and responsive rules
   assets/           Source screenshots processed by Astro
 public/
@@ -52,7 +53,13 @@ scripts/
 tests/              Vitest suites
 ```
 
-Edit product copy in `src/data/site.ts`. Section markup lives in `src/components/` and the page composition in `src/pages/index.astro`. Keep the FAQ in `src/data/site.ts` as the single source of truth: the visible accordion and the FAQPage structured data are generated from it.
+Edit product copy in `src/data/site.ts` — it drives navigation, features, workflow steps, keyboard shortcuts, themes, FAQ, and download formats. Section markup lives in `src/components/` and the page composition in `src/pages/index.astro`. Keep the FAQ in `src/data/site.ts` as the single source of truth: the visible accordion and the FAQPage structured data are generated from it.
+
+## Design system
+
+The site uses the desktop application's own palette so the two read as one product: onyx surfaces (`#0b0e13` page, `#14171d` base, `#1a1d24`–`#2a303d` panels), `#38bdf8` electric cyan accent, and the `#34d399` / `#f87171` / `#fbbf24` diff-signature colors. Typography is Inter (body), Outfit (display), and JetBrains Mono (labels, code, chips), all self-hosted via Fontsource. Tokens live in `src/styles/global.css`.
+
+Homepage sections, in order: `Hero` (copy, install one-liner, and a hand-drawn app mock in `AppMock.astro`), `Features` (bento grid of nine real app features), `Tour` (scroll-snap screenshot gallery), `ThemeGallery` (live previewer for the app's nine palettes), `Workflow` (four steps plus keyboard shortcuts), `Downloads`, `Faq`, `OpenSource`, and the footer.
 
 ## SEO and discoverability
 
@@ -60,7 +67,7 @@ Every page goes through `src/components/Seo.astro`, which renders:
 
 - a unique title, meta description, canonical URL, and robots directives;
 - Open Graph and Twitter/X large-image metadata with an absolute 1440×900 social image;
-- JSON-LD for `SoftwareApplication`, `WebSite`, and `FAQPage`, kept in sync with visible content;
+- JSON-LD for `SoftwareApplication`, `WebSite`, `FAQPage`, and an `ItemList` of the nine theme palettes, kept in sync with visible content;
 - a mobile-friendly viewport, theme color, icon, and sitemap link.
 
 `src/pages/sitemap.xml.ts` and `src/pages/robots.txt.ts` publish crawl files from the configured `site` in `astro.config.mjs`. The 404 page is `noindex, follow`.
@@ -69,7 +76,9 @@ The social image is `public/assets/screenshots/history.jpg`, so it keeps a stabl
 
 ## Responsive and accessible design
 
-The layout is mobile-first-friendly with fluid spacing and typography (`clamp()`), wrapping grids (`auto-fit` and `minmax()`), and breakpoints at 1080px, 880px, and 440px. The navigation collapses into a labelled menu button; the screenshot tabs support arrow, Home, and End keys. Reduced-motion preferences are respected, all images declare dimensions to avoid layout shift, and the page remains usable without JavaScript.
+The layout is mobile-first-friendly with fluid spacing and typography (`clamp()`), wrapping grids (`auto-fit` and `minmax()`), and breakpoints at 1080px, 880px, 600px, and 440px. The navigation collapses into a labelled menu button; the screenshot gallery scroll-snaps with arrow-button help; theme swatches support arrow-key movement like a radio group; copy and install commands are focusable and keyboard-operable. Reduced-motion preferences are respected, all images declare dimensions to avoid layout shift, and the page remains usable without JavaScript.
+
+The theme previewer guarantees readable chips in every palette: `ui.ts` computes white or black ink (`--pv-chip`) against each palette's accent-tinted chip surface so text always clears 4.5:1.
 
 Before publishing, review the page at roughly 360px, 768px, 1024px, and 1440px wide.
 
@@ -82,13 +91,13 @@ Replace a screenshot in both places:
 1. `src/assets/screenshots/` — Astro generates AVIF, WebP, and JPEG variants at several widths.
 2. `public/assets/screenshots/` — stable original used by the full-size link and social metadata.
 
-Keep the 1440×900 aspect ratio and update the alt text or dimensions in `src/components/Showcase.astro` if it changes. The build check verifies descriptive alt text, dimensions, and modern image formats.
+Keep the 1440×900 aspect ratio and update the alt text or dimensions in `src/components/Tour.astro` if it changes. The build check verifies descriptive alt text, dimensions, and modern image formats.
 
 ## Downloads
 
-Downloads are progressive enhancement. Every link points at GitHub Releases in the HTML, and `src/scripts/release.ts` upgrades those links to the latest stable public assets after checking the GitHub API.
+Downloads are progressive enhancement. Every link points at GitHub Releases in the HTML, and `src/scripts/release.ts` upgrades those links to the latest stable public assets after checking the GitHub API, filling in file sizes and naming the current release.
 
-Asset URLs are allowlisted to `https://github.com/GitWorkbench/workbench/releases/download/`. Drafts, prereleases, missing assets, API failures, and slow requests all fall back to the release page. The Linux architecture selector only changes which asset is chosen; no API data is ever rendered as markup.
+Asset URLs are allowlisted to `https://github.com/GitWorkbench/workbench/releases/download/`. Drafts, prereleases, missing assets, API failures, and slow requests all fall back to the release page. The live status region (`#release-status`) reports what happened; no API data is ever rendered as markup. Current Linux builds are x86_64.
 
 ## Deployment
 

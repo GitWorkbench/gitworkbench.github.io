@@ -1,0 +1,89 @@
+---
+import { THEMES } from '../data/site';
+---
+
+<section id="themes" class="section">
+  <div class="wrap">
+    <header class="section-head" data-reveal>
+      <p class="kicker">// appearance</p>
+      <h2>Nine themes. One live preview.</h2>
+      <p class="section-lead">
+        The app ships with these curated palettes, plus per-area typography and graph density
+        controls. Tap a swatch to repaint the workspace mock — the same way the app paints itself.
+      </p>
+    </header>
+
+    <div class="themes-layout">
+      <div class="app-preview" data-theme-preview data-reveal>
+        <div class="preview-titlebar" aria-hidden="true">
+          <span class="mock-dots"><i></i><i></i><i></i></span>
+          <span class="preview-tabs"><i>main</i><i>3 ahead</i></span>
+        </div>
+        <div class="preview-main" aria-hidden="true">
+          <div class="preview-pane">
+            <svg viewBox="0 0 300 190" preserveAspectRatio="xMidYMid meet" fill="none">
+              <path d="M34 6 V 184" stroke="var(--pv-accent, #38bdf8)" stroke-width="2" />
+              <path d="M34 52 C 62 52, 74 72, 74 90 V 132 C 74 150, 60 168, 34 178" stroke="#a78bfa" stroke-width="2" />
+              <path d="M74 104 C 102 104, 116 118, 116 136 V 186" stroke="#34d399" stroke-width="2" />
+              <circle cx="34" cy="30" r="4.4" fill="var(--pv-accent, #38bdf8)" />
+              <circle cx="34" cy="30" r="9" fill="var(--pv-accent, #38bdf8)" opacity="0.28" />
+              <circle cx="34" cy="98" r="4.4" fill="var(--pv-accent, #38bdf8)" />
+              <circle cx="34" cy="154" r="4.4" fill="var(--pv-accent, #38bdf8)" />
+              <circle cx="74" cy="90" r="4" fill="#a78bfa" />
+              <circle cx="74" cy="140" r="4" fill="#a78bfa" />
+              <circle cx="116" cy="136" r="3.8" fill="#34d399" />
+              <circle cx="116" cy="182" r="3.8" fill="#34d399" />
+              <circle cx="34" cy="30" r="12" stroke="var(--pv-accent, #38bdf8)" stroke-width="1.2" stroke-opacity="0.5" />
+            </svg>
+          </div>
+          <div class="preview-side">
+            <i class="is-hl">main ↕ 3/1</i>
+            <i>feat/stack</i>
+            <i>fix/rerere</i>
+            <i>stash/1</i>
+          </div>
+        </div>
+        <div class="preview-status" aria-hidden="true">
+          <span><b>main</b> · ahead 3</span>
+          <span>2 changed · 1 stash</span>
+        </div>
+      </div>
+
+      <div>
+        <ul class="theme-grid" role="list" data-reveal>
+          {
+            THEMES.map((theme, index) => (
+              <li>
+                <button
+                  class="theme-swatch"
+                  type="button"
+                  data-theme-swatch
+                  data-theme-bg={theme.bg}
+                  data-theme-panel={theme.panel}
+                  data-theme-edge="#2d3340"
+                  data-theme-fg={theme.fg}
+                  data-theme-accent={theme.accent}
+                  aria-pressed={index === 0 ? 'true' : 'false'}
+                >
+                  <span class="swatch-strip" aria-hidden="true">
+                    <i style={`background:${theme.bg}`} />
+                    <i style={`background:${theme.panel}`} />
+                    <i style={`background:${theme.fg}`} />
+                    <i style={`background:${theme.accent}`} />
+                  </span>
+                  <span class="theme-name">{theme.name}</span>
+                  <span class="theme-mood">{theme.mood}</span>
+                </button>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="themes-note">
+          Every theme, font preset, and text size lives in <strong>Settings → Typography &amp;
+          Density</strong>, with individual resets — see the
+          <a href="https://github.com/GitWorkbench/workbench/blob/main/docs/typography.md">typography guide</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

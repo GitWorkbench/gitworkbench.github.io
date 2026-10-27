@@ -51,7 +51,7 @@ check('meta description is present', meta('meta[name="description"]').length >= 
 check('meta description stays under 170 characters', meta('meta[name="description"]').length <= 170);
 check('robots metadata allows rich previews', meta('meta[name="robots"]').startsWith('index, follow'));
 check('canonical URL is absolute', document.querySelector('link[rel="canonical"]')?.href === canonical);
-check('theme color is set', /^#[0-9a-f]{6}$/i.test(meta('meta[name="theme-color"]')));
+check('theme color matches the page surface', /^#[0-9a-f]{6}$/i.test(meta('meta[name="theme-color"]')));
 
 // Open Graph and Twitter
 check('og:type is website', meta('meta[property="og:type"]') === 'website');
@@ -75,6 +75,9 @@ const software = jsonLd.find((data) => data['@type'] === 'SoftwareApplication') 
 check('software is free', software.offers?.price === '0');
 check('software lists every desktop platform', /Linux/.test(software.operatingSystem) && /Windows/.test(software.operatingSystem));
 check('software license points at the repository', software.license?.includes('GitWorkbench/workbench'));
+check('software feature list mentions the strata graph', software.featureList?.some((value) => /strata/i.test(value)));
+const themeList = jsonLd.find((data) => data['@type'] === 'ItemList') ?? {};
+check('theme palettes are structured data', themeList.itemListElement?.length === 9);
 
 // Content structure
 const headings = [...document.querySelectorAll('h1, h2, h3')];
@@ -82,7 +85,7 @@ check('exactly one h1', document.querySelectorAll('h1').length === 1);
 check('the page starts with its h1', headings[0]?.tagName === 'H1');
 check(
   'required sections are present',
-  ['workspace', 'features', 'how-it-works', 'download'].every((id) => document.getElementById(id)),
+  ['features', 'tour', 'themes', 'how-it-works', 'download', 'faq'].every((id) => document.getElementById(id)),
 );
 check('navigation is labelled', document.querySelector('nav[aria-label]') !== null);
 check('skip link points at main content', document.querySelector('.skip-link')?.getAttribute('href') === '#main');
@@ -94,7 +97,31 @@ check(
   localAnchors.every((anchor) => document.getElementById(anchor.getAttribute('href').slice(2))),
 );
 
-// Screenshots and images
+// Hero
+check(
+  'the hero explains the strata positioning',
+  document.querySelector('h1')?.textContent.toLowerCase().includes('strata'),
+);
+check('the hero install command is advertised', document.querySelector('.hero-install .quick-install-command code')?.textContent.includes('gitworkbench.github.io/install.sh'));
+check('the hero links to both releases and the repository', [...document.querySelectorAll('.hero-actions a')].some((a) => a.href.startsWith(releases)) && [...document.querySelectorAll('.hero-actions a')].some((a) => a.href.includes('workbench')));
+check('hero facts are sourced', document.querySelector('.hero-stats') !== null);
+
+// Application mock
+const mock = document.querySelector('.app-mock');
+check('hero shows the app mock', mock !== null);
+check('the app mock is described', mock?.getAttribute('role') === 'img' && (mock?.getAttribute('aria-label') ?? '').length > 40);
+check('the strata graph is drawn', [...document.querySelectorAll('.app-mock svg path')].length >= 4);
+check('mock commit files carry change badges', [...document.querySelectorAll('.app-mock .mock-badge')].length >= 3);
+
+// Features bento
+const cards = [...document.querySelectorAll('.bento-card')];
+check('the bento grid has feature cards', cards.length >= 8);
+check('feature cards have wide and narrow spans', cards.some((card) => card.classList.contains('is-wide')));
+for (const card of cards) {
+  check('feature card includes a kebab-case detail line', (card.querySelector('.bento-detail')?.textContent ?? '').length > 5);
+}
+
+// Screenshots (scroll-snap gallery)
 const galleryImages = [...document.querySelectorAll('.screenshot-gallery img')];
 check('three app screenshots are shown', galleryImages.length === 3);
 for (const image of galleryImages) {
@@ -119,6 +146,26 @@ check(
   document.body.textContent.includes('fictional demo repositories and identities'),
 );
 
+// Themes
+const swatches = [...document.querySelectorAll('[data-theme-swatch]')];
+check('all nine shipped palettes are listed', swatches.length === 9);
+check('every swatch exposes live preview colors', swatches.every((swatch) => swatch.dataset.themeBg && swatch.dataset.themeAccent));
+check('the live theme preview exists', document.querySelector('[data-theme-preview]') !== null);
+check(
+  'swatches are labelled as the app palette source',
+  document.body.textContent.includes('Settings → Typography'),
+);
+
+// Workflow + shortcuts
+const steps = [...document.querySelectorAll('.step')];
+check('the workflow has four steps', steps.length === 4);
+for (const step of steps) {
+  check('each step is numbered and titled', step.querySelector('.step-number')?.textContent && step.querySelector('h3'));
+}
+const shortcuts = [...document.querySelectorAll('.shortcut')];
+check('shortcuts are listed as chips', shortcuts.length >= 5);
+check('shortcut keys use kbd elements', shortcuts.every((item) => item.querySelectorAll('.key').length >= 1));
+
 // Downloads and progressive enhancement
 const downloadLinks = [...document.querySelectorAll('[data-download]')];
 check('every download format has a fallback link', downloadLinks.length >= 7);
@@ -128,17 +175,22 @@ check(
 );
 check('release status is announced', document.getElementById('release-status')?.getAttribute('role') === 'status');
 check('release status is a live region', document.getElementById('release-status')?.getAttribute('aria-live') === 'polite');
-check('architecture selector is labelled', document.querySelector('label[for="linux-arch"]') !== null);
-check('quick installer command is visible', document.querySelector('.quick-install-command code')?.textContent.includes('gitworkbench.github.io/install.sh'));
+check('release version badge exists', document.getElementById('release-version') !== null);
+check('release notes link exists', document.getElementById('release-notes')?.getAttribute('href') === releases);
+check('terminal install command is visible', document.querySelector('.install-terminal .quick-install-command code')?.textContent.includes('gitworkbench.github.io/install.sh'));
+check('copy buttons carry the full command', [...document.querySelectorAll('[data-copy]')].every((button) => (button.dataset.copy ?? '').includes('gitworkbench.github.io/install.sh')));
+check('installer source is linked for review', document.querySelector('.download-notes')?.textContent.includes('installer source'));
 
 // FAQ stays in sync with structured data
 const faqPage = jsonLd.find((data) => data['@type'] === 'FAQPage') ?? {};
-const visibleQuestions = [...document.querySelectorAll('.faq details summary')].map((summary) => summary.textContent.trim());
-check('FAQ questions are rendered', visibleQuestions.length >= 5);
-check('FAQ structured data matches the visible questions', faqPage.mainEntity?.length === visibleQuestions.length);
+const visibleQuestions = [...document.querySelectorAll('.faq details summary')].map((summary) =>
+  summary.textContent.trim().replace(/\s+/g, ' '),
+);
+check('FAQ questions are rendered', visibleQuestions.length >= 6);
 check(
-  'FAQ structured data uses the same questions',
-  faqPage.mainEntity?.every((entry, index) => entry.name === visibleQuestions[index]),
+  'FAQ structured data matches the visible questions',
+  faqPage.mainEntity?.length === visibleQuestions.length &&
+    faqPage.mainEntity?.every((entry, index) => entry.name === visibleQuestions[index]),
 );
 
 // 404 page
@@ -172,11 +224,12 @@ const styleSheets = [
   ...inlineStyles.map((css) => ({ css, directory: dist })),
 ];
 const css = styleSheets.map((sheet) => sheet.css).join('\n');
-check('styles include a mobile breakpoint', /@media\s*\((?:(?:max-width:\s*880px)|(?:width\s*<=\s*880px))\)/.test(css));
+check('styles include a tablet-down breakpoint', /@media\s*\((?:(?:max-width:\s*880px)|(?:width\s*<=\s*880px))\)/.test(css));
 check('styles include a narrow-phone breakpoint', /@media\s*\((?:(?:max-width:\s*440px)|(?:width\s*<=\s*440px))\)/.test(css));
 check('styles respect reduced motion', /prefers-reduced-motion/.test(css));
 check('styles use fluid typography', css.includes('clamp('));
 check('styles define the site colour tokens', css.includes('--accent') && css.includes('--font-sans'));
+check('the app palette drives the theme', css.includes('#38bdf8') && css.includes('--pv-'));
 check('fonts are self-hosted', !html.includes('fonts.googleapis.com') && !css.includes('fonts.googleapis.com'));
 check('font files are emitted', files.some((file) => file.endsWith('.woff2')));
 check('installer is executable', (statSync(path.join(dist, 'install.sh')).mode & 0o111) !== 0);

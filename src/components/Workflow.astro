@@ -1,0 +1,57 @@
+---
+import { SHORTCUTS, WORKFLOWS } from '../data/site';
+---
+
+<section id="how-it-works" class="section">
+  <div class="wrap">
+    <header class="section-head" data-reveal>
+      <p class="kicker">// workflow</p>
+      <h2>From first launch to a pushed request.</h2>
+      <p class="section-lead">
+        The safe path is built in: choices are reversible, and destructive actions snapshot
+        first.
+      </p>
+    </header>
+
+    <ol class="steps">
+      {
+        WORKFLOWS.map((flow) => (
+          <li class="step" data-reveal>
+            <span class="step-number" aria-hidden="true">{flow.step}</span>
+            <div>
+              <h3>{flow.title}</h3>
+              <p>{flow.description}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="section-head" style="margin-top: 3rem;" data-reveal>
+      <p class="kicker">// keyboard-first</p>
+      <h2>Everywhere without a mouse.</h2>
+    </div>
+    <div class="shortcut-grid" data-reveal data-shortcuts>
+      {
+        SHORTCUTS.map((shortcut) => (
+          <div class="shortcut">
+            <span class="keys">
+              {shortcut.keys.map((key) => (
+                <kbd class="key">{key}</kbd>
+              ))}
+            </span>
+            <span>{shortcut.label}</span>
+          </div>
+        ))
+      }
+      <div class="shortcut">
+        <span class="keys"><kbd class="key" data-mod-key>Ctrl</kbd><kbd class="key">`</kbd></span>
+        <span>Open the terminal drawer</span>
+      </div>
+    </div>
+    <p class="install-note" data-shortcut-note hidden>
+      Shortcuts shown for macOS use <strong>⌘</strong> where the sheet lists
+      <kbd class="key" data-mod-key>Ctrl</kbd>.
+    </p>
+  </div>
+</section>

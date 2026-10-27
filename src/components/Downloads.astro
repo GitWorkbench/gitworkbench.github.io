@@ -1,124 +1,105 @@
 ---
-import { URLS } from '../data/site';
+import { DOWNLOAD_FORMATS, INSTALL_COMMAND, URLS } from '../data/site';
+
+const linuxFormats = DOWNLOAD_FORMATS.filter((f) => ['AppImage', 'deb', 'rpm', 'pacman'].includes(f.format));
+const macFormats = DOWNLOAD_FORMATS.filter((f) => ['dmg', 'zip'].includes(f.format));
+const winFormats = DOWNLOAD_FORMATS.filter((f) => f.format === 'exe');
 ---
 
-<section id="download" class="download-section section" aria-labelledby="download-title">
+<section id="download" class="section">
   <div class="wrap">
-    <div class="section-heading">
-      <div>
-        <p class="eyebrow">FREE DOWNLOADS FOR YOUR DESKTOP</p>
-        <h2 id="download-title">Pick your platform.</h2>
-      </div>
-      <div class="release-summary">
-        <span class="release-badge" id="release-version">GitHub Releases</span>
-        <a id="release-notes" class="text-link" href={URLS.releases}>Release notes ↗</a>
-      </div>
-    </div>
-    <p id="release-status" class="release-status" role="status" aria-live="polite">
-      Downloads open the latest public release on GitHub.
-    </p>
-    <div class="download-grid">
-      <article class="download-card" data-platform="linux">
-        <div class="platform-heading">
-          <span class="os-symbol" aria-hidden="true">◈</span>
-          <div>
-            <h3>Linux</h3>
-            <p>Choose the package that fits.</p>
-          </div>
-          <span class="detected-label">Your platform</span>
-        </div>
-        <label class="architecture" for="linux-arch">
-          Architecture
-          <select id="linux-arch">
-            <option value="x64">Intel / AMD 64-bit</option>
-            <option value="arm64">ARM 64-bit</option>
-          </select>
-        </label>
-        <a class="button button-primary full" data-download="AppImage" href={URLS.releases}>
-          <span data-download-label>AppImage</span>
-          <span class="download-meta">
-            <span data-download-size></span>
-            <span aria-hidden="true">↓</span>
-          </span>
-        </a>
-        <div class="package-links">
-          <a data-download="deb" href={URLS.releases}>.deb ↗</a>
-          <a data-download="rpm" href={URLS.releases}>.rpm ↗</a>
-          <a data-download="pacman" href={URLS.releases}>.pkg.tar.zst ↗</a>
-        </div>
-        <p class="download-note">
-          Debian / Ubuntu, Fedora / RPM, Arch, or a portable AppImage.
-        </p>
-      </article>
-      <article class="download-card" data-platform="mac">
-        <div class="platform-heading">
-          <span class="os-symbol" aria-hidden="true">⌘</span>
-          <div>
-            <h3>macOS</h3>
-            <p>Apple silicon &amp; Intel.</p>
-          </div>
-          <span class="detected-label">Your platform</span>
-        </div>
-        <p class="architecture plain">Universal build</p>
-        <a class="button button-secondary full" data-download="dmg" href={URLS.releases}>
-          <span data-download-label>Download for macOS</span>
-          <span class="download-meta">
-            <span data-download-size></span>
-            <span aria-hidden="true">↓</span>
-          </span>
-        </a>
-        <div class="package-links">
-          <a data-download="zip" href={URLS.releases}>Prefer a ZIP? ↗</a>
-        </div>
-        <p class="download-note">
-          macOS builds are unsigned. Installation and updates are manual; review the release
-          instructions.
-        </p>
-      </article>
-      <article class="download-card" data-platform="windows">
-        <div class="platform-heading">
-          <span class="os-symbol" aria-hidden="true">⊞</span>
-          <div>
-            <h3>Windows</h3>
-            <p>A familiar desktop installer.</p>
-          </div>
-          <span class="detected-label">Your platform</span>
-        </div>
-        <p class="architecture plain">Intel / AMD 64-bit</p>
-        <a class="button button-secondary full" data-download="exe" href={URLS.releases}>
-          <span data-download-label>Download for Windows</span>
-          <span class="download-meta">
-            <span data-download-size></span>
-            <span aria-hidden="true">↓</span>
-          </span>
-        </a>
-        <div class="package-links">
-          <span>NSIS installer · .exe</span>
-        </div>
-        <p class="download-note">Install system Git before opening your first repository.</p>
-      </article>
-    </div>
-    <aside class="linux-quick-install" aria-labelledby="linux-quick-install-title">
-      <div class="quick-install-copy">
-        <p class="eyebrow">LINUX QUICK INSTALL</p>
-        <h3 id="linux-quick-install-title">One command. Verified before install.</h3>
-        <p>
-          Automatically chooses the package for Debian-based, RPM-based, or Arch-based
-          distributions. SHA-512 is checked before the system installer runs.
-        </p>
+    <header class="section-head download-hero" data-reveal>
+      <p class="kicker">// install</p>
+      <h2>Pick the package your system speaks.</h2>
+      <p class="section-lead">
+        The one-liner resolvers below always point at the latest public release. With JavaScript
+        on, every card also links straight to the current release asset, size included.
+      </p>
+    </header>
+
+    <div class="install-terminal" data-reveal>
+      <div class="terminal-head">
+        <span class="mock-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>bash — one-line install</span>
       </div>
       <div class="quick-install-command">
-        <pre tabindex="0"><code>curl -fsSL https://gitworkbench.github.io/install.sh | bash</code></pre>
-        <a href={URLS.installerSource}>Review installer source ↗</a>
+        <code id="terminal-command" tabindex="0" aria-label="Install command, horizontally scrollable"><span>curl -fsSL </span>{INSTALL_COMMAND.replace('curl -fsSL ', '').replace(' | bash', '')}<span> | bash</span></code>
+        <button class="copy-btn" type="button" data-copy={INSTALL_COMMAND} aria-label="Copy the Linux install command">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="4.6" y="4.6" width="8" height="8" rx="1.6" />
+            <path d="M9.4 4.6V3a1.4 1.4 0 0 0-1.4-1.4H3A1.4 1.4 0 0 0 1.6 3v5A1.4 1.4 0 0 0 3 9.4h1.6" />
+          </svg>
+          <span data-copy-label>Copy</span>
+        </button>
       </div>
-      <p class="quick-install-note">
-        The package manager asks for its normal confirmation. Other distributions get a per-user
-        AppImage. Current official Linux builds are x86_64.
-      </p>
-    </aside>
-    <p class="download-footer">
-      All downloads come from the project's public GitHub Releases.{' '}
-      <a href={URLS.releases}>Browse all releases ↗</a>
+    </div>
+
+    <p id="release-status" class="release-status" role="status" aria-live="polite" data-reveal>
+      Download cards link to the public release page. Enable JavaScript for direct asset links.
     </p>
+
+    <div class="download-grid">
+      <article class="download-card" data-platform="linux" data-reveal>
+        <h3>Linux <em>x86_64 · 4 formats</em></h3>
+        <div class="asset-list">
+          {
+            linuxFormats.map((format) => (
+              <a class="asset-link" href={URLS.releases} data-download={format.format}>
+                {format.label}
+                <span data-download-size />
+                <svg class="asset-spacer" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 10L10 4M5.5 4H10v4.5" />
+                </svg>
+              </a>
+            ))
+          }
+        </div>
+      </article>
+
+      <article class="download-card" data-platform="mac" data-reveal>
+        <h3>macOS <em>Intel + Apple silicon</em></h3>
+        <div class="asset-list">
+          {
+            macFormats.map((format) => (
+              <a class="asset-link" href={URLS.releases} data-download={format.format}>
+                {format.label}
+                <span data-download-size />
+                <svg class="asset-spacer" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 10L10 4M5.5 4H10v4.5" />
+                </svg>
+              </a>
+            ))
+          }
+        </div>
+        <p class="install-note">Universal builds are unsigned — install and update manually from the release page.</p>
+      </article>
+
+      <article class="download-card" data-platform="windows" data-reveal>
+        <h3>Windows <em>NSIS · 10 (1809+)</em></h3>
+        <div class="asset-list">
+          {
+            winFormats.map((format) => (
+              <a class="asset-link" href={URLS.releases} data-download={format.format}>
+                {format.label}
+                <span data-download-size />
+                <svg class="asset-spacer" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 10L10 4M5.5 4H10v4.5" />
+                </svg>
+              </a>
+            ))
+          }
+        </div>
+        <p class="install-note">Windows, plus every Linux format above, supports in-app software updates.</p>
+      </article>
+    </div>
+
+    <ul class="download-notes">
+      <li>
+        Latest release:
+        <a id="release-version" href={URLS.releases}>view on GitHub</a>
+      </li>
+      <li><a id="release-notes" href={URLS.releases}>Release notes</a></li>
+      <li><a href={URLS.installerSource}>Read the installer source</a></li>
+    </ul>
   </div>
 </section>
