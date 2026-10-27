@@ -6,7 +6,7 @@ This repository owns the complete website source, screenshots, tests, and deploy
 
 ## Develop
 
-Use Node.js 22 and npm:
+Use Node.js 24 (or 22.23.4+) and npm:
 
 ```bash
 npm ci
