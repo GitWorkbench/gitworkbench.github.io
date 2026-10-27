@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Showcase from '../components/Showcase.astro';
+import PlatformStrip from '../components/PlatformStrip.astro';
+import Features from '../components/Features.astro';
+import Why from '../components/Why.astro';
+import HowItWorks from '../components/HowItWorks.astro';
+import Downloads from '../components/Downloads.astro';
+import Faq from '../components/Faq.astro';
+import OpenSource from '../components/OpenSource.astro';
+import { FAQ, FEATURES, SITE, URLS } from '../data/site';
+
+const absolute = (path: string) => new URL(path, SITE.url).href;
+
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: SITE.name,
+    applicationCategory: 'DeveloperApplication',
+    applicationSubCategory: 'Version Control',
+    operatingSystem: 'Linux, macOS, Windows',
+    softwareRequirements: 'System Git',
+    url: SITE.url,
+    downloadUrl: URLS.latestRelease,
+    license: URLS.license,
+    description: SITE.description,
+    screenshot: absolute(URLS.socialImage),
+    featureList: FEATURES.map((feature) => feature.title),
+    author: {
+      '@type': 'Person',
+      name: SITE.author.name,
+      url: SITE.author.url,
+    },
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    sameAs: [URLS.repository, URLS.releases],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE.name,
+    alternateName: 'GitWorkbench',
+    url: SITE.url,
+    inLanguage: 'en',
+    description: SITE.description,
+    publisher: {
+      '@type': 'Organization',
+      name: SITE.name,
+      url: SITE.url,
+      logo: {
+        '@type': 'ImageObject',
+        url: absolute('/assets/icon.png'),
+      },
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQ.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer },
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title={SITE.title}
+  description={SITE.description}
+  structuredData={structuredData}
+>
+  <Hero />
+  <Showcase />
+  <PlatformStrip />
+  <Features />
+  <Why />
+  <HowItWorks />
+  <Downloads />
+  <Faq />
+  <OpenSource />
+</BaseLayout>
+
+<script>
+  import { mountWebsite } from '../scripts/ui';
+  import { loadRelease } from '../scripts/release';
+
+  mountWebsite();
+  void loadRelease();
+</script>

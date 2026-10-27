@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://gitworkbench.github.io/sitemap.xml

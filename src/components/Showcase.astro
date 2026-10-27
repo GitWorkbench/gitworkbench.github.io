@@ -1,0 +1,116 @@
+---
+import { Picture } from 'astro:assets';
+import history from '../assets/screenshots/history.jpg';
+import diff from '../assets/screenshots/diff.jpg';
+import merge from '../assets/screenshots/merge.jpg';
+
+const sizes = '(max-width: 480px) calc(100vw - 36px), (max-width: 880px) calc(100vw - 36px), (max-width: 1304px) calc(100vw - 64px), 1240px';
+const widths = [480, 720, 1080, 1440];
+
+const screenshots = [
+  {
+    id: 'history',
+    image: history,
+    alt: 'Git Workbench commit graph with parallel branch lanes, commit authors, short hashes, and a selected commit detail panel.',
+    title: 'History you can read.',
+    description:
+      'Follow branch lanes, compare refs, and inspect a commit without leaving the graph.',
+    eager: true,
+  },
+  {
+    id: 'diff',
+    image: diff,
+    alt: 'Git Workbench side-by-side repository and code diff view, showing a staged file and line-level patch controls.',
+    title: 'Make the commit yours.',
+    description:
+      'Review a real patch, then stage just the files, hunks, or lines you intend to include.',
+    eager: false,
+  },
+  {
+    id: 'merge',
+    image: merge,
+    alt: 'Git Workbench conflict editor showing Current and Incoming versions beside an editable Merge result pane.',
+    title: 'Resolve with the full context.',
+    description:
+      'Compare Current and Incoming beside an editable result, then review before applying.',
+    eager: false,
+  },
+];
+---
+
+<section id="workspace" class="showcase wrap" aria-label="Git Workbench screenshots">
+  <h2 class="visually-hidden">Git Workbench screenshots</h2>
+  <div class="showcase-top">
+    <span class="window-label"><span class="tiny-dot"></span> YOUR WORK, IN FOCUS</span>
+    <div class="preview-tabs" role="tablist" aria-label="App screenshots">
+      {
+        screenshots.map((shot, index) => (
+          <button
+            id={`tab-${shot.id}`}
+            type="button"
+            role="tab"
+            data-preview
+            aria-selected={index === 0 ? 'true' : 'false'}
+            aria-controls={`panel-${shot.id}`}
+            tabindex={index === 0 ? 0 : -1}
+          >
+            {shot.id === 'history' ? 'Commit graph' : shot.id === 'diff' ? 'Diff & staging' : 'Merge editor'}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+  <div class="screenshot-gallery">
+    {
+      screenshots.map((shot, index) => (
+        <div
+          id={`panel-${shot.id}`}
+          role="tabpanel"
+          aria-labelledby={`tab-${shot.id}`}
+          hidden={index !== 0}
+        >
+          <a
+            href={`/assets/screenshots/${shot.id}.jpg`}
+            target="_blank"
+            rel="noopener"
+            aria-label={`Open ${shot.id === 'history' ? 'commit graph' : shot.id === 'diff' ? 'diff and staging' : 'merge editor'} screenshot at full size`}
+          >
+            <Picture
+              src={shot.image}
+              alt={shot.alt}
+              widths={widths}
+              sizes={sizes}
+              formats={['avif', 'webp']}
+              quality={82}
+              loading={shot.eager ? 'eager' : 'lazy'}
+              fetchpriority={shot.eager ? 'high' : 'auto'}
+              decoding={shot.eager ? 'sync' : 'async'}
+            />
+          </a>
+          <div class="screenshot-caption">
+            <p>
+              <strong>{shot.title}</strong> {shot.description}
+            </p>
+            <span>
+              {String(index + 1).padStart(2, '0')} / {String(screenshots.length).padStart(2, '0')}{' '}
+              <span aria-hidden="true">↗</span>
+            </span>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+  <p class="demo-note">
+    Screenshots captured directly from the desktop app using fictional demo repositories and
+    identities. No customer repositories or credentials are shown. Click an image to view it full
+    size.
+  </p>
+  <noscript>
+    <p class="demo-note">
+      JavaScript is disabled, so only the first screenshot is shown here. Open the full-size
+      captures directly: <a href="/assets/screenshots/history.jpg">commit graph</a>,
+      <a href="/assets/screenshots/diff.jpg">diff and staging</a>, or
+      <a href="/assets/screenshots/merge.jpg">merge editor</a>.
+    </p>
+  </noscript>
+</section>

@@ -1,0 +1,22 @@
+---
+import { URLS } from '../data/site';
+---
+
+<section class="open-source wrap" aria-labelledby="open-source-title">
+  <div>
+    <p class="eyebrow">BUILT IN THE OPEN</p>
+    <h2 id="open-source-title">A better workflow.<br />A shared workbench.</h2>
+    <p>
+      Git Workbench is MIT-licensed and developed in public. Read the source, report an issue, or
+      suggest what should improve next.
+    </p>
+  </div>
+  <div class="open-source-actions">
+    <a class="button button-primary" href={URLS.repository}>
+      View the source <span aria-hidden="true">↗</span>
+    </a>
+    <a class="button button-secondary" href={URLS.issues}>
+      Report an issue <span aria-hidden="true">↗</span>
+    </a>
+  </div>
+</section>

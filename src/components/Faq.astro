@@ -1,0 +1,23 @@
+---
+import { FAQ, URLS } from '../data/site';
+---
+
+<section class="faq section wrap" aria-labelledby="faq-title">
+  <div>
+    <p class="eyebrow">A FEW USEFUL DETAILS</p>
+    <h2 id="faq-title">Before you jump in.</h2>
+    <p>
+      More questions? <a href={URLS.issues}>Start a conversation on GitHub ↗</a>
+    </p>
+  </div>
+  <div class="faq-list">
+    {
+      FAQ.map((item) => (
+        <details>
+          <summary>{item.question}</summary>
+          <p>{item.answer}</p>
+        </details>
+      ))
+    }
+  </div>
+</section>

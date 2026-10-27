@@ -1,0 +1,25 @@
+---
+import { FEATURES } from '../data/site';
+---
+
+<section id="features" class="section wrap" aria-labelledby="features-title">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">FROM FIRST COMMIT TO FINAL REVIEW</p>
+      <h2 id="features-title">Less switching.<br />More understanding.</h2>
+    </div>
+    <p>Stay close to your code, see what Git is doing, and choose the next action with context.</p>
+  </div>
+  <div class="feature-grid">
+    {
+      FEATURES.map((feature) => (
+        <article>
+          <span class="feature-icon" aria-hidden="true">{feature.icon}</span>
+          <h3>{feature.title}</h3>
+          <p>{feature.description}</p>
+          <span class="feature-detail">{feature.detail}</span>
+        </article>
+      ))
+    }
+  </div>
+</section>

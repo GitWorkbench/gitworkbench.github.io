@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../data/site';
+---
+
+<BaseLayout
+  title={`Page not found — ${SITE.name}`}
+  description="The page you are looking for does not exist. Return to the Git Workbench homepage to download the app or read the documentation."
+  noindex
+  canonicalPath="/404.html"
+>
+  <section class="not-found wrap">
+    <p class="eyebrow">404 · PAGE NOT FOUND</p>
+    <h1>That page is not in this workbench.</h1>
+    <p>
+      The link may be outdated. Head back to the homepage for screenshots, features, downloads, and
+      the latest release notes.
+    </p>
+    <div class="hero-actions">
+      <a class="button button-primary" href="/">Back to the homepage <span aria-hidden="true">↖</span></a>
+      <a class="button button-secondary" href="/#download">Download {SITE.name} <span aria-hidden="true">↓</span></a>
+    </div>
+  </section>
+</BaseLayout>

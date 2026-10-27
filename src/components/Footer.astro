@@ -1,0 +1,18 @@
+---
+import { SITE, URLS } from '../data/site';
+---
+
+<footer class="site-footer wrap">
+  <a class="brand" href="/" aria-label={`${SITE.name} home`}>
+    <img src="/assets/icon.png" width="28" height="28" alt="" />
+    <span>{SITE.name}</span>
+  </a>
+  <p>
+    Created by <a href={SITE.author.url}>{SITE.author.name}</a>.
+  </p>
+  <nav aria-label="Footer">
+    <a href={URLS.repository}>Source</a>
+    <a href={URLS.issues}>Feedback</a>
+    <a href={URLS.license}>MIT License</a>
+  </nav>
+</footer>
