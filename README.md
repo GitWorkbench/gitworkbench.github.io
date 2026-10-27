@@ -105,9 +105,11 @@ Keep the 1440×900 aspect ratio and update the alt text or dimensions in `src/co
 
 ## Downloads
 
-Downloads are progressive enhancement. Every link points at GitHub Releases in the HTML, and `src/scripts/release.ts` upgrades those links to the latest stable public assets after checking the GitHub API, filling in file sizes and naming the current release.
+The build tracks the app's latest stable release itself. `scripts/snapshot-release.mjs` runs as `prebuild` and snapshots the release from the GitHub API (authenticated works best; the deploy workflow already carries `GITHUB_TOKEN`) into `src/data/release-snapshot.json`. Every platform row in `Downloads.astro` is then rendered with the real, direct asset URL and its file size in the server HTML — so the links work even with JavaScript off, and never degrade to one generic releases URL when the visitor's browser hits the API's rate limit.
 
-Asset URLs are allowlisted to `https://github.com/GitWorkbench/workbench/releases/download/`. Drafts, prereleases, missing assets, API failures, and slow requests all fall back to the release page. The live status region (`#release-status`) reports what happened; no API data is ever rendered as markup. Current Linux builds are x86_64.
+On page load `src/scripts/release.ts` still re-checks the API and refreshes the links, sizes, and release notes if a newer release shipped since the last build. When that live check fails, the baked links are kept — the status region only reports the refresh failed, it never rolls the download URLs back to the release page.
+
+Asset URLs are allowlisted to `https://github.com/GitWorkbench/workbench/releases/download/`. Drafts, prereleases, missing assets, and slow requests all fall back to the release page. No API data is ever rendered as markup. Current Linux builds are x86_64.
 
 ## Deployment
 

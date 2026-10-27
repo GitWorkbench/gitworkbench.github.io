@@ -117,8 +117,10 @@ export async function loadRelease(
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
 
-  status.textContent = 'Checking the latest public release…';
-  status.dataset.state = 'loading';
+  if (!status.dataset.releaseSnapshot) {
+    status.textContent = 'Checking the latest public release…';
+    status.dataset.state = 'loading';
+  }
 
   try {
     const response = await request(
@@ -131,8 +133,10 @@ export async function loadRelease(
     );
 
     if (response.status === 404) {
-      status.textContent = 'Public release assets are being prepared. Check GitHub for availability.';
-      status.dataset.state = 'fallback';
+      if (!status.dataset.releaseSnapshot) {
+        status.textContent = 'Public release assets are being prepared. Check GitHub for availability.';
+        status.dataset.state = 'fallback';
+      }
       return;
     }
     if (!response.ok) throw new Error('Release lookup unavailable');
@@ -183,8 +187,15 @@ export async function loadRelease(
     updateDownloads();
     architecture?.addEventListener('change', updateDownloads);
   } catch {
-    status.textContent = 'Live release details are unavailable. Open GitHub Releases to download.';
-    status.dataset.state = 'fallback';
+    // The static build already carries direct links to the latest stable
+    // release (snapshot baked at build time). Never degrade those to the
+    // generic releases page just because the live API is rate-limited.
+    if (status.dataset.releaseSnapshot) {
+      status.textContent = `Showing the stable release known at build time (${status.dataset.releaseSnapshot}); the live refresh is unavailable just now.`;
+    } else {
+      status.textContent = 'Live release details are unavailable. Open GitHub Releases to download.';
+      status.dataset.state = 'fallback';
+    }
   } finally {
     clearTimeout(timeout);
   }

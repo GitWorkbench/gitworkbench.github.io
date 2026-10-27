@@ -172,15 +172,39 @@ check('shortcut keys use kbd elements', shortcuts.every((item) => item.querySele
 
 // Downloads and progressive enhancement
 const downloadLinks = [...document.querySelectorAll('[data-download]')];
-check('every download format has a fallback link', downloadLinks.length >= 7);
-check(
-  'download fallbacks point at the release page',
-  downloadLinks.every((link) => link.getAttribute('href') === releases),
-);
+check('every download format has a link', downloadLinks.length >= 7);
+const snapshotTag = document.getElementById('release-status')?.getAttribute('data-release-snapshot') ?? '';
+const assetLinks = [...document.querySelectorAll('.asset-list [data-download]')];
+check('all seven platform formats render as rows', assetLinks.length === 7);
+if (snapshotTag) {
+  // A release was baked at build time: links must be direct, verified assets.
+  check(
+    'baked release snapshots link to real release assets',
+    assetLinks.every((link) => link.getAttribute('href')?.startsWith(`https://github.com/GitWorkbench/workbench/releases/download/${snapshotTag}/`)),
+  );
+  check(
+    'each baked platform row uses a distinct asset',
+    new Set(assetLinks.map((link) => link.getAttribute('href'))).size === assetLinks.length,
+  );
+  check(
+    'baked release assets display their size',
+    assetLinks.every((link) => /^\d+(\.\d+)? (B|KB|MB|GB)$/.test(link.querySelector('[data-download-size]')?.textContent.trim() ?? '')),
+  );
+  check('baked release version drives the badge', (document.getElementById('release-version')?.textContent ?? '').startsWith(snapshotTag));
+  check('baked release notes link to the tag', document.getElementById('release-notes')?.getAttribute('href')?.endsWith(`/tag/${snapshotTag}`));
+} else {
+  check(
+    'download fallbacks point at the release page',
+    assetLinks.every((link) => link.getAttribute('href') === releases),
+  );
+}
 check('release status is announced', document.getElementById('release-status')?.getAttribute('role') === 'status');
 check('release status is a live region', document.getElementById('release-status')?.getAttribute('aria-live') === 'polite');
 check('release version badge exists', document.getElementById('release-version') !== null);
-check('release notes link exists', document.getElementById('release-notes')?.getAttribute('href') === releases);
+check(
+  'release notes link never regresses below the releases page',
+  (document.getElementById('release-notes')?.getAttribute('href') ?? '').startsWith(releases),
+);
 check('terminal install command is visible', document.querySelector('.install-terminal .quick-install-command code')?.textContent.includes('gitworkbench.github.io/install.sh'));
 check('copy buttons carry the full command', [...document.querySelectorAll('[data-copy]')].every((button) => (button.dataset.copy ?? '').includes('gitworkbench.github.io/install.sh')));
 check('installer source is linked for review', document.querySelector('.download-notes')?.textContent.includes('installer source'));

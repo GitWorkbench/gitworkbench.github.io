@@ -210,4 +210,23 @@ describe('release loading', () => {
     expect(document.getElementById('release-status')).toHaveTextContent('unavailable');
     expect(vi.getTimerCount()).toBe(0);
   });
+
+  it('keeps build-time baked asset links when the live lookup fails', async () => {
+    document.body.innerHTML = `
+      <p id="release-status" data-release-snapshot="v1.3.4" data-state="ready">Baked status.</p>
+      <span id="release-version" href="${RELEASES_URL}/tag/v1.3.4">v1.3.4</span>
+      <a id="release-notes" href="${RELEASES_URL}/tag/v1.3.4">Release notes</a>
+      <a data-download="AppImage" href="${RELEASES_URL}/download/v1.3.4/git-workbench-1.3.4-x86_64.AppImage" data-available="true">
+        <span data-download-size>127.9 MB</span>
+      </a>
+    `;
+    await loadRelease(document, mockFetch({}, 403, false));
+
+    const appImage = document.querySelector<HTMLAnchorElement>('[data-download="AppImage"]')!;
+    expect(appImage.getAttribute('href')).toBe(`${RELEASES_URL}/download/v1.3.4/git-workbench-1.3.4-x86_64.AppImage`);
+    expect(appImage.dataset.available).toBe('true');
+    expect(appImage.querySelector('[data-download-size]')).toHaveTextContent('127.9 MB');
+    expect(document.getElementById('release-status')).toHaveTextContent('build time');
+    expect(document.getElementById('release-status')).toHaveAttribute('data-state', 'ready');
+  });
 });

@@ -1377,6 +1377,7 @@ samp {
 .download-notes li {
   display: inline-flex;
   align-items: center;
+  column-gap: 0.45rem;
 }
 
 .download-notes li + li::before {

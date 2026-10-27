@@ -1,4 +1,6 @@
 ---
+import snapshot from '../data/release-snapshot.json';
+import { assetUrl, findAsset, formatBytes, RELEASES_URL, type ReleaseAsset } from '../scripts/release';
 import { DOWNLOAD_FORMATS, INSTALL_COMMAND, URLS } from '../data/site';
 
 const linuxFormats = DOWNLOAD_FORMATS.filter((f) => ['AppImage', 'deb', 'rpm', 'pacman'].includes(f.format));
@@ -10,6 +12,29 @@ const platforms = [
   { id: 'mac', name: 'macos', meta: 'Intel + Apple silicon', formats: macFormats, note: 'Unsigned builds — install and update manually from the release page.' },
   { id: 'windows', name: 'windows', meta: 'NSIS installer', formats: winFormats, note: 'Supports in-app software updates.' },
 ] as const;
+
+/**
+ * The build bakes the latest stable release (scripts/snapshot-release.mjs,
+ * run before every build) so every link below is a real, direct asset URL
+ * even with JavaScript off or the GitHub API rate-limiting the visitor.
+ * The client-side script only ever refreshes these values live.
+ */
+const tag = typeof snapshot.tag === 'string' && snapshot.tag.startsWith('v') ? snapshot.tag : '';
+const assets = (Array.isArray(snapshot.assets) ? snapshot.assets : []) as ReleaseAsset[];
+const releaseUrl = tag ? `${RELEASES_URL}/tag/${encodeURIComponent(tag)}` : RELEASES_URL;
+
+const baked = platforms.map((platform) => ({
+  ...platform,
+  rows: platform.formats.map((format) => {
+    const asset = findAsset(assets, format.format);
+    return {
+      format,
+      url: (asset && assetUrl(asset)) ?? releaseUrl,
+      size: asset ? formatBytes(asset.size) : '',
+      available: Boolean(asset),
+    };
+  }),
+}));
 ---
 
 <section id="download" class="section">
@@ -40,13 +65,31 @@ const platforms = [
       </div>
     </div>
 
-    <p id="release-status" class="release-status" role="status" aria-live="polite" data-reveal>
-      Download cards link to the public release page. Enable JavaScript for direct asset links.
-    </p>
+    {
+      tag ? (
+        <p
+          id="release-status"
+          class="release-status"
+          role="status"
+          aria-live="polite"
+          data-release-snapshot={tag}
+          data-state="ready"
+          data-reveal
+        >
+          Links point directly to stable assets of <strong>{tag}</strong>, baked at build time — JavaScript
+          refreshes them against the live release when GitHub allows.
+        </p>
+      ) : (
+        <p id="release-status" class="release-status" role="status" aria-live="polite" data-state="fallback" data-reveal>
+          Downloads link to the public release page. Live tracking is refreshed when JavaScript and the
+          GitHub API both allow.
+        </p>
+      )
+    }
 
     <div class="platform-list">
       {
-        platforms.map((platform) => (
+        baked.map((platform) => (
           <article class="platform-row" data-platform={platform.id} data-reveal>
             <div class="platform-meta">
               <h3 class="platform-name">{platform.name}</h3>
@@ -54,10 +97,16 @@ const platforms = [
             </div>
             <div>
               <div class="asset-list">
-                {platform.formats.map((format) => (
-                  <a class="asset-link" href={URLS.releases} data-download={format.format}>
-                    {format.label}
-                    <span data-download-size />
+                {platform.rows.map((row) => (
+                  <a
+                    class="asset-link"
+                    href={row.url}
+                    data-download={row.format.format}
+                    data-available={row.available ? 'true' : undefined}
+                    title={row.available && row.size ? `Download (${row.size}, verified SHA-512 by the installer)` : 'View this release for available builds'}
+                  >
+                    {row.format.label}
+                    <span data-download-size>{row.size}</span>
                     <svg class="asset-spacer" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="M4 10L10 4M5.5 4H10v4.5" />
                     </svg>
@@ -73,10 +122,9 @@ const platforms = [
 
     <ul class="download-notes">
       <li>
-        Latest release:
-        <a id="release-version" href={URLS.releases}>view on GitHub</a>
+        Latest release: <a id="release-version" href={releaseUrl}>{tag || 'view on GitHub'}</a>
       </li>
-      <li><a id="release-notes" href={URLS.releases}>Release notes</a></li>
+      <li><a id="release-notes" href={releaseUrl}>Release notes</a></li>
       <li><a href={URLS.installerSource}>Read the installer source</a></li>
     </ul>
   </div>
