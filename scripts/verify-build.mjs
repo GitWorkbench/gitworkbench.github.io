@@ -292,7 +292,7 @@ for (const sheet of styleSheets) {
 }
 
 check('no insecure http:// links are published', !/http:\/\//.test(html));
-check('the only remote script is the requested async Google tag', [...document.querySelectorAll('script[src]')].filter((script) => /^https?:/.test(script.getAttribute('src') ?? '')).every((script) => script.getAttribute('src') === 'https://www.googletagmanager.com/gtag/js?id=G-0X03SJ62WK' && script.hasAttribute('async')));
+check('the only remote script is the requested async Google tag', [...document.querySelectorAll('script[src]')].filter((script) => /^https?:/.test(script.getAttribute('src') ?? '')).every((script) => script.getAttribute('src') === 'https://www.googletagmanager.com/gtag/js?id=G-0T2SP16P0K' && script.hasAttribute('async')));
 
 if (failures.length) {
   console.error(`\nWebsite build verification failed (${failures.length} check${failures.length === 1 ? '' : 's'}):\n`);

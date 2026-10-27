@@ -4,7 +4,7 @@ import { JSDOM } from 'jsdom';
 
 const dist = path.resolve('dist');
 const origin = 'https://gitworkbench.github.io';
-const tagUrl = 'https://www.googletagmanager.com/gtag/js?id=G-0X03SJ62WK';
+const tagUrl = 'https://www.googletagmanager.com/gtag/js?id=G-0T2SP16P0K';
 const failures = [];
 let passed = 0;
 function check(label, condition) { if (condition) passed++; else failures.push(label); }
@@ -39,7 +39,7 @@ for (const file of htmlFiles) {
   check(prefix + 'social image has alt text', meta('meta[property="og:image:alt"]').length > 30);
   const scripts = [...document.querySelectorAll('script[src]')];
   check(prefix + 'Google tag loads exactly once', scripts.filter((script) => script.getAttribute('src') === tagUrl && script.hasAttribute('async')).length === 1);
-  check(prefix + 'Google property is initialized once', [...document.scripts].filter((script) => script.textContent.includes("gtag('config', 'G-0X03SJ62WK')")).length === 1);
+  check(prefix + 'Google property is initialized once', [...document.scripts].filter((script) => script.textContent.includes("gtag('config', 'G-0T2SP16P0K')")).length === 1);
   check(prefix + 'no unexpected third-party scripts', scripts.every((script) => !/^https?:/.test(script.getAttribute('src')) || script.getAttribute('src') === tagUrl));
   check(prefix + 'cacheable shared styles', document.querySelector('link[rel="stylesheet"][href^="/_astro/"]') !== null);
   check(prefix + 'font preload', document.querySelector('link[rel="preload"][as="font"][crossorigin]') !== null);

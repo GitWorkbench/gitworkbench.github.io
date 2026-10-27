@@ -71,7 +71,7 @@ Before publishing, review a phone, tablet, and desktop viewport. Browser tests s
 
 ## Google Analytics and Search Console
 
-`src/components/Analytics.astro` loads the requested asynchronous Google tag and initializes **G-0X03SJ62WK** once per page in production builds, including the 404. Development builds omit it. The standard tag sends automatic page views; this site does not add custom event handlers or a client-side router that would duplicate them. The website privacy page describes this setup.
+`src/components/Analytics.astro` loads the requested asynchronous Google tag and initializes **G-0T2SP16P0K** once per page in production builds, including the 404. Development builds omit it. The standard tag sends automatic page views; this site does not add custom event handlers or a client-side router that would duplicate them. The website privacy page describes this setup.
 
 After deploying, use Google Analytics Realtime or [Tag Assistant](https://tagassistant.google.com/) to verify actual collection. A production build verifies the markup; it cannot prove that the Analytics property received a hit.
 
