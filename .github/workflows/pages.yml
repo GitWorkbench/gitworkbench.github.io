@@ -34,7 +34,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Check Astro and TypeScript
-        run: npm run check
+        run: |
+          set -o pipefail
+          npm run check 2>&1 | tee "$RUNNER_TEMP/check.log"
+      - name: Report check diagnostics
+        if: failure()
+        run: |
+          if [ -s "$RUNNER_TEMP/check.log" ]; then
+            while IFS= read -r line; do printf '::error::%s\n' "$line"; done < <(tail -n 30 "$RUNNER_TEMP/check.log")
+          fi
       - name: Build static site
         run: npm run build
       - name: Run unit tests
