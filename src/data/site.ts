@@ -45,6 +45,7 @@ export const TRADEMARK_NOTICE = {
 export const NAVIGATION = [
   { label: 'Features', href: '/features/' },
   { label: 'Guides', href: '/guides/' },
+  { label: 'Compare', href: '/compare/' },
   { label: 'Themes', href: '/#themes' },
   { label: 'FAQ', href: '/faq/' },
   { label: 'Download', href: '/download/' },

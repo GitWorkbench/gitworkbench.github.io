@@ -1,0 +1,9 @@
+---
+import ComparisonLayout from '../../layouts/ComparisonLayout.astro';
+import { COMPARISONS } from '../../data/comparisons';
+export function getStaticPaths() {
+  return COMPARISONS.map((comparison)=>({params:{slug:comparison.slug},props:{comparison}}));
+}
+const { comparison } = Astro.props;
+---
+<ComparisonLayout comparison={comparison} />

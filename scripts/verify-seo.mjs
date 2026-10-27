@@ -63,6 +63,15 @@ for (const file of htmlFiles) {
     check(prefix + 'breadcrumbs end at canonical URL', breadcrumbs?.itemListElement?.at(-1)?.item === canonical);
   }
   if (route.startsWith('/guides/') && route !== '/guides/') check(prefix + 'guide has article schema', structured.some((item) => item['@type'] === 'TechArticle'));
+  if (route.startsWith('/compare/') && route !== '/compare/') {
+    const table = document.querySelector('.comparison-table table');
+    check(prefix + 'accessible substantive comparison table', table?.querySelector('caption') && table.querySelectorAll('thead th[scope="col"]').length === 3 && table.querySelectorAll('tbody th[scope="row"]').length >= 4);
+    const sources = [...document.querySelectorAll('.document-sources li[id] a[href]')];
+    check(prefix + 'official sources and Workbench documentation', sources.length >= 2 && sources.every((source) => source.href.startsWith('https://')) && sources.some((source) => source.href === 'https://github.com/GitWorkbench/workbench/blob/main/README.md'));
+    const reviewed = [...document.querySelectorAll('time[datetime]')].map((node) => node.getAttribute('datetime'));
+    check(prefix + 'consistent source review date', reviewed.length >= 2 && reviewed.every((date) => /^\d{4}-\d{2}-\d{2}$/.test(date) && date === reviewed[0] && Number.isFinite(Date.parse(date))));
+    check(prefix + 'balanced fit and switching context', document.querySelector('#other-fit p')?.textContent.length > 100 && document.querySelectorAll('#before-switching li').length >= 2);
+  }
   const faq = structured.find((item) => item['@type'] === 'FAQPage');
   if (faq) {
     const questions = [...document.querySelectorAll('.faq summary')].map((item) => item.textContent.trim().replace(/\s+/g, ' '));
@@ -99,6 +108,7 @@ check('sitemap contains every indexable page exactly once', urls.length === publ
 check('404 is absent from sitemap', !urls.includes(origin + '/404.html'));
 check('all content pages have incoming links', publicRoutes.every((route) => route === '/' || inbound.get(route) > 0));
 check('ten substantive feature and guide detail pages exist', publicRoutes.filter((route) => /^\/(features|guides)\/.+\/$/.test(route)).length === 10);
+check('five sourced client comparison pages exist', publicRoutes.filter((route) => /^\/compare\/.+\/$/.test(route)).length === 5);
 check('only three variable font files are shipped', files.filter((file) => file.endsWith('.woff2')).length === 3);
 check('robots advertises sitemap', readFileSync(path.join(dist, 'robots.txt'), 'utf8').includes(`Sitemap: ${origin}/sitemap.xml`));
 

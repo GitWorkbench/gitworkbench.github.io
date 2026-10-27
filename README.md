@@ -21,15 +21,18 @@ npm run verify       # all of the above checks and build
 
 ## Pages and content
 
-There are 17 indexable pages, plus a noindex 404:
+There are 23 indexable pages, plus a noindex 404:
 
 - `/` — product overview, interactive app previews, feature links, themes, workflow, downloads, and FAQ.
 - `/features/` — feature hub with six detailed pages: commit graph, staging and diffs, merge conflicts, hosted reviews, restore points, and optional AI.
 - `/guides/` — practical guides for getting started, Linux installation, advanced Git workflows, and building the desktop app from source.
+- `/compare/` — five sourced comparisons with GitKraken, Sourcetree, GitHub Desktop, Fork, and SmartGit.
 - `/download/` — stable installers, file sizes, platform suggestion, and installation help.
 - `/faq/`, `/about/`, `/privacy/` — product answers, project information, and website data handling.
 
 Feature and guide copy is maintained in `src/data/content.ts`. It is based on the organization's profile README, the application README, and its first-run and advanced workflow documentation. Each detail page links to its maintained source. Keep prerequisites, supported platforms, provider limits, and recovery caveats accurate when updating copy.
+
+Comparison copy is maintained in `src/data/comparisons.ts`. Each page includes official sources, a source-review date, practical differences, reasons another client may fit better, and Workbench limitations. Review the actual sources before changing the review date. Avoid unsupported performance claims, invented ratings, copied branding, or stale price amounts.
 
 `src/data/pages.ts` provides the indexable route inventory and collection-page metadata. When adding a new standalone route, add it to this inventory; the build checks compare it with the real HTML output. Do not add the 404 page to the sitemap.
 
@@ -43,11 +46,12 @@ src/
                     page headers, and homepage sections
   data/
     content.ts      Feature and guide documents, references, related pages
+    comparisons.ts  Competitor comparisons, citations, and review dates
     pages.ts        Public page inventory and collection metadata
     schema.ts       Software, FAQ, page, article, and breadcrumb JSON-LD
     site.ts         Product facts, navigation, FAQ, themes, and URLs
     release-snapshot.json  Last saved stable release assets
-  layouts/          BaseLayout and the shared content-reading layout
+  layouts/          BaseLayout, content-reading, and comparison layouts
   pages/            Static routes, sitemap.xml, robots.txt, and 404
   scripts/          Global UI, platform suggestion, and live release lookup
   styles/           Shared design system and three local variable fonts
@@ -62,6 +66,18 @@ tests/              Vitest interaction and release tests
 Every public page has its own title, description, canonical trailing-slash URL, Open Graph and Twitter metadata, and semantic main heading. Inner pages have visible breadcrumbs and matching BreadcrumbList data. Guide details use TechArticle; the homepage and downloads describe the SoftwareApplication, and FAQ markup is generated from the visible answers. Ratings and modification dates are not invented. Structured data does not guarantee a search feature or ranking.
 
 `/sitemap.xml` lists every indexable canonical page. `/robots.txt` allows crawling and links to that sitemap. The custom 404 is noindex. Footer links, feature links, related pages, and guide hubs keep the content discoverable without client-side routing.
+
+Competitor search targets are mapped to substantive comparison pages, not duplicate pages for every spelling or search phrase:
+
+| Page | Main keyword targets |
+| --- | --- |
+| `/compare/gitkraken-alternative/` | GitKraken alternative; Git Workbench vs GitKraken; open-source GitKraken alternative |
+| `/compare/sourcetree-alternative/` | Sourcetree alternative for Linux; Git Workbench vs Sourcetree |
+| `/compare/github-desktop-alternative/` | GitHub Desktop alternative for Linux; GitHub Desktop alternative for GitLab |
+| `/compare/fork-alternative/` | Fork Git client alternative; Fork alternative for Linux |
+| `/compare/smartgit-alternative/` | open-source SmartGit alternative; Git Workbench vs SmartGit |
+
+These targets are based on product fit, not measured search volume or proven rankings. Titles, visible headings, useful comparison content, and links from the comparison hub support discovery. Use Search Console queries, impressions, clicks, and positions after indexing to refine the pages; keep each page's claims accurate as products change.
 
 Astro renders the content to HTML without a client framework. Shared styles are external and cacheable across pages. Only the Latin subsets of Inter, Outfit, and JetBrains Mono are shipped; the display font is preloaded and all fonts use swap. Screenshots have dimensions, AVIF/WebP variants, responsive sizes, and descriptive alt text. The initial hero screenshot is prioritized; lower screenshots load lazily. The release module is requested only on pages with download controls. Keyboard navigation, reduced motion, and JavaScript-disabled reading and navigation are supported.
 

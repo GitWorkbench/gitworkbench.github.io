@@ -1926,6 +1926,24 @@ html { scroll-padding-top: 90px; }
 .document-sources { padding: 0.2rem 0 1rem; }
 .document-sources h2 { font-size: 1.2rem; }
 .document-sources p, .document-sources li { font-size: 0.8rem; }
+.comparison-reviewed { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem; margin: 1.5rem 0 0; color: var(--faint); font: 0.7rem/1.8 var(--font-mono); }
+.comparison-reviewed time { color: var(--dim); }
+.comparison-scroll-hint { display: none; }
+.comparison-table { max-width: 100%; overflow-x: auto; border: 1px solid var(--edge-strong); border-radius: var(--radius-sm); background: var(--panel); scrollbar-width: thin; }
+.comparison-table table { width: 100%; min-width: 640px; table-layout: fixed; border-collapse: collapse; text-align: left; }
+.comparison-table th, .comparison-table td { padding: 1.1rem; border-bottom: 1px solid var(--edge); vertical-align: top; font-size: 0.84rem; line-height: 1.8; overflow-wrap: break-word; }
+.comparison-table thead th { color: var(--fg); font: 500 0.74rem/1.7 var(--font-mono); background: #101720; }
+.comparison-table th:first-child { width: 24%; }
+.comparison-table th[scope='row'] { color: var(--fg); font-weight: 500; }
+.comparison-table th:nth-child(2), .comparison-table td:nth-child(2) { background: var(--accent-soft); }
+.comparison-table thead th:nth-child(2) { color: var(--accent); }
+.comparison-table tbody tr:last-child > * { border-bottom: 0; }
+.document-body .comparison-table-note { margin: 0.9rem 0 0; color: var(--faint); font-size: 0.77rem; }
+.comparison-citation { color: var(--accent); white-space: nowrap; font: 0.72rem var(--font-mono); }
+.comparison-reasons { display: grid; gap: 1.8rem; }
+.comparison-reasons h3 { margin: 0 0 0.65rem; color: var(--fg); font-size: 1.16rem; line-height: 1.4; }
+.comparison-reasons p { margin-bottom: 0.65rem; }
+.comparison-body .document-sources li { scroll-margin-top: 7rem; }
 .related-content { padding-top: 2.5rem; padding-bottom: 3rem; border-top: 1px solid var(--edge); }
 .related-content > h2 { margin-bottom: 1.7rem; font-size: clamp(1.6rem, 1.2rem + 1.5vw, 2.5rem); }
 .standalone-breadcrumbs { padding-top: 2rem; }
@@ -1946,6 +1964,7 @@ html { scroll-padding-top: 90px; }
 }
 
 @media (max-width: 600px) {
+  .document-body .comparison-scroll-hint { display: block; margin-bottom: 0.75rem; color: var(--faint); font-size: 0.77rem; }
   .content-cards { grid-template-columns: 1fr; }
   .document-toc ol { grid-template-columns: 1fr; }
   .page-header h1 { overflow-wrap: break-word; }
