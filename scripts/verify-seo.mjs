@@ -24,6 +24,7 @@ for (const file of htmlFiles) {
   const canonical = document.querySelector('link[rel="canonical"]')?.href;
   const prefix = `${route}: `;
   check(prefix + 'one canonical URL', document.querySelectorAll('link[rel="canonical"]').length === 1 && canonical === origin + route);
+  check(prefix + 'advertises the official sitemap index', document.querySelector('link[rel="sitemap"]')?.getAttribute('href') === '/sitemap-index.xml');
   check(prefix + 'one descriptive h1', document.querySelectorAll('main h1').length === 1 && document.querySelector('main h1').textContent.trim().length > 10);
   check(prefix + 'English document', document.documentElement.lang === 'en');
   check(prefix + 'mobile viewport', /width=device-width/.test(meta('meta[name="viewport"]')));
@@ -101,8 +102,21 @@ for (const [route, document] of pages) {
     }
   }
 }
-const sitemapDoc = new JSDOM(readFileSync(path.join(dist, 'sitemap.xml'), 'utf8'), {contentType: 'application/xml'}).window.document;
-const urls = [...sitemapDoc.querySelectorAll('loc')].map((node) => node.textContent);
+const indexXml = readFileSync(path.join(dist, 'sitemap-index.xml'), 'utf8');
+const sitemapIndex = new JSDOM(indexXml, {contentType: 'application/xml'}).window.document;
+const sitemapLocations = [...sitemapIndex.querySelectorAll('sitemap > loc')].map((node) => node.textContent);
+check('official sitemap index is valid and nonempty', sitemapIndex.documentElement.localName === 'sitemapindex' && sitemapIndex.documentElement.namespaceURI === 'http://www.sitemaps.org/schemas/sitemap/0.9' && sitemapLocations.length > 0 && new Set(sitemapLocations).size === sitemapLocations.length);
+const urls = sitemapLocations.flatMap((location) => {
+  const url = new URL(location);
+  const file = path.join(dist, url.pathname);
+  const valid = url.origin === origin && /^\/sitemap-\d+\.xml$/.test(url.pathname) && existsSync(file);
+  check(`generated sitemap ${location} is published on the production domain`, valid);
+  if (!valid) return [];
+  const document = new JSDOM(readFileSync(file, 'utf8'), {contentType: 'application/xml'}).window.document;
+  check(`${url.pathname} contains a standard sitemap urlset`, document.documentElement.localName === 'urlset' && document.documentElement.namespaceURI === 'http://www.sitemaps.org/schemas/sitemap/0.9');
+  return [...document.querySelectorAll('url > loc')].map((node) => node.textContent);
+});
+check('legacy sitemap is an exact copy of the generated index', readFileSync(path.join(dist, 'sitemap.xml'), 'utf8') === indexXml);
 const publicRoutes = [...pages.keys()].filter((route) => route !== '/404.html');
 check('sitemap contains every indexable page exactly once', urls.length === publicRoutes.length && new Set(urls).size === urls.length && publicRoutes.every((route) => urls.includes(origin + route)));
 check('404 is absent from sitemap', !urls.includes(origin + '/404.html'));
@@ -110,7 +124,7 @@ check('all content pages have incoming links', publicRoutes.every((route) => rou
 check('ten substantive feature and guide detail pages exist', publicRoutes.filter((route) => /^\/(features|guides)\/.+\/$/.test(route)).length === 10);
 check('five sourced client comparison pages exist', publicRoutes.filter((route) => /^\/compare\/.+\/$/.test(route)).length === 5);
 check('only three variable font files are shipped', files.filter((file) => file.endsWith('.woff2')).length === 3);
-check('robots advertises sitemap', readFileSync(path.join(dist, 'robots.txt'), 'utf8').includes(`Sitemap: ${origin}/sitemap.xml`));
+check('robots advertises sitemap index', readFileSync(path.join(dist, 'robots.txt'), 'utf8').includes(`Sitemap: ${origin}/sitemap-index.xml`));
 
 if (failures.length) {
   console.error(`SEO verification failed (${failures.length} checks):\n${failures.map((item) => `  ✗ ${item}`).join('\n')}`);

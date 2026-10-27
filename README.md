@@ -34,7 +34,7 @@ Feature and guide copy is maintained in `src/data/content.ts`. It is based on th
 
 Comparison copy is maintained in `src/data/comparisons.ts`. Each page includes official sources, a source-review date, practical differences, reasons another client may fit better, and Workbench limitations. Review the actual sources before changing the review date. Avoid unsupported performance claims, invented ratings, copied branding, or stale price amounts.
 
-`src/data/pages.ts` provides the indexable route inventory and collection-page metadata. When adding a new standalone route, add it to this inventory; the build checks compare it with the real HTML output. Do not add the 404 page to the sitemap.
+`src/data/pages.ts` provides collection-page metadata. The official `@astrojs/sitemap` integration discovers generated routes during the build, with the noindex 404 explicitly excluded in `astro.config.mjs`. The build checks compare all sitemap URLs with the real HTML output, so new indexable routes are included automatically.
 
 The homepage FAQ and `/faq/` use `src/data/site.ts` as a shared source for visible answers and FAQ structured data. Navigation, release formats, shortcuts, palettes, and product URLs also live there.
 
@@ -47,17 +47,17 @@ src/
   data/
     content.ts      Feature and guide documents, references, related pages
     comparisons.ts  Competitor comparisons, citations, and review dates
-    pages.ts        Public page inventory and collection metadata
+    pages.ts        Collection-page metadata
     schema.ts       Software, FAQ, page, article, and breadcrumb JSON-LD
     site.ts         Product facts, navigation, FAQ, themes, and URLs
     release-snapshot.json  Last saved stable release assets
   layouts/          BaseLayout, content-reading, and comparison layouts
-  pages/            Static routes, sitemap.xml, robots.txt, and 404
+  pages/            Static routes, robots.txt, and 404
   scripts/          Global UI, platform suggestion, and live release lookup
   styles/           Shared design system and three local variable fonts
   assets/           Screenshots processed by Astro
 public/             Stable image originals, install.sh, and .nojekyll
-scripts/            Release snapshot and production-output verification
+scripts/            Release snapshot, legacy sitemap alias, and output checks
 tests/              Vitest interaction and release tests
 ```
 
@@ -65,7 +65,7 @@ tests/              Vitest interaction and release tests
 
 Every public page has its own title, description, canonical trailing-slash URL, Open Graph and Twitter metadata, and semantic main heading. Inner pages have visible breadcrumbs and matching BreadcrumbList data. Guide details use TechArticle; the homepage and downloads describe the SoftwareApplication, and FAQ markup is generated from the visible answers. Ratings and modification dates are not invented. Structured data does not guarantee a search feature or ranking.
 
-`/sitemap.xml` lists every indexable canonical page. `/robots.txt` allows crawling and links to that sitemap. The custom 404 is noindex. Footer links, feature links, related pages, and guide hubs keep the content discoverable without client-side routing.
+The official `@astrojs/sitemap` integration generates `/sitemap-index.xml` and numbered URL lists such as `/sitemap-0.xml`. The index is advertised in `/robots.txt`, every page's head, and the footer. After the build, `scripts/alias-sitemap.mjs` copies the generated index to `/sitemap.xml` for existing links and Search Console submissions; there is no second URL inventory or custom sitemap generator. The build checks follow every numbered sitemap and verify that all indexable canonical HTML pages appear exactly once. The custom 404 is noindex and excluded. Footer links, feature links, related pages, and guide hubs keep content discoverable without client-side routing.
 
 Competitor search targets are mapped to substantive comparison pages, not duplicate pages for every spelling or search phrase:
 
@@ -95,7 +95,7 @@ For Google Search Console:
 
 1. Add or open the URL-prefix property `https://gitworkbench.github.io/`.
 2. If using HTML-tag verification, copy only its token into the repository's Actions variable `PUBLIC_GOOGLE_SITE_VERIFICATION`. The build workflow passes this public value to the shared metadata component. `.env.example` documents the same optional local setting.
-3. Deploy the site, verify the property, then submit `https://gitworkbench.github.io/sitemap.xml`.
+3. Deploy the site, verify the property, then submit `https://gitworkbench.github.io/sitemap-index.xml`.
 4. Inspect the homepage, feature hub, and a guide URL using URL Inspection. Use the live deployed URLs when checking rendered markup and structured data.
 
 The Analytics measurement ID is not a Search Console HTML verification token. Search Console ownership, sitemap submission, and external indexing are account/deployment actions; they are not performed by the local build.

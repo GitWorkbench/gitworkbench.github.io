@@ -1,7 +1,3 @@
-import { FEATURE_PAGES, GUIDE_PAGES } from './content';
-import { COMPARISONS } from './comparisons';
-import { SITE } from './site';
-
 export const PAGE_META = {
   compare: { path: '/compare/', label: 'Compare', title: 'Compare Git Workbench with Other Git Clients', description: 'Compare Git Workbench with GitKraken, Sourcetree, GitHub Desktop, Fork, and SmartGit using sourced platform, licensing, and workflow differences.' },
   features: { path: '/features/', label: 'Features', title: 'Git GUI Features — Graph, Diffs & Reviews | Git Workbench', description: 'Explore Git Workbench features: visual commit history, hunk staging, merge conflict resolution, hosted reviews, restore points, and optional local AI assistance.' },
@@ -11,11 +7,3 @@ export const PAGE_META = {
   about: { path: '/about/', label: 'About', title: 'About Git Workbench — An Open-Source Git Desktop Client', description: 'Meet Git Workbench, the MIT-licensed desktop Git client built around visual history, your existing Git setup, and open development. Find source and contribution links.' },
   privacy: { path: '/privacy/', label: 'Website privacy', title: 'Website Privacy & Analytics | Git Workbench', description: 'Learn how the Git Workbench website uses Google Analytics, GitHub Pages, and public release metadata, and how website analytics differs from the desktop app.' },
 } as const;
-
-export const PUBLIC_PAGES = [
-  { path: '/', label: 'Home', title: SITE.title, description: SITE.description },
-  ...Object.values(PAGE_META),
-  ...FEATURE_PAGES.map((page) => ({ path: `/features/${page.slug}/`, label: page.label, title: page.title, description: page.description })),
-  ...GUIDE_PAGES.map((page) => ({ path: `/guides/${page.slug}/`, label: page.label, title: page.title, description: page.description })),
-  ...COMPARISONS.map((page) => ({ path: `/compare/${page.slug}/`, label: `${page.competitor} alternative`, title: page.title, description: page.description })),
-];

@@ -231,14 +231,17 @@ check('404 page links home', notFound.querySelector('a[href="/"]') !== null);
 check('404 page has a canonical URL', notFound.querySelector('link[rel="canonical"]')?.href === `${canonical}404.html`);
 
 // Crawling files
-const sitemap = read('sitemap.xml');
+const sitemap = read('sitemap-0.xml');
+const sitemapIndex = read('sitemap-index.xml');
+check('official sitemap index links to generated URLs', sitemapIndex.includes('<sitemapindex') && sitemapIndex.includes(`<loc>${canonical}sitemap-0.xml</loc>`));
+check('legacy sitemap is an alias of the official index', read('sitemap.xml') === sitemapIndex);
 check('sitemap is a urlset', sitemap.includes('xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'));
 check('sitemap lists the homepage once', (sitemap.match(new RegExp(`<loc>${canonical}</loc>`, 'g')) ?? []).length === 1);
 check('sitemap includes the feature and guide pages', sitemap.includes(`${canonical}features/commit-graph/`) && sitemap.includes(`${canonical}guides/getting-started/`));
 check('sitemap uses the production domain', sitemap.includes(`<loc>${canonical}</loc>`));
 const robots = read('robots.txt');
 check('robots allows crawling', /User-agent: \*\s+Allow: \//.test(robots));
-check('robots points at the sitemap', robots.includes(`Sitemap: ${canonical}sitemap.xml`));
+check('robots points at the sitemap index', robots.includes(`Sitemap: ${canonical}sitemap-index.xml`));
 check('GitHub Pages Jekyll opt-out is published', existsSync(path.join(dist, '.nojekyll')));
 
 // Installer wrapper

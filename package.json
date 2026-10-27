@@ -11,6 +11,7 @@
     "start": "astro dev",
     "prebuild": "node scripts/snapshot-release.mjs",
     "build": "astro build",
+    "postbuild": "node scripts/alias-sitemap.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run",
@@ -19,6 +20,7 @@
     "verify": "npm run check && npm run build && npm test && npm run test:build"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
     "@fontsource-variable/inter": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/outfit": "^5.3.0",
