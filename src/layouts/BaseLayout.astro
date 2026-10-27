@@ -1,8 +1,8 @@
 ---
-import '@fontsource-variable/inter';
-import '@fontsource-variable/jetbrains-mono';
-import '@fontsource-variable/outfit';
+import '../styles/fonts.css';
 import '../styles/global.css';
+import displayFont from '@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2?url';
+import Analytics from '../components/Analytics.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Seo from '../components/Seo.astro';
@@ -16,6 +16,7 @@ interface Props {
   imageAlt?: string;
   structuredData?: Record<string, unknown>[];
   canonicalPath?: string;
+  type?: 'website' | 'article';
 }
 
 const {
@@ -26,10 +27,12 @@ const {
   imageAlt = 'Git Workbench showing the commit strata graph with branch lanes, authors, and the selected commit in a dark workspace',
   structuredData = [],
   canonicalPath = Astro.url.pathname,
+  type = 'website',
 } = Astro.props;
 
 const canonical = new URL(canonicalPath, Astro.site ?? SITE.url).href;
 const socialImage = new URL(image, Astro.site ?? SITE.url).href;
+const searchConsoleVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
 ---
 
 <!doctype html>
@@ -37,6 +40,8 @@ const socialImage = new URL(image, Astro.site ?? SITE.url).href;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Analytics />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
     <script is:inline>document.documentElement.classList.add('js');</script>
     <Seo
       title={title}
@@ -46,7 +51,9 @@ const socialImage = new URL(image, Astro.site ?? SITE.url).href;
       imageAlt={imageAlt}
       noindex={noindex}
       structuredData={structuredData}
+      type={type}
     />
+    {searchConsoleVerification && <meta name="google-site-verification" content={searchConsoleVerification} />}
     <link rel="icon" type="image/png" sizes="128x128" href="/assets/icon.png" />
     <link rel="apple-touch-icon" href="/assets/icon.png" />
     <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
@@ -65,3 +72,11 @@ const socialImage = new URL(image, Astro.site ?? SITE.url).href;
     <Footer />
   </body>
 </html>
+
+<script>
+  import { mountWebsite } from '../scripts/ui';
+  mountWebsite();
+  if (document.getElementById('release-status')) {
+    void import('../scripts/release').then(({ loadRelease }) => loadRelease());
+  }
+</script>

@@ -127,6 +127,7 @@ describe('release loading', () => {
       expect.objectContaining({ credentials: 'omit' }),
     );
     expect(document.getElementById('release-version')).toHaveTextContent('v1.0.0');
+    expect(document.getElementById('release-version')).toHaveAttribute('href', `${RELEASES_URL}/tag/v1.0.0`);
     expect(document.getElementById('release-notes')).toHaveAttribute(
       'href',
       `${RELEASES_URL}/tag/v1.0.0`,
@@ -226,7 +227,7 @@ describe('release loading', () => {
     expect(appImage.getAttribute('href')).toBe(`${RELEASES_URL}/download/v1.3.4/git-workbench-1.3.4-x86_64.AppImage`);
     expect(appImage.dataset.available).toBe('true');
     expect(appImage.querySelector('[data-download-size]')).toHaveTextContent('127.9 MB');
-    expect(document.getElementById('release-status')).toHaveTextContent('build time');
+    expect(document.getElementById('release-status')).toHaveTextContent('Downloads available · v1.3.4');
     expect(document.getElementById('release-status')).toHaveAttribute('data-state', 'ready');
   });
 });

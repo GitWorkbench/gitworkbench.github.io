@@ -157,4 +157,71 @@ describe('platform detection', () => {
     mountWebsite();
     expect(document.querySelector('[data-mod-key]')?.textContent).toBe('Ctrl');
   });
+
+  it('uses the baked installer for the hero suggestion before any API request', () => {
+    vi.spyOn(navigator, 'platform', 'get').mockReturnValue('Win32');
+    document.body.innerHTML += `
+      <a href="/#download" data-download-recommended><span data-download-label>Download Git Workbench</span></a>
+      <article data-platform="windows"><a data-download="exe" href="https://github.com/GitWorkbench/workbench/releases/download/v1.3.4/setup.exe">Installer</a></article>
+    `;
+    mountWebsite();
+    const recommended = document.querySelector('[data-download-recommended]');
+    expect(recommended).toHaveTextContent('Download for Windows');
+    expect(recommended).toHaveAttribute('data-download', 'exe');
+    expect(recommended).toHaveAttribute('href', 'https://github.com/GitWorkbench/workbench/releases/download/v1.3.4/setup.exe');
+  });
+
+  it.each([
+    ['Linux armv8l', 'Mozilla/5.0 (Linux; Android 14)', 5],
+    ['MacIntel', 'Mozilla/5.0 (Macintosh; Intel Mac OS X)', 5],
+  ])('keeps mobile visitors on the platform chooser (%s)', (platform, userAgent, maxTouchPoints) => {
+    vi.spyOn(navigator, 'platform', 'get').mockReturnValue(platform);
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(userAgent);
+    Object.defineProperty(navigator, 'maxTouchPoints', { value: maxTouchPoints, configurable: true });
+    document.body.innerHTML += '<a href="/#download" data-download-recommended>Download Git Workbench</a>';
+    mountWebsite();
+    expect(document.querySelector('[data-detected="true"]')).toBeNull();
+    expect(document.querySelector('[data-download-recommended]')).toHaveAttribute('href', '/#download');
+    Reflect.deleteProperty(navigator, 'maxTouchPoints');
+  });
+});
+
+describe('hero previews', () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div data-hero-tabs hidden role="tablist">
+        <button id="preview-tab-history" data-hero-tab="history" role="tab" aria-selected="true">History</button>
+        <button id="preview-tab-diff" data-hero-tab="diff" role="tab" aria-selected="false" tabindex="-1">Diff</button>
+        <button id="preview-tab-merge" data-hero-tab="merge" role="tab" aria-selected="false" tabindex="-1">Merge</button>
+      </div>
+      <figure id="preview-history" data-hero-panel="history">Graph screenshot</figure>
+      <figure id="preview-diff" data-hero-panel="diff" hidden>Diff screenshot</figure>
+      <figure id="preview-merge" data-hero-panel="merge" hidden>Merge screenshot</figure>
+    `;
+  });
+
+  it('exposes controls and shows only the selected screenshot', () => {
+    mountWebsite();
+    expect(document.querySelector('[data-hero-tabs]')).not.toHaveAttribute('hidden');
+    document.querySelector<HTMLButtonElement>('[data-hero-tab="diff"]')!.click();
+    expect(document.getElementById('preview-diff')).toBeVisible();
+    expect(document.getElementById('preview-history')).not.toBeVisible();
+    expect(document.getElementById('preview-merge')).not.toBeVisible();
+    expect(document.getElementById('preview-diff')).toHaveAttribute('aria-labelledby', 'preview-tab-diff');
+    expect(document.getElementById('preview-tab-diff')).toHaveAttribute('aria-selected', 'true');
+  });
+
+  it('supports arrow wrapping, Home, and End with one tab stop', () => {
+    mountWebsite();
+    const history = document.getElementById('preview-tab-history')!;
+    history.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+    const merge = document.getElementById('preview-tab-merge')!;
+    expect(merge).toHaveFocus();
+    expect(document.getElementById('preview-merge')).toBeVisible();
+    merge.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+    expect(history).toHaveFocus();
+    history.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+    expect(merge).toHaveFocus();
+    expect(document.querySelectorAll('[data-hero-tab][tabindex="0"]')).toHaveLength(1);
+  });
 });

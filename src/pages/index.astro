@@ -8,36 +8,17 @@ import Workflow from '../components/Workflow.astro';
 import Downloads from '../components/Downloads.astro';
 import Faq from '../components/Faq.astro';
 import OpenSource from '../components/OpenSource.astro';
-import { FAQ, FEATURES, SITE, THEMES, URLS, WORKFLOWS } from '../data/site';
+import { SITE, THEMES } from '../data/site';
+import { softwareSchema, faqSchema } from '../data/schema';
 
 const absolute = (path: string) => new URL(path, SITE.url).href;
 
 const structuredData = [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name: SITE.name,
-    applicationCategory: 'DeveloperApplication',
-    applicationSubCategory: 'Version Control',
-    operatingSystem: 'Linux, macOS, Windows',
-    softwareRequirements: 'System Git',
-    url: SITE.url,
-    downloadUrl: URLS.latestRelease,
-    license: URLS.license,
-    description: SITE.description,
-    screenshot: absolute(URLS.socialImage),
-    featureList: [...FEATURES.map((feature) => feature.title), ...WORKFLOWS.map((flow) => flow.title)],
-    author: {
-      '@type': 'Person',
-      name: SITE.author.name,
-      url: SITE.author.url,
-    },
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    sameAs: [URLS.repository, URLS.releases],
-  },
+  softwareSchema,
   {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${SITE.url}/#website`,
     name: SITE.name,
     alternateName: 'GitWorkbench',
     url: SITE.url,
@@ -45,23 +26,17 @@ const structuredData = [
     description: SITE.description,
     publisher: {
       '@type': 'Organization',
+      '@id': `${SITE.url}/#organization`,
       name: SITE.name,
       url: SITE.url,
+      sameAs: ['https://github.com/GitWorkbench/'],
       logo: {
         '@type': 'ImageObject',
         url: absolute('/assets/icon.png'),
       },
     },
   },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: FAQ.map((item) => ({
-      '@type': 'Question',
-      name: item.question,
-      acceptedAnswer: { '@type': 'Answer', text: item.answer },
-    })),
-  },
+  faqSchema,
   {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -85,11 +60,3 @@ const structuredData = [
   <Faq />
   <OpenSource />
 </BaseLayout>
-
-<script>
-  import { mountWebsite } from '../scripts/ui';
-  import { loadRelease } from '../scripts/release';
-
-  mountWebsite();
-  void loadRelease();
-</script>

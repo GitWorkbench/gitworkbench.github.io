@@ -13,12 +13,13 @@ import { NAVIGATION, SITE, URLS } from '../data/site';
           Visual commit strata and an effortless git workflow — free and open source for Linux,
           macOS, and Windows.
         </p>
-        <a class="button button-outline button-sm" href={URLS.releases}>Get the latest release</a>
+        <a class="button button-outline button-sm" href="/download/">Get the latest release</a>
       </div>
 
       <nav aria-label="Site sections">
         <h2 class="footer-heading">Site</h2>
         <ul class="footer-list">
+          <li><a href="/about/">About Git Workbench</a></li>
           {
             NAVIGATION.map((item) => (
               <li>
@@ -42,16 +43,16 @@ import { NAVIGATION, SITE, URLS } from '../data/site';
       <nav aria-label="Documentation links">
         <h2 class="footer-heading">Guides</h2>
         <ul class="footer-list">
-          <li><a href={URLS.docs}>Full README</a></li>
-          <li><a href={URLS.advanced}>Advanced workflows</a></li>
-          <li><a href={URLS.firstRun}>First-run setup</a></li>
-          <li><a href={URLS.branding}>Branding &amp; data locations</a></li>
+          <li><a href="/guides/getting-started/">Getting started</a></li>
+          <li><a href="/guides/linux-installation/">Linux installation</a></li>
+          <li><a href="/guides/advanced-git-workflows/">Advanced Git workflows</a></li>
+          <li><a href="/guides/build-from-source/">Build from source</a></li>
         </ul>
       </nav>
     </div>
 
     <div class="footer-bottom">
-      <span>{SITE.author.name} · MIT license</span>
+      <span>{SITE.author.name} · MIT license · <a href="/privacy/">Website privacy</a></span>
       <span>
         built with <a href="https://astro.build">astro</a> · site source:{' '}
         <a href="https://github.com/GitWorkbench/gitworkbench.github.io">gitworkbench.github.io</a>

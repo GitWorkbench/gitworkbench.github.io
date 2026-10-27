@@ -1,55 +1,77 @@
 ---
-import Strata from './Strata.astro';
+import { Picture } from 'astro:assets';
+import history from '../assets/screenshots/history.jpg';
+import diff from '../assets/screenshots/diff.jpg';
+import merge from '../assets/screenshots/merge.jpg';
 import { HERO, INSTALL_COMMAND, URLS } from '../data/site';
 
-const commandUrl = INSTALL_COMMAND.slice(INSTALL_COMMAND.indexOf('https://'));
+const previews = [
+  { id: 'history', label: 'Commit graph', image: history, caption: 'Every branch. Every commit. The whole picture.', alt: 'Git Workbench showing a real repository with colored commit strata, parallel branches, and the selected commit details.' },
+  { id: 'diff', label: 'Diff & staging', image: diff, caption: 'A closer look at every change, before you commit.', alt: 'Git Workbench showing a side-by-side code diff with changed files and hunk-level staging controls.' },
+  { id: 'merge', label: 'Merge editor', image: merge, caption: 'Bring both sides together, with the full context.', alt: 'Git Workbench showing Current and Incoming changes alongside the editable result in its three-pane merge editor.' },
+];
 ---
 
-<section class="hero">
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero-gridlines" aria-hidden="true"></div>
   <div class="wrap hero-grid">
     <div class="hero-copy">
-      <p class="eyebrow" data-reveal>{HERO.eyebrow}</p>
-      <h1 data-reveal>
-        <span class="hero-line">Complex git history,</span>
-        <span class="hero-line">rendered as <span class="accent-glow">clear strata</span>.</span>
+      <p class="eyebrow">{HERO.eyebrow}</p>
+      <h1 id="hero-heading">
+        Complex Git history.<br />
+        <span class="accent-glow">Clear strata.</span> Clear head.
       </h1>
-      <p class="lead" data-reveal>{HERO.lead}</p>
+      <p class="lead">{HERO.lead}</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="/#download" data-download-recommended>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5" /></svg>
+          <span data-download-label>Download Git Workbench</span>
+        </a>
+        <a class="button button-outline" href={URLS.repository}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-14-2 18" /></svg>
+          Browse the source
+        </a>
+      </div>
+      <p class="hero-platforms">Linux, macOS & Windows <span aria-hidden="true">/</span> <a href="/#download">All downloads <span aria-hidden="true">↗</span></a></p>
+    </div>
 
-      <div class="hero-cta" data-reveal>
-        <div class="hero-actions">
-          <a class="button button-primary" href={URLS.releases} data-download="">
-            Download
-            <svg width="14" height="14" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M7.5 1.5v8m0 0l3.5-3.5M7.5 9.5L4 6m-2.5 6.5h12" />
-            </svg>
-          </a>
-          <a class="button button-outline" href={URLS.repository}>
-            Browse the source
-            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M5 2.5H2.5v9h9V9M8.5 1.5H12.5V5.5M12.5 1.5l-5 5" />
-            </svg>
-          </a>
+    <div class="hero-showcase">
+      <div class="hero-preview-toolbar">
+        <span class="hero-window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div class="hero-preview-tabs" data-hero-tabs hidden role="tablist" aria-label="Explore Git Workbench">
+          {previews.map((preview, index) => (
+            <button type="button" role="tab" id={`preview-tab-${preview.id}`} aria-controls={`preview-${preview.id}`} aria-selected={index === 0 ? 'true' : 'false'} tabindex={index === 0 ? 0 : -1} data-hero-tab={preview.id}>{preview.label}</button>
+          ))}
         </div>
+        <span class="hero-preview-label">Git Workbench</span>
+      </div>
+      {previews.map((preview, index) => (
+        <figure id={`preview-${preview.id}`} class="hero-preview-panel" data-hero-panel={preview.id} hidden={index !== 0}>
+          <a href={`/assets/screenshots/${preview.id}.jpg`} target="_blank" rel="noopener" aria-label={`Open the ${preview.label.toLowerCase()} screenshot at full size`}>
+            <Picture src={preview.image} alt={preview.alt} widths={[480, 720, 1080, 1440]} sizes="(max-width: 600px) calc(100vw - 32px), (max-width: 1222px) calc(100vw - 72px), 1100px" formats={['avif', 'webp']} quality={82} loading={index === 0 ? 'eager' : 'lazy'} fetchpriority={index === 0 ? 'high' : 'auto'} />
+          </a>
+          <figcaption><span class="preview-live-dot" aria-hidden="true"></span>{preview.caption}<span class="hero-preview-index" aria-hidden="true">0{index + 1} / 03</span></figcaption>
+        </figure>
+      ))}
+    </div>
 
-        <div class="hero-install">
-          <span class="install-label" id="hero-install-label">Install on Linux, one line</span>
-          <div class="quick-install-command">
-            <code aria-labelledby="hero-install-label" tabindex="0" aria-label="Install command, horizontally scrollable">curl -fsSL <span>{commandUrl}</span> | bash</code>
-            <button class="copy-btn" type="button" data-copy={INSTALL_COMMAND} aria-label="Copy the Linux install command">
-              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="4.6" y="4.6" width="8" height="8" rx="1.6" />
-                <path d="M9.4 4.6V3a1.4 1.4 0 0 0-1.4-1.4H3A1.4 1.4 0 0 0 1.6 3v5A1.4 1.4 0 0 0 3 9.4h1.6" />
-              </svg>
-              <span data-copy-label>Copy</span>
-            </button>
-          </div>
-          <p class="install-note">Debian, RPM, Arch, and an AppImage fallback · SHA-512 verified.</p>
+    <div class="hero-bottom">
+      <ul class="hero-benefits" aria-label="Made for your workflow">
+        <li><span aria-hidden="true">✓</span> Your system Git</li>
+        <li><span aria-hidden="true">✓</span> No account required</li>
+        <li><span aria-hidden="true">✓</span> Local-first workflow</li>
+      </ul>
+      <div class="hero-install">
+        <span class="install-label" id="hero-install-label">Linux? One line and you're in.</span>
+        <div class="quick-install-command">
+          <code aria-labelledby="hero-install-label" tabindex="0">{INSTALL_COMMAND}</code>
+          <button class="copy-btn" type="button" data-copy={INSTALL_COMMAND} aria-label="Copy the Linux install command">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.6" y="4.6" width="8" height="8" rx="1.6" /><path d="M9.4 4.6V3a1.4 1.4 0 0 0-1.4-1.4H3A1.4 1.4 0 0 0 1.6 3v5A1.4 1.4 0 0 0 3 9.4h1.6" /></svg>
+            <span data-copy-label>Copy</span>
+          </button>
         </div>
+        <p class="install-note">Debian, RPM, Arch & AppImage · SHA-512 verified by the installer.</p>
       </div>
     </div>
-  </div>
-
-  <div class="hero-art" aria-hidden="true">
-    <Strata />
   </div>
 </section>

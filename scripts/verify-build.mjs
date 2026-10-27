@@ -103,17 +103,18 @@ check(
   document.querySelector('h1')?.textContent.toLowerCase().includes('strata'),
 );
 check('the hero install command is advertised', document.querySelector('.hero-install .quick-install-command code')?.textContent.includes('gitworkbench.github.io/install.sh'));
-check('the hero links to both releases and the repository', [...document.querySelectorAll('.hero-actions a')].some((a) => a.href.startsWith(releases)) && [...document.querySelectorAll('.hero-actions a')].some((a) => a.href.includes('workbench')));
+check('the hero links to downloads and the repository', document.querySelector('.hero-actions [data-download-recommended]')?.getAttribute('href') === '/#download' && [...document.querySelectorAll('.hero-actions a')].some((a) => a.href.includes('GitWorkbench/workbench')));
 check(
   'the hero install note names package formats',
   document.querySelector('.hero-install .install-note')?.textContent.includes('AppImage'),
 );
 
-// Hero strata art
-const heroArt = document.querySelector('.hero-art svg');
-check('hero renders the strata art', heroArt !== null);
-check('the strata art draws several commit lanes', [...heroArt?.querySelectorAll('path') ?? []].length >= 6);
-check('the strata art is decorative', heroArt?.getAttribute('aria-hidden') === 'true');
+// Real product previews are usable before client-side enhancement.
+const heroPreviews = [...document.querySelectorAll('[data-hero-panel]')];
+check('hero offers three real app previews', heroPreviews.length === 3);
+check('one hero preview is visible without JavaScript', heroPreviews.filter((panel) => !panel.hidden).length === 1);
+check('hero image is prioritized', heroPreviews[0]?.querySelector('img')?.getAttribute('fetchpriority') === 'high');
+check('hero preview controls have matching panels', [...document.querySelectorAll('[data-hero-tab]')].every((tab) => document.getElementById(tab.getAttribute('aria-controls'))));
 
 // Commit-log features
 const rows = [...document.querySelectorAll('.commit-log .commit-row')];
@@ -138,8 +139,7 @@ for (const image of galleryImages) {
     image.closest('a')?.getAttribute('href')?.startsWith('/assets/screenshots/'),
   );
 }
-check('hero screenshot loads eagerly', galleryImages[0]?.getAttribute('fetchpriority') === 'high');
-check('lower screenshots are lazy', galleryImages.slice(1).every((image) => image.getAttribute('loading') === 'lazy'));
+check('tour screenshots are lazy', galleryImages.every((image) => image.getAttribute('loading') === 'lazy'));
 for (const image of document.querySelectorAll('img')) {
   check('every image declares alt text', image.hasAttribute('alt'));
   check('every image declares its size', image.hasAttribute('width') && image.hasAttribute('height'));
@@ -180,15 +180,15 @@ if (snapshotTag) {
   // A release was baked at build time: links must be direct, verified assets.
   check(
     'baked release snapshots link to real release assets',
-    assetLinks.every((link) => link.getAttribute('href')?.startsWith(`https://github.com/GitWorkbench/workbench/releases/download/${snapshotTag}/`)),
+    assetLinks.every((link) => link.dataset.available === 'true' ? link.getAttribute('href')?.startsWith(`https://github.com/GitWorkbench/workbench/releases/download/${encodeURIComponent(snapshotTag)}/`) : link.getAttribute('href') === `${releases}/tag/${encodeURIComponent(snapshotTag)}`),
   );
   check(
     'each baked platform row uses a distinct asset',
-    new Set(assetLinks.map((link) => link.getAttribute('href'))).size === assetLinks.length,
+    new Set(assetLinks.filter((link) => link.dataset.available === 'true').map((link) => link.getAttribute('href'))).size === assetLinks.filter((link) => link.dataset.available === 'true').length,
   );
   check(
     'baked release assets display their size',
-    assetLinks.every((link) => /^\d+(\.\d+)? (B|KB|MB|GB)$/.test(link.querySelector('[data-download-size]')?.textContent.trim() ?? '')),
+    assetLinks.filter((link) => link.dataset.available === 'true').every((link) => /^\d+(\.\d+)? (B|KB|MB|GB)$/.test(link.querySelector('[data-download-size]')?.textContent.trim() ?? '')),
   );
   check('baked release version drives the badge', (document.getElementById('release-version')?.textContent ?? '').startsWith(snapshotTag));
   check('baked release notes link to the tag', document.getElementById('release-notes')?.getAttribute('href')?.endsWith(`/tag/${snapshotTag}`));
@@ -208,6 +208,9 @@ check(
 check('terminal install command is visible', document.querySelector('.install-terminal .quick-install-command code')?.textContent.includes('gitworkbench.github.io/install.sh'));
 check('copy buttons carry the full command', [...document.querySelectorAll('[data-copy]')].every((button) => (button.dataset.copy ?? '').includes('gitworkbench.github.io/install.sh')));
 check('installer source is linked for review', document.querySelector('.download-notes')?.textContent.includes('installer source'));
+
+check('FAQ opens with an answer visible', document.querySelectorAll('.faq details[open]').length === 1);
+check('FAQ works as a native exclusive accordion', [...document.querySelectorAll('.faq details')].every((item) => item.getAttribute('name') === 'workbench-faq'));
 
 // FAQ stays in sync with structured data
 const faqPage = jsonLd.find((data) => data['@type'] === 'FAQPage') ?? {};
@@ -230,7 +233,8 @@ check('404 page has a canonical URL', notFound.querySelector('link[rel="canonica
 // Crawling files
 const sitemap = read('sitemap.xml');
 check('sitemap is a urlset', sitemap.includes('xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'));
-check('sitemap lists the homepage once', (sitemap.match(/<loc>/g) ?? []).length === 1);
+check('sitemap lists the homepage once', (sitemap.match(new RegExp(`<loc>${canonical}</loc>`, 'g')) ?? []).length === 1);
+check('sitemap includes the feature and guide pages', sitemap.includes(`${canonical}features/commit-graph/`) && sitemap.includes(`${canonical}guides/getting-started/`));
 check('sitemap uses the production domain', sitemap.includes(`<loc>${canonical}</loc>`));
 const robots = read('robots.txt');
 check('robots allows crawling', /User-agent: \*\s+Allow: \//.test(robots));
@@ -288,7 +292,7 @@ for (const sheet of styleSheets) {
 }
 
 check('no insecure http:// links are published', !/http:\/\//.test(html));
-check('no remote scripts are loaded', ![...document.querySelectorAll('script[src]')].some((script) => /^https?:/.test(script.getAttribute('src') ?? '')));
+check('the only remote script is the requested async Google tag', [...document.querySelectorAll('script[src]')].filter((script) => /^https?:/.test(script.getAttribute('src') ?? '')).every((script) => script.getAttribute('src') === 'https://www.googletagmanager.com/gtag/js?id=G-0X03SJ62WK' && script.hasAttribute('async')));
 
 if (failures.length) {
   console.error(`\nWebsite build verification failed (${failures.length} check${failures.length === 1 ? '' : 's'}):\n`);

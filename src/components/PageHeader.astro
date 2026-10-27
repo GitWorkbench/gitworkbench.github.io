@@ -1,0 +1,13 @@
+---
+import Breadcrumbs from './Breadcrumbs.astro';
+import type { Breadcrumb } from '../data/schema';
+interface Props { eyebrow: string; heading: string; lead: string; breadcrumbs: Breadcrumb[] }
+const { eyebrow, heading, lead, breadcrumbs } = Astro.props;
+---
+<header class="page-header wrap">
+  <Breadcrumbs items={breadcrumbs} />
+  <p class="kicker"><span class="kicker-hash">{eyebrow}</span> // git workbench</p>
+  <h1>{heading}</h1>
+  <p class="page-lead">{lead}</p>
+  <slot />
+</header>

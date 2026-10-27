@@ -1,7 +1,9 @@
+import { detectPlatform } from './platform';
+
 /**
  * Progressive enhancements for the redesigned site. Every feature degrades
- * gracefully: without JavaScript the page renders statically, downloads stay
- * on their release-page fallbacks, and the theme preview simply keeps its
+ * gracefully: without JavaScript the page renders statically, downloads keep
+ * their build-time asset links, and the theme preview simply keeps its
  * default palette.
  */
 export function mountWebsite(root: Document = document): void {
@@ -12,6 +14,7 @@ export function mountWebsite(root: Document = document): void {
   mountCopyButtons(root);
   mountGalleryNavigation(root, root.defaultView);
   mountThemePreview(root);
+  mountHeroPreview(root);
   applyPlatform(root);
 }
 
@@ -289,20 +292,21 @@ function mountThemePreview(root: Document): void {
 /* ── Platform detection: downloads card + keyboard hint ────── */
 
 function applyPlatform(root: Document): void {
-  const platform =
-    (navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform ??
-    (navigator as Navigator & { platform?: string }).platform ??
-    '';
-  const detected = /mac/i.test(platform)
-    ? 'mac'
-    : /win/i.test(platform)
-      ? 'windows'
-      : /linux/i.test(platform) && !/android/i.test(navigator.userAgent)
-        ? 'linux'
-        : null;
+  const detected = detectPlatform();
 
   if (detected) {
     root.querySelector(`[data-platform="${detected}"]`)?.setAttribute('data-detected', 'true');
+    const recommended = root.querySelector<HTMLAnchorElement>('[data-download-recommended]');
+    const formats = { linux: 'AppImage', mac: 'dmg', windows: 'exe' };
+    const labels = { linux: 'Linux', mac: 'macOS', windows: 'Windows' };
+    const format = formats[detected];
+    const source = root.querySelector<HTMLAnchorElement>(`[data-platform="${detected}"] [data-download="${format}"]`);
+    if (recommended && source) {
+      recommended.dataset.download = format;
+      recommended.href = source.href;
+      const label = recommended.querySelector('[data-download-label]');
+      if (label) label.textContent = `Download for ${labels[detected]}`;
+    }
   }
 
   if (detected === 'mac') {
@@ -310,5 +314,43 @@ function applyPlatform(root: Document): void {
     const note = root.querySelector('[data-shortcut-note]');
     const container = root.querySelector('[data-shortcuts]');
     if (note instanceof HTMLElement && container) note.hidden = false;
+  }
+}
+
+/* ── Real app previews: keyboard-accessible tabs ───────────── */
+
+function mountHeroPreview(root: Document): void {
+  const list = root.querySelector<HTMLElement>('[data-hero-tabs]');
+  if (!list) return;
+  const tabs = [...list.querySelectorAll<HTMLButtonElement>('[data-hero-tab]')];
+  const panels = [...root.querySelectorAll<HTMLElement>('[data-hero-panel]')];
+  if (!tabs.length || panels.length !== tabs.length) return;
+
+  list.hidden = false;
+  for (const panel of panels) {
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', `preview-tab-${panel.dataset.heroPanel}`);
+    panel.tabIndex = 0;
+  }
+  const select = (selected: HTMLButtonElement) => {
+    for (const tab of tabs) {
+      tab.setAttribute('aria-selected', String(tab === selected));
+      tab.tabIndex = tab === selected ? 0 : -1;
+    }
+    for (const panel of panels) panel.hidden = panel.dataset.heroPanel !== selected.dataset.heroTab;
+  };
+  for (const tab of tabs) {
+    tab.addEventListener('click', () => select(tab));
+    tab.addEventListener('keydown', (event) => {
+      const index = tabs.indexOf(tab);
+      const next = event.key === 'Home' ? tabs[0]
+        : event.key === 'End' ? tabs[tabs.length - 1]
+        : event.key === 'ArrowRight' ? tabs[(index + 1) % tabs.length]
+        : event.key === 'ArrowLeft' ? tabs[(index - 1 + tabs.length) % tabs.length] : null;
+      if (!next) return;
+      event.preventDefault();
+      select(next);
+      next.focus();
+    });
   }
 }

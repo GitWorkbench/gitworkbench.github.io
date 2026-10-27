@@ -1,34 +1,38 @@
 ---
 import { FAQ, URLS } from '../data/site';
+interface Props { standalone?: boolean }
+const { standalone = false } = Astro.props;
+const Heading = standalone ? 'h1' : 'h2';
 ---
 
-<section id="faq" class="section">
-  <div class="wrap">
-    <header class="section-head" data-reveal>
-      <p class="kicker"><span class="kicker-hash">e05f73c</span> // annotations</p>
-      <h2>Questions reviewers<br />always ask.</h2>
-    </header>
+<section id="faq" class="section" aria-labelledby="faq-heading">
+  <div class="wrap faq-layout">
+    <div class="faq-intro" data-reveal>
+      <header class="section-head">
+        <p class="kicker"><span class="kicker-hash">e05f73c</span> // good to know</p>
+        <Heading id="faq-heading">{standalone ? <>Git Workbench.<br />Your questions, answered.</> : <>A little clarity.<br />Before you commit.</>}</Heading>
+        <p class="section-lead">The essentials on getting started, your existing setup, and keeping your code yours.</p>
+      </header>
+      <aside class="faq-help">
+        <span class="faq-help-icon" aria-hidden="true">?</span>
+        <h3>Still have a question?</h3>
+        <p>Go a little deeper in the docs, or start a conversation on GitHub.</p>
+        <a href={URLS.advanced}>Explore the guide <span aria-hidden="true">↗</span></a>
+        <a href={URLS.issues}>Ask on GitHub <span aria-hidden="true">↗</span></a>
+      </aside>
+    </div>
     <ul class="faq-list faq" data-reveal>
-      {
-        FAQ.map((entry) => (
-          <li>
-            <details>
-              <summary>
-                {entry.question}
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M6 3.5L10.5 8 6 12.5" />
-                </svg>
-              </summary>
-              <p>{entry.answer}</p>
-            </details>
-          </li>
-        ))
-      }
+      {FAQ.map((entry, index) => (
+        <li>
+          <details name="workbench-faq" open={index === 0}>
+            <summary>
+              <span class="faq-question">{entry.question}</span>
+              <span class="faq-toggle" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3 8h10" /><path class="faq-plus" d="M8 3v10" /></svg></span>
+            </summary>
+            <div class="faq-answer"><p>{entry.answer}</p></div>
+          </details>
+        </li>
+      ))}
     </ul>
-    <p class="themes-note" data-reveal>
-      Deeper questions are covered in the
-      <a href={URLS.advanced}>advanced workflows guide</a> and the
-      <a href={URLS.issues}>issue tracker</a>.
-    </p>
   </div>
 </section>

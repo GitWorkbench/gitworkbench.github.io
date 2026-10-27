@@ -1,0 +1,14 @@
+---
+interface Props { items: { label: string; description: string; href: string }[]; compact?: boolean }
+const { items, compact = false } = Astro.props;
+---
+<div class:list={['content-cards', { 'content-cards-compact': compact }]}>
+  {items.map((item, index) => (
+    <a class="content-card" href={item.href}>
+      <span class="content-card-index" aria-hidden="true">{String(index + 1).padStart(2, '0')} <span>↗</span></span>
+      <h3>{item.label}</h3>
+      <p>{item.description}</p>
+      <span class="content-card-link">Explore {item.label.toLowerCase()} <span aria-hidden="true">→</span></span>
+    </a>
+  ))}
+</div>

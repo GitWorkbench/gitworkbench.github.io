@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import ContentCards from '../../components/ContentCards.astro';
+import { FEATURE_PAGES } from '../../data/content';
+import { PAGE_META } from '../../data/pages';
+import { pageSchema, absolute } from '../../data/schema';
+const meta = PAGE_META.features;
+const breadcrumbs = [{label:'Home',href:'/'},{label:'Features',href:meta.path}];
+const items = FEATURE_PAGES.map((page) => ({label:page.label,description:page.description,href:`/features/${page.slug}/`}));
+const structuredData = [...pageSchema(meta.path, meta.title, meta.description, breadcrumbs, 'CollectionPage'), {'@context':'https://schema.org','@type':'ItemList',name:'Git Workbench features',itemListElement:items.map((item,index)=>({'@type':'ListItem',position:index+1,name:item.label,url:absolute(item.href)}))}];
+---
+<BaseLayout title={meta.title} description={meta.description} structuredData={structuredData}>
+  <PageHeader eyebrow="built for the whole workflow" heading="Know the history. Own the next change." lead="From your first staged hunk to a complex branch rewrite, the tools stay close to your code. Explore how each part works, and where its limits are." breadcrumbs={breadcrumbs} />
+  <section class="wrap page-content" aria-labelledby="feature-pages-heading"><h2 class="collection-heading" id="feature-pages-heading">A closer look at the workbench</h2><ContentCards items={items} /></section>
+  <section class="wrap capability-band"><div><p class="kicker">More room to work</p><h2>A workspace that fits your repositories.</h2><p>Switch between projects in tabs, pin status cards on Home, use a persistent terminal, and choose from nine themes with independent interface and code typography.</p></div><div><a class="text-link" href="/#themes">Preview the nine themes →</a><a class="text-link" href="/guides/advanced-git-workflows/">Explore commit splitting, stacks, LFS & sparse checkout →</a><a class="text-link" href="/guides/getting-started/">Set up your first workspace →</a></div></section>
+</BaseLayout>

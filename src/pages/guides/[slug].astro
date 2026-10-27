@@ -1,0 +1,9 @@
+---
+import ContentLayout from '../../layouts/ContentLayout.astro';
+import { GUIDE_PAGES } from '../../data/content';
+export function getStaticPaths() {
+  return GUIDE_PAGES.map((page) => ({params: {slug: page.slug}, props: {page}}));
+}
+const { page } = Astro.props;
+---
+<ContentLayout page={page} category="guides" />

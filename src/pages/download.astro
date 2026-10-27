@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Downloads from '../components/Downloads.astro';
+import { PAGE_META } from '../data/pages';
+import { pageSchema, softwareSchema } from '../data/schema';
+const meta = PAGE_META.download;
+const breadcrumbs = [{label:'Home',href:'/'},{label:'Download',href:meta.path}];
+---
+<BaseLayout title={meta.title} description={meta.description} structuredData={[...pageSchema(meta.path,meta.title,meta.description,breadcrumbs),softwareSchema]}>
+  <div class="wrap standalone-breadcrumbs"><Breadcrumbs items={breadcrumbs} /></div>
+  <Downloads standalone />
+  <section class="wrap download-help" aria-labelledby="download-help-heading"><h2 id="download-help-heading">A few things before your first launch.</h2><p>Install system Git before opening a repository. Linux releases target x86_64, macOS downloads are universal and unsigned, and Windows uses a 64-bit installer. Released packages do not need the Node.js source-build environment.</p><div class="page-actions"><a class="text-link" href="/guides/getting-started/">First-run setup guide →</a><a class="text-link" href="/guides/linux-installation/">Linux installation help →</a><a class="text-link" href="/faq/">Update and account questions →</a></div></section>
+</BaseLayout>

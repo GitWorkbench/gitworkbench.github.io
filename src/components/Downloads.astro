@@ -3,14 +3,18 @@ import snapshot from '../data/release-snapshot.json';
 import { assetUrl, findAsset, formatBytes, RELEASES_URL, type ReleaseAsset } from '../scripts/release';
 import { DOWNLOAD_FORMATS, INSTALL_COMMAND, URLS } from '../data/site';
 
+interface Props { standalone?: boolean }
+const { standalone = false } = Astro.props;
+const Heading = standalone ? 'h1' : 'h2';
+
 const linuxFormats = DOWNLOAD_FORMATS.filter((f) => ['AppImage', 'deb', 'rpm', 'pacman'].includes(f.format));
 const macFormats = DOWNLOAD_FORMATS.filter((f) => ['dmg', 'zip'].includes(f.format));
 const winFormats = DOWNLOAD_FORMATS.filter((f) => f.format === 'exe');
 
 const platforms = [
-  { id: 'linux', name: 'linux', meta: 'x86_64 · 4 formats', formats: linuxFormats, note: null },
-  { id: 'mac', name: 'macos', meta: 'Intel + Apple silicon', formats: macFormats, note: 'Unsigned builds — install and update manually from the release page.' },
-  { id: 'windows', name: 'windows', meta: 'NSIS installer', formats: winFormats, note: 'Supports in-app software updates.' },
+  { id: 'linux', name: 'Linux', meta: 'Intel / AMD 64-bit', formats: linuxFormats, note: 'AppImage for any distribution, or a package for your system.' },
+  { id: 'mac', name: 'macOS', meta: 'Universal · Intel + Apple silicon', formats: macFormats, note: 'Unsigned builds — install and update manually from the release page.' },
+  { id: 'windows', name: 'Windows', meta: '64-bit · NSIS installer', formats: winFormats, note: 'Supports in-app software updates.' },
 ] as const;
 
 /**
@@ -41,58 +45,42 @@ const baked = platforms.map((platform) => ({
   <div class="wrap">
     <header class="section-head" data-reveal>
       <p class="kicker"><span class="kicker-hash">7e9f1a3</span> // checkout</p>
-      <h2>Get the binary.<br />Keep the package manager.</h2>
+      <Heading>{standalone ? 'Download Git Workbench.' : <>Your next commit<br />starts here.</>}</Heading>
       <p class="section-lead">
-        The one-liner below resolves your distribution and hands off to its package manager —
-        checksums verified, prompt intact.
+        One workbench, every desktop. Pick your platform and get straight to work.
+        Free to use, with your existing Git setup.
       </p>
     </header>
 
-    <div class="install-terminal" data-reveal>
-      <div class="terminal-head">
-        <span class="mock-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-        <span>bash — one-line install</span>
+    <div class="release-bar" data-reveal>
+      <div class="release-summary">
+        <span class="release-stable">Stable release</span>
+        <a id="release-version" href={releaseUrl}>{tag || 'View on GitHub'}</a>
+        <a id="release-notes" class="release-notes-link" href={releaseUrl}>What's new <span aria-hidden="true">↗</span></a>
       </div>
-      <div class="quick-install-command">
-        <code id="terminal-command" tabindex="0" aria-label="Install command, horizontally scrollable"><span>curl -fsSL </span>{INSTALL_COMMAND.replace('curl -fsSL ', '').replace(' | bash', '')}<span> | bash</span></code>
-        <button class="copy-btn" type="button" data-copy={INSTALL_COMMAND} aria-label="Copy the Linux install command">
-          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="4.6" y="4.6" width="8" height="8" rx="1.6" />
-            <path d="M9.4 4.6V3a1.4 1.4 0 0 0-1.4-1.4H3A1.4 1.4 0 0 0 1.6 3v5A1.4 1.4 0 0 0 3 9.4h1.6" />
-          </svg>
-          <span data-copy-label>Copy</span>
-        </button>
-      </div>
+      <p id="release-status" class="release-status" role="status" aria-live="polite" data-release-snapshot={tag || undefined} data-state={tag ? 'ready' : 'fallback'}>
+        {tag ? 'Ready for your next commit.' : 'Find available builds on GitHub Releases.'}
+      </p>
     </div>
-
-    {
-      tag ? (
-        <p
-          id="release-status"
-          class="release-status"
-          role="status"
-          aria-live="polite"
-          data-release-snapshot={tag}
-          data-state="ready"
-          data-reveal
-        >
-          Links point directly to stable assets of <strong>{tag}</strong>, baked at build time — JavaScript
-          refreshes them against the live release when GitHub allows.
-        </p>
-      ) : (
-        <p id="release-status" class="release-status" role="status" aria-live="polite" data-state="fallback" data-reveal>
-          Downloads link to the public release page. Live tracking is refreshed when JavaScript and the
-          GitHub API both allow.
-        </p>
-      )
-    }
 
     <div class="platform-list">
       {
         baked.map((platform) => (
           <article class="platform-row" data-platform={platform.id} data-reveal>
             <div class="platform-meta">
-              <h3 class="platform-name">{platform.name}</h3>
+              <div class="platform-heading">
+                <span class="platform-icon" aria-hidden="true">
+                  {platform.id === 'linux' ? (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 7 5 5-5 5m8 0h6" /></svg>
+                  ) : platform.id === 'mac' ? (
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.8 12.7c0-2 1.7-3.1 1.8-3.2-1-1.4-2.5-1.6-3-1.6-1.3-.2-2.5.8-3.2.8-.7 0-1.7-.8-2.8-.7-1.5 0-2.9.9-3.7 2.2-1.6 2.7-.4 6.8 1.1 9 .7 1 1.6 2.2 2.7 2.1 1.1 0 1.5-.7 2.9-.7 1.3 0 1.7.7 2.9.7 1.2 0 1.9-1.1 2.6-2.1.8-1.2 1.1-2.3 1.1-2.4-.1 0-2.4-.9-2.4-4.1ZM14.6 6.4c.6-.8 1.1-1.9 1-2.9-.9 0-2 .6-2.7 1.4-.6.7-1.2 1.8-1 2.8 1 .1 2.1-.5 2.7-1.3Z" /></svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="m3 5 8-1v7H3V5Zm10-1.3L22 2v9h-9V3.7ZM3 13h8v7l-8-1v-6Zm10 0h9v9l-9-1.7V13Z" /></svg>
+                  )}
+                </span>
+                <h3 class="platform-name">{platform.name}</h3>
+                <span class="platform-detected">Your platform</span>
+              </div>
               <small>{platform.meta}</small>
             </div>
             <div>
@@ -103,9 +91,9 @@ const baked = platforms.map((platform) => ({
                     href={row.url}
                     data-download={row.format.format}
                     data-available={row.available ? 'true' : undefined}
-                    title={row.available && row.size ? `Download (${row.size}, verified SHA-512 by the installer)` : 'View this release for available builds'}
+                    title={row.available ? `Download ${row.format.label}${row.size ? ` (${row.size})` : ''}` : 'View this release for available builds'}
                   >
-                    {row.format.label}
+                    <span class="asset-name">{row.format.label}<small data-download-availability>{row.available ? 'Direct download' : 'View release'}</small></span>
                     <span data-download-size>{row.size}</span>
                     <svg class="asset-spacer" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="M4 10L10 4M5.5 4H10v4.5" />
@@ -120,11 +108,28 @@ const baked = platforms.map((platform) => ({
       }
     </div>
 
+    <div class="linux-install" data-reveal>
+      <div class="linux-install-heading"><h3>On Linux? Let your terminal handle it.</h3><p>Detects your distribution and verifies SHA-512 checksums before installing.</p></div>
+      <div class="install-terminal">
+        <div class="terminal-head">
+          <span class="mock-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>bash — one-line install</span>
+        </div>
+        <div class="quick-install-command">
+          <code id="terminal-command" tabindex="0" aria-label="Install command, horizontally scrollable"><span>curl -fsSL </span>{INSTALL_COMMAND.replace('curl -fsSL ', '').replace(' | bash', '')}<span> | bash</span></code>
+          <button class="copy-btn" type="button" data-copy={INSTALL_COMMAND} aria-label="Copy the Linux install command">
+            <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="4.6" y="4.6" width="8" height="8" rx="1.6" />
+              <path d="M9.4 4.6V3a1.4 1.4 0 0 0-1.4-1.4H3A1.4 1.4 0 0 0 1.6 3v5A1.4 1.4 0 0 0 3 9.4h1.6" />
+            </svg>
+            <span data-copy-label>Copy</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <ul class="download-notes">
-      <li>
-        Latest release: <a id="release-version" href={releaseUrl}>{tag || 'view on GitHub'}</a>
-      </li>
-      <li><a id="release-notes" href={releaseUrl}>Release notes</a></li>
+      <li><a href={URLS.releases}>All releases</a></li>
       <li><a href={URLS.installerSource}>Read the installer source</a></li>
     </ul>
   </div>

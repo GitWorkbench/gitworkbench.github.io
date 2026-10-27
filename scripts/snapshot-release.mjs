@@ -38,7 +38,7 @@ if (process.env.GITHUB_TOKEN) {
 }
 
 try {
-  const response = await fetch(endpoint, { headers });
+  const response = await fetch(endpoint, { headers, signal: AbortSignal.timeout(10_000) });
   if (!response.ok) {
     console.log(`Release snapshot: GitHub answered ${response.status} — keeping the existing snapshot.`);
     process.exit(0);
@@ -56,14 +56,14 @@ try {
         .filter((entry) => entry.name && validAsset(entry.browser_download_url))
     : [];
 
-  if (!tag.startsWith('v') || assets.length === 0) {
+  if (release.draft || release.prerelease || !tag.startsWith('v') || assets.length === 0) {
     console.log('Release snapshot: response unusable (no stable tag or assets) — keeping the existing snapshot.');
     process.exit(0);
   }
 
   const snapshot = {
     tag,
-    url: `${REPOSITORY ? `https://github.com/${REPOSITORY}/releases` : ''}/tag/${encodeURIComponent(tag)}`,
+    url: `https://github.com/${REPOSITORY}/releases/tag/${encodeURIComponent(tag)}`,
     generatedAt: new Date().toISOString(),
     assets,
   };

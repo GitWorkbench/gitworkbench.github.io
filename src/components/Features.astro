@@ -3,16 +3,17 @@ import { FEATURES } from '../data/site';
 
 const lane = ['#38bdf8', '#a78bfa', '#34d399', '#fbbf24'];
 const hashes = ['a1f3c2d', 'b7e94f0', 'c3d8a15', 'd92b6e4', 'e05f73c', 'f18a2b9', '4c2d5e8', '7e9f1a3', '08b4c62', '31c7d64', '9b50e2f', '6d81f47'];
+const links = ['/features/commit-graph/', '/features/staging-and-diffs/', '/features/merge-conflicts/', '/features/pull-request-reviews/', '/features/pull-request-reviews/', '/#themes', '/guides/getting-started/', '/features/restore-points/', '/features/ai-assistance/', '/features/commit-graph/', '/guides/', '/guides/advanced-git-workflows/'];
 ---
 
 <section id="features" class="section">
   <div class="wrap">
     <header class="section-head" data-reveal>
       <p class="kicker"><span class="kicker-hash">a1f3c2d</span> // features</p>
-      <h2>Every feature is<br />a commit in the log.</h2>
+      <h2>Your Git workflow.<br />All in one workbench.</h2>
       <p class="section-lead">
-        Twelve commits shaped this workbench. Read the log the way you read the app: lanes branch,
-        merge, and keep going. One of them is you.
+        Read branch history, review a patch, resolve a conflict, and recover a change.
+        Explore the tools behind each part of your day.
       </p>
     </header>
 
@@ -23,7 +24,7 @@ const hashes = ['a1f3c2d', 'b7e94f0', 'c3d8a15', 'd92b6e4', 'e05f73c', 'f18a2b9'
             <span class="commit-dot" aria-hidden="true"></span>
             <span class="commit-hash" aria-hidden="true">{hashes[index]}</span>
             <div class="commit-body">
-              <h3>{feature.title}</h3>
+              <h3><a href={links[index]}>{feature.title} <span aria-hidden="true">↗</span></a></h3>
               <p>{feature.description}</p>
               <p class="commit-detail">{feature.detail}</p>
             </div>
@@ -31,5 +32,6 @@ const hashes = ['a1f3c2d', 'b7e94f0', 'c3d8a15', 'd92b6e4', 'e05f73c', 'f18a2b9'
         ))
       }
     </ol>
+    <p class="section-more"><a class="text-link" href="/features/">Explore the feature guides →</a><a class="text-link" href="/guides/getting-started/">New here? Start with the setup guide →</a></p>
   </div>
 </section>

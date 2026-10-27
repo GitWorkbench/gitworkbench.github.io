@@ -1,124 +1,105 @@
 # Git Workbench website
 
-The official website at **https://gitworkbench.github.io/**, built with [Astro](https://astro.build/) and deployed to GitHub Pages by GitHub Actions.
+The official website at **https://gitworkbench.github.io/**, built with Astro and deployed as static files to GitHub Pages. The desktop application lives in [GitWorkbench/workbench](https://github.com/GitWorkbench/workbench).
 
-This repository owns the complete website source, screenshots, tests, and deployment. The desktop application is maintained separately in [GitWorkbench/workbench](https://github.com/GitWorkbench/workbench).
+## Develop and validate
 
-## Develop
-
-Use Node.js 24 (or 22.23.4+) and npm:
+Use Node.js 24 (or 22.23.4+) and npm with the committed lockfile:
 
 ```bash
 npm ci
 npm run dev          # http://localhost:4321
+npm run check        # Astro and TypeScript
+npm run build        # static output in dist/
+npm run preview      # preview the production build
+npm test             # release loader and UI behavior
+npm run test:build   # built content, links, SEO, sitemap, and analytics
+npm run verify       # all of the above checks and build
 ```
 
-The production build is static, so there is no server runtime:
+`npm run build` first refreshes the release snapshot. Offline or rate-limited local builds keep the committed working snapshot. CI supplies `GITHUB_TOKEN` for the public lookup. No token is sent to the visitor.
 
-```bash
-npm run check        # Astro + TypeScript diagnostics
-npm run build        # writes dist/
-npm run preview      # serves the built site
-npm test             # unit tests for the release loader and UI behaviour
-npm run test:build   # validates the generated HTML, SEO, assets, and sitemap
-npm run verify       # check + build + both test suites
-```
+## Pages and content
 
-Run `npm run verify` before pushing. CI runs the same checks and will not publish a failing build.
+There are 17 indexable pages, plus a noindex 404:
+
+- `/` — product overview, interactive app previews, feature links, themes, workflow, downloads, and FAQ.
+- `/features/` — feature hub with six detailed pages: commit graph, staging and diffs, merge conflicts, hosted reviews, restore points, and optional AI.
+- `/guides/` — practical guides for getting started, Linux installation, advanced Git workflows, and building the desktop app from source.
+- `/download/` — stable installers, file sizes, platform suggestion, and installation help.
+- `/faq/`, `/about/`, `/privacy/` — product answers, project information, and website data handling.
+
+Feature and guide copy is maintained in `src/data/content.ts`. It is based on the organization's profile README, the application README, and its first-run and advanced workflow documentation. Each detail page links to its maintained source. Keep prerequisites, supported platforms, provider limits, and recovery caveats accurate when updating copy.
+
+`src/data/pages.ts` provides the indexable route inventory and collection-page metadata. When adding a new standalone route, add it to this inventory; the build checks compare it with the real HTML output. Do not add the 404 page to the sitemap.
+
+The homepage FAQ and `/faq/` use `src/data/site.ts` as a shared source for visible answers and FAQ structured data. Navigation, release formats, shortcuts, palettes, and product URLs also live there.
 
 ## Project structure
 
 ```text
 src/
-  components/       Header, footer, and each homepage section
-                    (Strata.astro is the hero art, Seo.astro the meta block)
-  data/site.ts      Product copy, navigation, features, FAQ, URLs
-  layouts/          BaseLayout.astro (document shell and fonts)
-  pages/
-    index.astro     Homepage and structured data
-    404.astro       Styled not-found page (noindex)
-    robots.txt.ts   Generated robots.txt
-    sitemap.xml.ts  Generated sitemap.xml
-  scripts/
-    release.ts      GitHub Releases lookup and safe asset selection
-    ui.ts           Navigation, scroll progress, scrollspy, reveal-on-scroll,
-                    copy buttons, gallery arrows, theme previewer, platform keys
-  styles/global.css Design tokens, layout, and responsive rules
-  assets/           Source screenshots processed by Astro
-public/
-  assets/           Stable icon, screenshot originals, and social image
-  install.sh        Linux one-line installer wrapper
-  .nojekyll         Keeps GitHub Pages from running Jekyll
-scripts/
-  verify-build.mjs  Post-build quality gate
-tests/              Vitest suites
+  components/       Shared navigation, analytics, SEO, breadcrumbs, cards,
+                    page headers, and homepage sections
+  data/
+    content.ts      Feature and guide documents, references, related pages
+    pages.ts        Public page inventory and collection metadata
+    schema.ts       Software, FAQ, page, article, and breadcrumb JSON-LD
+    site.ts         Product facts, navigation, FAQ, themes, and URLs
+    release-snapshot.json  Last saved stable release assets
+  layouts/          BaseLayout and the shared content-reading layout
+  pages/            Static routes, sitemap.xml, robots.txt, and 404
+  scripts/          Global UI, platform suggestion, and live release lookup
+  styles/           Shared design system and three local variable fonts
+  assets/           Screenshots processed by Astro
+public/             Stable image originals, install.sh, and .nojekyll
+scripts/            Release snapshot and production-output verification
+tests/              Vitest interaction and release tests
 ```
 
-Edit product copy in `src/data/site.ts` — it drives navigation, features, workflow steps, keyboard shortcuts, themes, FAQ, and download formats. Section markup lives in `src/components/` and the page composition in `src/pages/index.astro`. Keep the FAQ in `src/data/site.ts` as the single source of truth: the visible accordion and the FAQPage structured data are generated from it.
+## SEO and performance
 
-## Design system
+Every public page has its own title, description, canonical trailing-slash URL, Open Graph and Twitter metadata, and semantic main heading. Inner pages have visible breadcrumbs and matching BreadcrumbList data. Guide details use TechArticle; the homepage and downloads describe the SoftwareApplication, and FAQ markup is generated from the visible answers. Ratings and modification dates are not invented. Structured data does not guarantee a search feature or ranking.
 
-The site is a concept piece: **the page itself reads like a repository history**. Colors and fonts still come straight from the desktop application's Tailwind theme (onyx surfaces, `#38bdf8` electric cyan diff-lane colors), with Inter (body), Outfit (display), and JetBrains Mono (labels, hashes, chips), all self-hosted via Fontsource. Tokens live in `src/styles/global.css`.
+`/sitemap.xml` lists every indexable canonical page. `/robots.txt` allows crawling and links to that sitemap. The custom 404 is noindex. Footer links, feature links, related pages, and guide hubs keep the content discoverable without client-side routing.
 
-The homepage sections carry that idea through:
+Astro renders the content to HTML without a client framework. Shared styles are external and cacheable across pages. Only the Latin subsets of Inter, Outfit, and JetBrains Mono are shipped; the display font is preloaded and all fonts use swap. Screenshots have dimensions, AVIF/WebP variants, responsive sizes, and descriptive alt text. The initial hero screenshot is prioritized; lower screenshots load lazily. The release module is requested only on pages with download controls. Keyboard navigation, reduced motion, and JavaScript-disabled reading and navigation are supported.
 
-- `Hero` — oversized editorial headline with `Strata.astro`, an abstract SVG commit-lane field that bleeds off the page edge, plus the install one-liner;
-- `Features` — the bento grid is gone: nine features render as a **commit log**, each row a lane dot, a short hash, a title, and its description;
-- `Tour` — scroll-snap strip of real screenshots;
-- `ThemeGallery` — live previewer for the app's nine palettes;
-- `Workflow` — steps read as a **reflog** (`HEAD@{3}` → `HEAD@{0}`) plus keyboard shortcut chips;
-- `Downloads` — platform rows (`linux` / `macos` / `windows`) with per-format asset links;
-- `Faq` — hairline accordion; `OpenSource` — a merge-band visual (two lanes merging into one node) instead of a diagram;
-- A 1px "history rail" runs the full page height on wide screens, and every section pins a commit node onto it.
+`npm run test:build` checks metadata uniqueness, canonical URLs, schema/visible-content agreement, every internal page and fragment link, sitemap completeness, image assets, font files, Google tag placement, and unexpected third-party scripts. It also verifies the homepage's download fallbacks and interactions' required markup.
 
-## SEO and discoverability
+Before publishing, review a phone, tablet, and desktop viewport. Browser tests should include feature-card navigation, the reading page's table of contents, mobile navigation, hero tabs, and download links.
 
-Every page goes through `src/components/Seo.astro`, which renders:
+## Google Analytics and Search Console
 
-- a unique title, meta description, canonical URL, and robots directives;
-- Open Graph and Twitter/X large-image metadata with an absolute 1440×900 social image;
-- JSON-LD for `SoftwareApplication`, `WebSite`, `FAQPage`, and an `ItemList` of the nine theme palettes, kept in sync with visible content;
-- a mobile-friendly viewport, theme color, icon, and sitemap link.
+`src/components/Analytics.astro` loads the requested asynchronous Google tag and initializes **G-0X03SJ62WK** once per page in production builds, including the 404. Development builds omit it. The standard tag sends automatic page views; this site does not add custom event handlers or a client-side router that would duplicate them. The website privacy page describes this setup.
 
-`src/pages/sitemap.xml.ts` and `src/pages/robots.txt.ts` publish crawl files from the configured `site` in `astro.config.mjs`. The 404 page is `noindex, follow`.
+After deploying, use Google Analytics Realtime or [Tag Assistant](https://tagassistant.google.com/) to verify actual collection. A production build verifies the markup; it cannot prove that the Analytics property received a hit.
 
-The social image is `public/assets/screenshots/history.jpg`, so it keeps a stable URL. Update `og:image` metadata in `Seo.astro` if its dimensions change. After changing page copy, run `npm run test:build` to catch metadata drift.
+For Google Search Console:
 
-## Responsive and accessible design
+1. Add or open the URL-prefix property `https://gitworkbench.github.io/`.
+2. If using HTML-tag verification, copy only its token into the repository's Actions variable `PUBLIC_GOOGLE_SITE_VERIFICATION`. The build workflow passes this public value to the shared metadata component. `.env.example` documents the same optional local setting.
+3. Deploy the site, verify the property, then submit `https://gitworkbench.github.io/sitemap.xml`.
+4. Inspect the homepage, feature hub, and a guide URL using URL Inspection. Use the live deployed URLs when checking rendered markup and structured data.
 
-The layout is mobile-first-friendly with fluid spacing and typography (`clamp()`), wrapping grids (`auto-fit` and `minmax()`), and breakpoints at 1080px, 880px, 600px, and 440px. The navigation collapses into a labelled menu button; the screenshot gallery scroll-snaps with arrow-button help; theme swatches support arrow-key movement like a radio group; copy and install commands are focusable and keyboard-operable. Reduced-motion preferences are respected, all images declare dimensions to avoid layout shift, and the page remains usable without JavaScript.
-
-The theme previewer guarantees readable chips in every palette: `ui.ts` computes white or black ink (`--pv-chip`) against each palette's accent-tinted chip surface so text always clears 4.5:1.
-
-Before publishing, review the page at roughly 360px, 768px, 1024px, and 1440px wide.
-
-## Screenshots
-
-Screenshots are captured directly from the desktop app using disposable demo repositories and fictional identities. Review every new capture for secrets and personal data.
-
-Replace a screenshot in both places:
-
-1. `src/assets/screenshots/` — Astro generates AVIF, WebP, and JPEG variants at several widths.
-2. `public/assets/screenshots/` — stable original used by the full-size link and social metadata.
-
-Keep the 1440×900 aspect ratio and update the alt text or dimensions in `src/components/Tour.astro` if it changes. The build check verifies descriptive alt text, dimensions, and modern image formats.
+The Analytics measurement ID is not a Search Console HTML verification token. Search Console ownership, sitemap submission, and external indexing are account/deployment actions; they are not performed by the local build.
 
 ## Downloads
 
-The build tracks the app's latest stable release itself. `scripts/snapshot-release.mjs` runs as `prebuild` and snapshots the release from the GitHub API (authenticated works best; the deploy workflow already carries `GITHUB_TOKEN`) into `src/data/release-snapshot.json`. Every platform row in `Downloads.astro` is then rendered with the real, direct asset URL and its file size in the server HTML — so the links work even with JavaScript off, and never degrade to one generic releases URL when the visitor's browser hits the API's rate limit.
+`scripts/snapshot-release.mjs` snapshots the latest public stable release into `src/data/release-snapshot.json` before building. Its bounded request excludes drafts and prereleases and keeps the saved snapshot on failure. The committed snapshot is seeded from the v1.3.4 installers and public update manifests.
 
-On page load `src/scripts/release.ts` still re-checks the API and refreshes the links, sizes, and release notes if a newer release shipped since the last build. When that live check fails, the baked links are kept — the status region only reports the refresh failed, it never rolls the download URLs back to the release page.
+The HTML contains direct installer links and sizes even without JavaScript. On load, the download pages request public release metadata and refresh the version, notes, sizes, availability labels, and asset URLs. Failed requests leave the saved links intact. Missing formats in a valid release link to that release page and say “View release”. Only public assets under `https://github.com/GitWorkbench/workbench/releases/download/` are accepted.
 
-Asset URLs are allowlisted to `https://github.com/GitWorkbench/workbench/releases/download/`. Drafts, prereleases, missing assets, and slow requests all fall back to the release page. No API data is ever rendered as markup. Current Linux builds are x86_64.
+Desktop platform detection highlights a card and suggests an AppImage, universal DMG, or Windows installer in the hero. Mobile visitors retain the platform chooser. All platform cards remain available. Current official Linux binaries are x86_64.
 
-## Deployment
+The public installer wrapper verifies SHA-512 through the canonical Linux installer before invoking the selected package manager. macOS releases are unsigned and updated manually. Review the installer source or follow the Linux guide for details.
 
-Push reviewed changes to `main`. The workflow in `.github/workflows/pages.yml`:
+## Screenshots
 
-1. installs dependencies and runs `astro check`, the build, unit tests, and the build verification;
-2. uploads `dist/` as the GitHub Pages artifact;
-3. deploys it to the `github-pages` environment.
+Demo captures use fictional repositories and identities. To replace a capture, update both `src/assets/screenshots/` (optimized variants) and `public/assets/screenshots/` (stable full-size links and social images). Keep 1440×900 dimensions, and update alt text if the content changes.
 
-Repository settings must use **GitHub Actions** as the Pages source. The build job needs only read access; the deploy job receives `pages: write` and `id-token: write`.
+## GitHub Pages deployment
 
-App releases remain at [GitWorkbench/workbench/releases](https://github.com/GitWorkbench/workbench/releases). The published installer wrapper at `https://gitworkbench.github.io/install.sh` fetches the canonical Linux installer, verifies package SHA-512 against the release feed, then hands off to the system package manager.
+Set the repository's Pages source to **GitHub Actions**, then push reviewed changes to `main`. `.github/workflows/pages.yml` validates the source, builds, runs both test suites and output checks, uploads `dist/`, and deploys to the `github-pages` environment. Build permissions are read-only; deployment receives `pages: write` and `id-token: write`.
+
+The workflow also rebuilds daily at 03:23 UTC to refresh static release links, supports manual runs, and accepts an `app-release` repository dispatch. The separate application's release publisher must send that dispatch for an immediate static refresh; releases in another repository do not automatically trigger this website workflow. Browser release checks run independently.

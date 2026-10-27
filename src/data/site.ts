@@ -1,7 +1,7 @@
 export const SITE = {
   name: 'Git Workbench',
   url: 'https://gitworkbench.github.io',
-  title: 'Git Workbench: Visual Commit Graph Git Client',
+  title: 'Git Workbench — Free Git GUI for Linux, macOS & Windows',
   description:
     'An open-source desktop Git client that renders history as commit strata, with hunk-level staging, a three-pane merge editor, PR reviews, and safe recovery.',
   tagline: 'Complex Git history, rendered as clear strata.',
@@ -32,17 +32,17 @@ export const URLS = {
 export const INSTALL_COMMAND = 'curl -fsSL https://gitworkbench.github.io/install.sh | bash';
 
 export const NAVIGATION = [
-  { label: 'Features', href: '/#features' },
-  { label: 'Tour', href: '/#tour' },
+  { label: 'Features', href: '/features/' },
+  { label: 'Guides', href: '/guides/' },
   { label: 'Themes', href: '/#themes' },
-  { label: 'Workflow', href: '/#how-it-works' },
-  { label: 'Install', href: '/#download' },
+  { label: 'FAQ', href: '/faq/' },
+  { label: 'Download', href: '/download/' },
 ] as const;
 
 export const HERO = {
   eyebrow: 'Free and open source · MIT licensed',
   lead:
-    'Git Workbench is a desktop Git client for Linux, macOS, and Windows that maps your history as colored commit strata — and keeps staging, merging, reviewing, and recovery one keystroke away. It drives your system git, so hooks, SSH keys, GPG signing, and .gitconfig keep working untouched.',
+    'See the whole story of your code. Follow every branch, stage the right changes, and resolve conflicts in a workspace that feels like your own. Your Git setup comes with you.',
 } as const;
 
 export interface Feature {

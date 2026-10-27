@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Refresh the static download links even when the website has no new commits.
+  schedule:
+    - cron: '23 3 * * *'
+  repository_dispatch:
+    types: [app-release]
 
 permissions:
   contents: read
@@ -19,8 +24,6 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-      pages: write
-      id-token: write
     steps:
       - name: Check out website
         uses: actions/checkout@v6
@@ -37,6 +40,9 @@ jobs:
         run: npm run check
       - name: Build static site
         run: npm run build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.PUBLIC_GOOGLE_SITE_VERIFICATION }}
       - name: Run unit tests
         run: npm test
       - name: Verify built output

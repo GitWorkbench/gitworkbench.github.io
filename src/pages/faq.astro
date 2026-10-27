@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faq from '../components/Faq.astro';
+import { PAGE_META } from '../data/pages';
+import { pageSchema, faqSchema } from '../data/schema';
+const meta = PAGE_META.faq;
+const breadcrumbs = [{label:'Home',href:'/'},{label:'FAQ',href:meta.path}];
+---
+<BaseLayout title={meta.title} description={meta.description} structuredData={[...pageSchema(meta.path,meta.title,meta.description,breadcrumbs),faqSchema]}>
+  <div class="wrap standalone-breadcrumbs"><Breadcrumbs items={breadcrumbs} /></div>
+  <Faq standalone />
+  <p class="wrap section-more"><a class="text-link" href="/guides/">Browse the practical guides →</a><a class="text-link" href="/download/">Find your desktop download →</a></p>
+</BaseLayout>

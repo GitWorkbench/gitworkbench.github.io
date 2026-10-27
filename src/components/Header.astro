@@ -13,7 +13,7 @@ import { NAVIGATION, SITE } from '../data/site';
         {
           NAVIGATION.map((item) => (
             <li>
-              <a href={item.href}>{item.label}</a>
+              <a href={item.href} aria-current={!item.href.includes('#') && Astro.url.pathname.startsWith(item.href) ? 'page' : undefined}>{item.label}</a>
             </li>
           ))
         }
@@ -41,7 +41,7 @@ import { NAVIGATION, SITE } from '../data/site';
 
 <noscript>
   <div class="wrap noscript-notice" role="note">
-    JavaScript is off: this site stays fully readable, but the theme previewer and direct download
-    links stay on their safe fallbacks.
+    JavaScript is off: downloads and FAQs still work. Enable JavaScript for interactive previews
+    and live release updates.
   </div>
 </noscript>

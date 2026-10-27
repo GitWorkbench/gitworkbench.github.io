@@ -100,9 +100,8 @@ interface ReleaseResponse {
 }
 
 /**
- * Progressive enhancement: without JavaScript every download link already
- * points at the release page, and this only upgrades those links to direct
- * assets once a valid public release has been confirmed.
+ * Keep the build's working links until a public stable release is confirmed.
+ * Public GitHub metadata needs no token in the visitor's browser.
  */
 export async function loadRelease(
   root: Document = document,
@@ -156,6 +155,7 @@ export async function loadRelease(
     const releaseUrl = `${RELEASES_URL}/tag/${encodeURIComponent(tag)}`;
 
     badge.textContent = tag.slice(0, 40);
+    badge.setAttribute('href', releaseUrl);
     releaseNotes?.setAttribute('href', releaseUrl);
 
     const updateDownloads = () => {
@@ -174,6 +174,8 @@ export async function loadRelease(
 
         const size = link.querySelector<HTMLElement>('[data-download-size]');
         if (size) size.textContent = asset ? formatBytes(asset.size) : '';
+        const availability = link.querySelector<HTMLElement>('[data-download-availability]');
+        if (availability) availability.textContent = url ? 'Direct download' : 'View release';
 
         if (url) available += 1;
       }
@@ -191,7 +193,7 @@ export async function loadRelease(
     // release (snapshot baked at build time). Never degrade those to the
     // generic releases page just because the live API is rate-limited.
     if (status.dataset.releaseSnapshot) {
-      status.textContent = `Showing the stable release known at build time (${status.dataset.releaseSnapshot}); the live refresh is unavailable just now.`;
+      status.textContent = `Downloads available · ${status.dataset.releaseSnapshot}. Live update check unavailable.`;
     } else {
       status.textContent = 'Live release details are unavailable. Open GitHub Releases to download.';
       status.dataset.state = 'fallback';
