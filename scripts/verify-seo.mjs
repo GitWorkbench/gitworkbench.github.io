@@ -24,7 +24,7 @@ for (const file of htmlFiles) {
   const canonical = document.querySelector('link[rel="canonical"]')?.href;
   const prefix = `${route}: `;
   check(prefix + 'one canonical URL', document.querySelectorAll('link[rel="canonical"]').length === 1 && canonical === origin + route);
-  check(prefix + 'advertises the official sitemap index', document.querySelector('link[rel="sitemap"]')?.getAttribute('href') === '/sitemap-index.xml');
+  check(prefix + 'advertises the flat sitemap', document.querySelector('link[rel="sitemap"]')?.getAttribute('href') === '/sitemap.xml');
   check(prefix + 'one descriptive h1', document.querySelectorAll('main h1').length === 1 && document.querySelector('main h1').textContent.trim().length > 10);
   check(prefix + 'English document', document.documentElement.lang === 'en');
   check(prefix + 'mobile viewport', /width=device-width/.test(meta('meta[name="viewport"]')));
@@ -103,6 +103,7 @@ for (const [route, document] of pages) {
   }
 }
 const indexXml = readFileSync(path.join(dist, 'sitemap-index.xml'), 'utf8');
+const flatXml = readFileSync(path.join(dist, 'sitemap.xml'), 'utf8');
 const sitemapIndex = new JSDOM(indexXml, {contentType: 'application/xml'}).window.document;
 const sitemapLocations = [...sitemapIndex.querySelectorAll('sitemap > loc')].map((node) => node.textContent);
 check('official sitemap index is valid and nonempty', sitemapIndex.documentElement.localName === 'sitemapindex' && sitemapIndex.documentElement.namespaceURI === 'http://www.sitemaps.org/schemas/sitemap/0.9' && sitemapLocations.length > 0 && new Set(sitemapLocations).size === sitemapLocations.length);
@@ -116,15 +117,25 @@ const urls = sitemapLocations.flatMap((location) => {
   check(`${url.pathname} contains a standard sitemap urlset`, document.documentElement.localName === 'urlset' && document.documentElement.namespaceURI === 'http://www.sitemaps.org/schemas/sitemap/0.9');
   return [...document.querySelectorAll('url > loc')].map((node) => node.textContent);
 });
-check('legacy sitemap is an exact copy of the generated index', readFileSync(path.join(dist, 'sitemap.xml'), 'utf8') === indexXml);
+const flatDocument = new JSDOM(flatXml, {contentType: 'application/xml'}).window.document;
+const flatUrls = flatDocument.documentElement.localName === 'urlset'
+  ? [...flatDocument.querySelectorAll('url > loc')].map((node) => node.textContent)
+  : urls;
+if (sitemapLocations.length === 1) {
+  check('conventional sitemap is a single standard urlset', flatDocument.documentElement.localName === 'urlset' && flatDocument.documentElement.namespaceURI === 'http://www.sitemaps.org/schemas/sitemap/0.9');
+  check('conventional sitemap is the exact Astro-generated URL set', flatXml === readFileSync(path.join(dist, 'sitemap-0.xml'), 'utf8'));
+} else {
+  check('conventional sitemap preserves the official index when URLs are split', flatDocument.documentElement.localName === 'sitemapindex' && flatXml === indexXml);
+}
 const publicRoutes = [...pages.keys()].filter((route) => route !== '/404.html');
 check('sitemap contains every indexable page exactly once', urls.length === publicRoutes.length && new Set(urls).size === urls.length && publicRoutes.every((route) => urls.includes(origin + route)));
+check('flat sitemap contains every indexable page exactly once', flatUrls.length === publicRoutes.length && new Set(flatUrls).size === flatUrls.length && publicRoutes.every((route) => flatUrls.includes(origin + route)));
 check('404 is absent from sitemap', !urls.includes(origin + '/404.html'));
 check('all content pages have incoming links', publicRoutes.every((route) => route === '/' || inbound.get(route) > 0));
 check('ten substantive feature and guide detail pages exist', publicRoutes.filter((route) => /^\/(features|guides)\/.+\/$/.test(route)).length === 10);
 check('five sourced client comparison pages exist', publicRoutes.filter((route) => /^\/compare\/.+\/$/.test(route)).length === 5);
 check('only three variable font files are shipped', files.filter((file) => file.endsWith('.woff2')).length === 3);
-check('robots advertises sitemap index', readFileSync(path.join(dist, 'robots.txt'), 'utf8').includes(`Sitemap: ${origin}/sitemap-index.xml`));
+check('robots advertises flat sitemap', readFileSync(path.join(dist, 'robots.txt'), 'utf8').includes(`Sitemap: ${origin}/sitemap.xml`));
 
 if (failures.length) {
   console.error(`SEO verification failed (${failures.length} checks):\n${failures.map((item) => `  ✗ ${item}`).join('\n')}`);
