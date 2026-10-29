@@ -1,4 +1,5 @@
 import { detectPlatform } from './platform';
+import { mountHistoryReplay } from './history-replay';
 
 /**
  * Progressive enhancements for the redesigned site. Every feature degrades
@@ -15,6 +16,7 @@ export function mountWebsite(root: Document = document): void {
   mountGalleryNavigation(root, root.defaultView);
   mountThemePreview(root);
   mountHeroPreview(root);
+  mountHistoryReplay(root, root.defaultView);
   applyPlatform(root);
 }
 

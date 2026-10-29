@@ -118,7 +118,17 @@ check('hero preview controls have matching panels', [...document.querySelectorAl
 
 // Commit-log features
 const rows = [...document.querySelectorAll('.commit-log .commit-row')];
-check('features render as a commit log with twelve rows', rows.length === 12);
+check('features render as a commit log with fourteen rows', rows.length === 14);
+const homepageFeatureText = document.querySelector('#features')?.textContent ?? '';
+check('homepage describes branch replay and file archaeology', /history time machine/i.test(homepageFeatureText) && /file archaeology/i.test(homepageFeatureText));
+check('homepage explains optional milestone celebrations', /optional/i.test(homepageFeatureText) && /milestone celebrations/i.test(homepageFeatureText));
+const historyDemo = document.querySelector('[data-history-demo]');
+check('interactive history replay is present on the homepage', historyDemo !== null);
+check('history replay has eight selectable commit snapshots', historyDemo?.querySelectorAll('[data-history-step]').length === 8);
+check('history replay graph contains eight commits and seven connections', historyDemo?.querySelectorAll('[data-history-node]').length === 8 && historyDemo.querySelectorAll('[data-history-edge]').length === 7);
+check('history replay controls degrade to a readable static example', historyDemo?.querySelector('[data-history-controls][hidden]') !== null && historyDemo.querySelector('[data-history-step="1"]:not([hidden])') !== null);
+check('history replay discloses that sample data is fictional and read-only', /fictional/.test(historyDemo?.textContent ?? '') && /does not connect to a repository or change files/i.test(historyDemo?.textContent ?? ''));
+check('history replay links to the full feature guide', document.querySelector('.history-replay-section a[href="/features/commit-graph/#history-time-machine"]') !== null);
 check('commit rows expose lane colors for the strata motif', rows.every((row) => row.style.getPropertyValue('--lane')));
 check('commit rows carry a fake short hash', rows.every((row) => /^[0-9a-f]{7}$/.test(row.querySelector('.commit-hash')?.textContent ?? '')));
 for (const row of rows) {

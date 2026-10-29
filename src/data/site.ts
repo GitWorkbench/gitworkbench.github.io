@@ -3,7 +3,7 @@ export const SITE = {
   url: 'https://gitworkbench.github.io',
   title: 'Git Workbench — Free Git GUI for Linux, macOS & Windows',
   description:
-    'An open-source desktop Git client that renders history as commit strata, with hunk-level staging, a three-pane merge editor, PR reviews, and safe recovery.',
+    'Open-source Git GUI for Linux, macOS & Windows. Replay history, trace files, stage changes, resolve conflicts, and review across GitHub, GitLab, Bitbucket & Gitea.',
   tagline: 'Complex Git history, rendered as clear strata.',
   repository: 'GitWorkbench/workbench',
   author: {
@@ -69,6 +69,18 @@ export const FEATURES: Feature[] = [
     description:
       'Every branch travels its own color lane, curves drawn by hand in the graph. Select a node to open its files, parent hashes, and patch. HEAD, local and remote branches, and tags sit inline beside each summary.',
     detail: 'Cubic Bézier lanes · Parent links · Adjustable row density',
+  },
+  {
+    title: 'History time machine & file archaeology',
+    description:
+      'Replay a local or remote branch one commit at a time as the graph grows. Inspect each step’s changed files and diff, then scrub a file’s history to see who changed each line and what the commit said.',
+    detail: 'Read-only replay · Historical blame · Per-commit file diffs',
+  },
+  {
+    title: 'Quiet milestone celebrations',
+    description:
+      'See a brief, subtle confirmation after a rebase completes or the last conflict is resolved. Turn milestone animations off in Appearance settings, or let your reduced-motion preference keep the interface still.',
+    detail: 'Optional · Reduced-motion aware · Easy to disable',
   },
   {
     title: 'Hunk-level staging',

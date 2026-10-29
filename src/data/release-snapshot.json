@@ -1,42 +1,72 @@
 {
-  "tag": "v1.3.4",
-  "url": "https://github.com/GitWorkbench/workbench/releases/tag/v1.3.4",
-  "generatedAt": "2026-10-27T08:41:17.681855Z",
+  "tag": "v1.4.0",
+  "url": "https://github.com/GitWorkbench/workbench/releases/tag/v1.4.0",
+  "generatedAt": "2026-10-29T05:07:34.521Z",
   "assets": [
     {
-      "name": "git-workbench-1.3.4-x86_64.AppImage",
-      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.3.4/git-workbench-1.3.4-x86_64.AppImage",
-      "size": 134002738
+      "name": "git-workbench-1.4.0-1-x86_64.pkg.tar.zst",
+      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.4.0/git-workbench-1.4.0-1-x86_64.pkg.tar.zst",
+      "size": 111275799
     },
     {
-      "name": "git-workbench-1.3.4-amd64.deb",
-      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.3.4/git-workbench-1.3.4-amd64.deb",
-      "size": 92684658
+      "name": "git-workbench-1.4.0-amd64.deb",
+      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.4.0/git-workbench-1.4.0-amd64.deb",
+      "size": 92477694
     },
     {
-      "name": "git-workbench-1.3.4-x86_64.rpm",
-      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.3.4/git-workbench-1.3.4-x86_64.rpm",
-      "size": 92706337
+      "name": "git-workbench-1.4.0-universal.dmg",
+      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.4.0/git-workbench-1.4.0-universal.dmg",
+      "size": 236176613
     },
     {
-      "name": "git-workbench-1.3.4-1-x86_64.pkg.tar.zst",
-      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.3.4/git-workbench-1.3.4-1-x86_64.pkg.tar.zst",
-      "size": 111611553
+      "name": "git-workbench-1.4.0-universal.dmg.blockmap",
+      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.4.0/git-workbench-1.4.0-universal.dmg.blockmap",
+      "size": 246978
     },
     {
-      "name": "git-workbench-1.3.4-universal.dmg",
-      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.3.4/git-workbench-1.3.4-universal.dmg",
-      "size": 236110468
+      "name": "git-workbench-1.4.0-universal.zip",
+      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.4.0/git-workbench-1.4.0-universal.zip",
+      "size": 228898251
     },
     {
-      "name": "git-workbench-1.3.4-universal.zip",
-      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.3.4/git-workbench-1.3.4-universal.zip",
-      "size": 228863973
+      "name": "git-workbench-1.4.0-universal.zip.blockmap",
+      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.4.0/git-workbench-1.4.0-universal.zip.blockmap",
+      "size": 240514
     },
     {
-      "name": "git-workbench-setup-1.3.4.exe",
-      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.3.4/git-workbench-setup-1.3.4.exe",
-      "size": 123191734
+      "name": "git-workbench-1.4.0-x86_64.AppImage",
+      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.4.0/git-workbench-1.4.0-x86_64.AppImage",
+      "size": 134039547
+    },
+    {
+      "name": "git-workbench-1.4.0-x86_64.rpm",
+      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.4.0/git-workbench-1.4.0-x86_64.rpm",
+      "size": 92705189
+    },
+    {
+      "name": "git-workbench-setup-1.4.0.exe",
+      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.4.0/git-workbench-setup-1.4.0.exe",
+      "size": 123216638
+    },
+    {
+      "name": "git-workbench-setup-1.4.0.exe.blockmap",
+      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.4.0/git-workbench-setup-1.4.0.exe.blockmap",
+      "size": 129448
+    },
+    {
+      "name": "latest-linux.yml",
+      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.4.0/latest-linux.yml",
+      "size": 923
+    },
+    {
+      "name": "latest-mac.yml",
+      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.4.0/latest-mac.yml",
+      "size": 527
+    },
+    {
+      "name": "latest.yml",
+      "browser_download_url": "https://github.com/GitWorkbench/workbench/releases/download/v1.4.0/latest.yml",
+      "size": 355
     }
   ]
 }

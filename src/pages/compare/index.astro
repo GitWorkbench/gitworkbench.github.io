@@ -1,17 +1,40 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeader from '../../components/PageHeader.astro';
-import ContentCards from '../../components/ContentCards.astro';
 import { COMPARISONS } from '../../data/comparisons';
 import { PAGE_META } from '../../data/pages';
 import { pageSchema, absolute } from '../../data/schema';
 const meta = PAGE_META.compare;
 const breadcrumbs = [{label:'Home',href:'/'},{label:'Compare Git clients',href:meta.path}];
-const items = COMPARISONS.map((page)=>({label:`${page.competitor} alternative`,description:page.description,href:`/compare/${page.slug}/`}));
+const competitorNames = COMPARISONS.map((page)=>page.competitor).join(', ');
+const items = COMPARISONS.map((page)=>({label:`${page.competitor} comparison`,description:page.description,href:`/compare/${page.slug}/`}));
 const structuredData = [...pageSchema(meta.path,meta.title,meta.description,breadcrumbs,'CollectionPage'),{'@context':'https://schema.org','@type':'ItemList',name:'Git Workbench client comparisons',itemListElement:items.map((item,index)=>({'@type':'ListItem',position:index+1,name:item.label,url:absolute(item.href)}))}];
 ---
 <BaseLayout title={meta.title} description={meta.description} structuredData={structuredData}>
-  <PageHeader eyebrow="compare Git clients" heading="Choose the client that fits your work." lead="Compare Git Workbench with GitKraken, Sourcetree, GitHub Desktop, Fork, and SmartGit. Start with platform support, licensing, and the workflows you need every day." breadcrumbs={breadcrumbs} />
-  <section class="wrap page-content" aria-labelledby="comparisons-heading"><h2 class="collection-heading" id="comparisons-heading">Explore the alternatives</h2><ContentCards items={items} /></section>
+  <PageHeader eyebrow="compare desktop Git clients" heading="Compare the workflows. Choose what fits." lead={`Compare Git Workbench with ${competitorNames}. See how platforms, licensing, history tools, and review workflows differ; every page links to official product sources and explains when the other client may suit you better.`} breadcrumbs={breadcrumbs} />
+  <section class="wrap page-content compare-index" aria-labelledby="comparisons-heading">
+    <div class="compare-index-heading">
+      <p class="kicker">{COMPARISONS.length} independently sourced comparisons</p>
+      <h2 class="collection-heading" id="comparisons-heading">Start with your requirements.</h2>
+      <p>There is no overall score. Compare the capabilities and limits that matter for your repositories, operating systems, team, and hosting provider.</p>
+    </div>
+    <div class="client-comparison-grid">
+      {COMPARISONS.map((page, index) => (
+        <a class="client-comparison-card" href={`/compare/${page.slug}/`} aria-label={`Compare Git Workbench and ${page.competitor}`}>
+          <div class="client-comparison-card-meta">
+            <span>CLIENT COMPARISON</span>
+            <span>{String(index + 1).padStart(2, '0')} <span aria-hidden="true">/</span> {String(COMPARISONS.length).padStart(2, '0')}</span>
+          </div>
+          <h2 class="client-comparison-matchup">
+            <span class="client-comparison-workbench">Git Workbench</span>
+            {' '}<span class="client-comparison-vs" aria-label="versus">vs</span>{' '}
+            <span class="client-comparison-competitor">{page.competitor}</span>
+          </h2>
+          <p class="client-comparison-advantage"><span>THE WORKBENCH EDGE</span>{page.fit.workbench[0]}</p>
+          <span class="client-comparison-link" aria-hidden="true">View comparison <span>→</span></span>
+        </a>
+      ))}
+    </div>
+  </section>
   <section class="wrap capability-band"><div><p class="kicker">A useful comparison starts here</p><h2>Bring your actual requirements.</h2><p>Check your desktop platform, repository host, license requirements, and any enterprise connection before switching. Each page links to official sources, includes a review date, and explains where another tool may fit better.</p></div><div><a class="text-link" href="/features/">Explore Git Workbench’s features →</a><a class="text-link" href="/download/">Check packages and platform details →</a><a class="text-link" href="/guides/getting-started/">Plan your first run →</a></div></section>
 </BaseLayout>

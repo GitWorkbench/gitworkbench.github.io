@@ -1,0 +1,82 @@
+---
+const commits = [
+  { message: 'feat: create the workspace shell', author: 'Maya Demo', date: 'Oct 28 · 10:14', sha: '2f8c1a4', files: ['src/App.tsx', 'src/styles/workspace.css'], summary: 'The demo starts with a small workspace and a clean main branch.' },
+  { message: 'feat: draw branch lanes', author: 'Alex Demo', date: 'Oct 28 · 10:26', sha: '8c9142e', files: ['src/graph/lanes.ts', 'src/graph/CommitNode.tsx'], summary: 'A graph makes the main line of work visible at a glance.' },
+  { message: 'fix: keep labels readable', author: 'Maya Demo', date: 'Oct 28 · 10:39', sha: 'd3a7f10', files: ['src/graph/labels.ts'], summary: 'The third commit improves how branch labels fit beside the graph.' },
+  { message: 'feat: add a history scrubber', author: 'Alex Demo', date: 'Oct 28 · 11:02', sha: 'f2c603b', files: ['src/history/Timeline.tsx', 'src/history/useReplay.ts'], summary: 'A feature branch adds controls for stepping through earlier commits.' },
+  { message: 'docs: explain each history step', author: 'Maya Demo', date: 'Oct 28 · 11:18', sha: 'ac18e2d', files: ['docs/history.md', 'src/history/Timeline.test.tsx'], summary: 'The branch gets clearer explanations and a focused regression check.' },
+  { message: 'feat: preview changed files', author: 'Alex Demo', date: 'Oct 28 · 11:34', sha: 'c1b706e', files: ['src/history/ChangedFiles.tsx', 'src/history/CommitPreview.tsx'], summary: 'The feature branch rejoins main with a file preview for each step.' },
+  { message: 'fix: support keyboard scrubbing', author: 'Maya Demo', date: 'Oct 28 · 11:46', sha: '9a4d0c1', files: ['src/history/Timeline.tsx'], summary: 'The timeline now has a clear keyboard path through the same history.' },
+  { message: 'chore: polish empty states', author: 'Alex Demo', date: 'Oct 28 · 12:01', sha: 'e8c541a', files: ['src/history/EmptyState.tsx', 'docs/history.md'], summary: 'A final small change rounds out the example branch history.' },
+];
+---
+
+<section class="history-replay-section" aria-labelledby="history-replay-title">
+  <div class="wrap history-replay-layout">
+    <div class="history-replay-intro">
+      <p class="kicker"><span class="kicker-hash">h1s70ry</span> // try the timeline</p>
+      <h2 id="history-replay-title">Watch a branch take shape.</h2>
+      <p>Scrub a fictional commit history. Each step grows the graph and reveals the files and message from that moment.</p>
+      <a class="text-link" href="/features/commit-graph/#history-time-machine">Explore history replay and file archaeology →</a>
+    </div>
+
+    <div class="history-replay-demo" data-history-demo>
+      <div class="history-demo-titlebar">
+        <div class="history-demo-repository"><span class="history-demo-repo-icon" aria-hidden="true">⌘</span><span><strong>sample-project</strong><small>main · visual history</small></span></div>
+        <span class="history-demo-state" data-history-progress aria-live="polite">Step 1 of 8</span>
+      </div>
+      <div class="history-demo-content">
+        <figure class="history-demo-graph">
+          <svg viewBox="0 0 620 184" role="img" aria-label="Illustrative commit graph with a feature branch that merges into main">
+            <path class="history-demo-edge" data-history-edge="2" d="M58 112 H140" />
+            <path class="history-demo-edge" data-history-edge="3" d="M140 112 H222" />
+            <path class="history-demo-edge history-demo-edge-branch" data-history-edge="4" d="M222 112 C250 112 254 58 286 58" />
+            <path class="history-demo-edge history-demo-edge-branch" data-history-edge="5" d="M286 58 H368" />
+            <path class="history-demo-edge history-demo-edge-merge" data-history-edge="6" d="M368 58 C400 58 402 112 430 112" />
+            <path class="history-demo-edge" data-history-edge="7" d="M430 112 H512" />
+            <path class="history-demo-edge" data-history-edge="8" d="M512 112 H576" />
+            <text class="history-demo-lane-label" x="35" y="151">main</text>
+            <text class="history-demo-lane-label history-demo-branch-label" x="253" y="32">feature/history-demo</text>
+            <circle class="history-demo-node" data-history-node="1" data-lane="main" cx="58" cy="112" r="8" />
+            <circle class="history-demo-node" data-history-node="2" data-lane="main" cx="140" cy="112" r="8" />
+            <circle class="history-demo-node" data-history-node="3" data-lane="main" cx="222" cy="112" r="8" />
+            <circle class="history-demo-node" data-history-node="4" data-lane="branch" cx="286" cy="58" r="8" />
+            <circle class="history-demo-node" data-history-node="5" data-lane="branch" cx="368" cy="58" r="8" />
+            <circle class="history-demo-node" data-history-node="6" data-lane="merge" cx="430" cy="112" r="8" />
+            <circle class="history-demo-node" data-history-node="7" data-lane="main" cx="512" cy="112" r="8" />
+            <circle class="history-demo-node" data-history-node="8" data-lane="main" cx="576" cy="112" r="8" />
+            <circle class="history-demo-current-ring" data-history-current-ring cx="58" cy="112" r="15" />
+          </svg>
+          <figcaption>The graph grows one commit at a time</figcaption>
+        </figure>
+
+        <div class="history-demo-commit" data-history-current aria-live="polite" aria-atomic="true">
+          {commits.map((commit, index) => (
+            <article data-history-step={index + 1} hidden={index !== 0}>
+              <div class="history-demo-commit-meta"><span>{commit.author}</span><time>{commit.date}</time><code>{commit.sha}</code></div>
+              <h3>{commit.message}</h3>
+              <p>{commit.summary}</p>
+              <div class="history-demo-files">
+                <span>Changed files</span>
+                <ul>{commit.files.map((file) => <li><code>{file}</code></li>)}</ul>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+
+      <div class="history-demo-controls" data-history-controls hidden>
+        <label for="history-demo-range">Choose a commit</label>
+        <output class="history-demo-step-output" data-history-step-output for="history-demo-range">1 / 8</output>
+        <input id="history-demo-range" type="range" min="1" max={commits.length} value="1" data-history-range aria-valuetext="Commit 1 of 8: feat: create the workspace shell" />
+        <div class="history-demo-buttons">
+          <button type="button" data-history-action="previous" aria-label="Previous commit" disabled>← Previous</button>
+          <button type="button" data-history-action="play" aria-label="Play history replay">Play</button>
+          <button type="button" data-history-action="next" aria-label="Next commit">Next →</button>
+        </div>
+        <p class="history-demo-status" data-history-demo-status aria-live="polite">Use the slider, arrow keys, or Play to explore the sample history.</p>
+      </div>
+      <p class="history-demo-disclaimer">Sample commits, authors, and files are fictional. This interactive demo does not connect to a repository or change files.</p>
+    </div>
+  </div>
+</section>

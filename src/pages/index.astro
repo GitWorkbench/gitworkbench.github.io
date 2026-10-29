@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
+import HistoryReplayDemo from '../components/HistoryReplayDemo.astro';
 import Features from '../components/Features.astro';
 import Tour from '../components/Tour.astro';
 import ThemeGallery from '../components/ThemeGallery.astro';
@@ -52,6 +53,7 @@ const structuredData = [
 
 <BaseLayout title={SITE.title} description={SITE.description} structuredData={structuredData}>
   <Hero />
+  <HistoryReplayDemo />
   <Features />
   <Tour />
   <ThemeGallery />

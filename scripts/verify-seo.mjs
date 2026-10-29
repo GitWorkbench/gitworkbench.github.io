@@ -66,12 +66,40 @@ for (const file of htmlFiles) {
   if (route.startsWith('/guides/') && route !== '/guides/') check(prefix + 'guide has article schema', structured.some((item) => item['@type'] === 'TechArticle'));
   if (route.startsWith('/compare/') && route !== '/compare/') {
     const table = document.querySelector('.comparison-table table');
-    check(prefix + 'accessible substantive comparison table', table?.querySelector('caption') && table.querySelectorAll('thead th[scope="col"]').length === 3 && table.querySelectorAll('tbody th[scope="row"]').length >= 4);
+    check(prefix + 'accessible detailed comparison table', table?.querySelector('caption') && table.querySelectorAll('thead th[scope="col"]').length === 3 && table.querySelectorAll('tbody th[scope="row"]').length >= 9);
+    const tableRows = [...(table?.querySelectorAll('tbody tr') ?? [])];
+    const mobileCards = [...document.querySelectorAll('.comparison-mobile-card')];
+    check(prefix + 'mobile comparison uses stacked cards rather than horizontal scrolling', mobileCards.length >= 9 && mobileCards.every((card) => card.querySelector('h3') && card.querySelectorAll('dl > div').length === 2 && card.querySelectorAll('dt').length === 2));
+    check(prefix + 'comparison table has no forced scroll region or scroll hint', !document.querySelector('.comparison-table[role="region"]') && !document.querySelector('.comparison-scroll-hint'));
+    check(prefix + 'each comparison criterion has a unique label and official competitor citation', tableRows.length >= 9 && new Set(tableRows.map((row) => row.querySelector('th[scope="row"]')?.textContent.trim())).size === tableRows.length && tableRows.every((row) => {
+      const citation = row.querySelector('td:last-child .comparison-citation[href^="#source-"]');
+      return Boolean(citation && document.querySelector(citation.getAttribute('href')));
+    }));
+    const fitCards = [...document.querySelectorAll('#quick-fit .comparison-fit-card')];
+    check(prefix + 'quick-fit summary gives both products a sourced perspective', fitCards.length === 2 && fitCards.every((card) => card.querySelectorAll('li').length >= 2 && card.querySelector('.comparison-fit-source a[href^="#source-"]')));
+    check(prefix + 'comparison table links product claims to cited sources', table?.querySelectorAll('thead .comparison-citation[href^="#source-"]').length === 2 && table.querySelectorAll('tbody .comparison-citation[href^="#source-"]').length >= 4);
+    check(prefix + 'specific Workbench advantage is stated and sourced', document.querySelector('#consider-workbench .comparison-edge')?.textContent.trim().length > 100 && document.querySelector('#consider-workbench .comparison-edge a[href^="#source-"]'));
     const sources = [...document.querySelectorAll('.document-sources li[id] a[href]')];
     check(prefix + 'official sources and Workbench documentation', sources.length >= 2 && sources.every((source) => source.href.startsWith('https://')) && sources.some((source) => source.href === 'https://github.com/GitWorkbench/workbench/blob/main/README.md'));
     const reviewed = [...document.querySelectorAll('time[datetime]')].map((node) => node.getAttribute('datetime'));
     check(prefix + 'consistent source review date', reviewed.length >= 2 && reviewed.every((date) => /^\d{4}-\d{2}-\d{2}$/.test(date) && date === reviewed[0] && Number.isFinite(Date.parse(date))));
     check(prefix + 'balanced fit and switching context', document.querySelector('#other-fit p')?.textContent.length > 100 && document.querySelectorAll('#before-switching li').length >= 2);
+  }
+  if (route === '/compare/') {
+    const cards = [...document.querySelectorAll('.client-comparison-card')];
+    const list = structured.find((item) => item['@type'] === 'ItemList');
+    check(prefix + 'comparison index lists nine distinct clients', cards.length === 9 && new Set(cards.map((card) => card.querySelector('h2')?.textContent.trim())).size === 9);
+    check(prefix + 'comparison cards show a direct Git Workbench versus competitor matchup', cards.every((card) => {
+      const competitor = card.querySelector('.client-comparison-competitor')?.textContent.trim();
+      const heading = card.querySelector('h2')?.textContent.replace(/\s+/g, ' ').trim();
+      return card.querySelector('.client-comparison-workbench')?.textContent === 'Git Workbench'
+        && card.querySelector('.client-comparison-vs')?.textContent.trim().toLowerCase() === 'vs'
+        && heading === `Git Workbench vs ${competitor}`;
+    }));
+    check(prefix + 'each comparison card is one accessible full-card link with a clear action', cards.every((card) => card.matches('a.client-comparison-card[href^="/compare/"]') && !card.querySelector('a') && card.querySelector('.client-comparison-link[aria-hidden="true"]')));
+    check(prefix + 'each comparison card states one Workbench edge', cards.every((card) => (card.querySelector('.client-comparison-advantage')?.textContent.trim().length ?? 0) > 50));
+    check(prefix + 'comparison collection schema matches visible comparison pages', list?.itemListElement?.length === cards.length && list.itemListElement.every((item) => item.url.startsWith(origin + '/compare/')));
+    check(prefix + 'comparison page explains there is no overall score', /no overall score/i.test(document.body.textContent));
   }
   const faq = structured.find((item) => item['@type'] === 'FAQPage');
   if (faq) {
@@ -133,7 +161,7 @@ check('flat sitemap contains every indexable page exactly once', flatUrls.length
 check('404 is absent from sitemap', !urls.includes(origin + '/404.html'));
 check('all content pages have incoming links', publicRoutes.every((route) => route === '/' || inbound.get(route) > 0));
 check('ten substantive feature and guide detail pages exist', publicRoutes.filter((route) => /^\/(features|guides)\/.+\/$/.test(route)).length === 10);
-check('five sourced client comparison pages exist', publicRoutes.filter((route) => /^\/compare\/.+\/$/.test(route)).length === 5);
+check('nine sourced client comparison pages exist', publicRoutes.filter((route) => /^\/compare\/.+\/$/.test(route)).length === 9);
 check('only three variable font files are shipped', files.filter((file) => file.endsWith('.woff2')).length === 3);
 check('robots advertises flat sitemap', readFileSync(path.join(dist, 'robots.txt'), 'utf8').includes(`Sitemap: ${origin}/sitemap.xml`));
 

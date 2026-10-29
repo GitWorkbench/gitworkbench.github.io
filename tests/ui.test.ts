@@ -2,6 +2,7 @@
 import '@testing-library/jest-dom/vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mountWebsite } from '../src/scripts/ui';
+import { mountHistoryReplay } from '../src/scripts/history-replay';
 
 const fixture = `
   <header class="site-header">
@@ -37,6 +38,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
 
@@ -223,5 +226,144 @@ describe('hero previews', () => {
     history.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
     expect(merge).toHaveFocus();
     expect(document.querySelectorAll('[data-hero-tab][tabindex="0"]')).toHaveLength(1);
+  });
+});
+
+describe('interactive history replay', () => {
+  const demoFixture = `
+    <section data-history-demo>
+      <input type="range" min="1" max="3" value="1" data-history-range>
+      <div data-history-controls hidden>
+        <button type="button" data-history-action="previous" disabled>Previous</button>
+        <button type="button" data-history-action="play">Play</button>
+        <button type="button" data-history-action="next">Next</button>
+        <output data-history-step-output></output>
+      </div>
+      <p data-history-progress></p><p data-history-demo-status></p>
+      <div data-history-step="1"><h3>first change</h3></div>
+      <div data-history-step="2" hidden><h3>second change</h3></div>
+      <div data-history-step="3" hidden><h3>third change</h3></div>
+      <svg>
+        <path data-history-edge="2"></path><path data-history-edge="3"></path>
+        <circle data-history-node="1" cx="10" cy="20"></circle>
+        <circle data-history-node="2" cx="30" cy="40"></circle>
+        <circle data-history-node="3" cx="50" cy="60"></circle>
+        <circle data-history-current-ring></circle>
+      </svg>
+    </section>
+  `;
+
+  const mountDemo = () => {
+    document.body.innerHTML = demoFixture;
+    mountHistoryReplay(document);
+    return document.querySelector<HTMLElement>('[data-history-demo]')!;
+  };
+
+  it('reveals accessible controls and synchronizes the commit, graph, and slider', () => {
+    const demo = mountDemo();
+    const controls = demo.querySelector('[data-history-controls]')!;
+    const range = demo.querySelector<HTMLInputElement>('[data-history-range]')!;
+    const next = demo.querySelector<HTMLButtonElement>('[data-history-action="next"]')!;
+
+    expect(controls).not.toHaveAttribute('hidden');
+    expect(demo.querySelector('[data-history-step="1"]')).toBeVisible();
+    expect(demo.querySelector('[data-history-step="2"]')).not.toBeVisible();
+    expect(range).toHaveAttribute('aria-valuetext', 'Commit 1 of 3: first change');
+    expect(demo.querySelector('[data-history-step-output]')).toHaveTextContent('1 / 3');
+    expect(demo.querySelector('[data-history-node="1"]')).toHaveAttribute('data-current', 'true');
+    expect(demo.querySelector('[data-history-node="2"]')).toHaveAttribute('data-active', 'false');
+    expect(demo.querySelector('[data-history-edge="2"]')).toHaveAttribute('data-active', 'false');
+    expect(demo.querySelector('[data-history-current-ring]')).toHaveAttribute('cx', '10');
+
+    next.click();
+    expect(demo.querySelector('[data-history-step="2"]')).toBeVisible();
+    expect(demo.querySelector('[data-history-node="2"]')).toHaveAttribute('data-current', 'true');
+    expect(demo.querySelector('[data-history-edge="2"]')).toHaveAttribute('data-active', 'true');
+    expect(demo.querySelector('[data-history-current-ring]')).toHaveAttribute('cy', '40');
+    expect(demo.querySelector('[data-history-progress]')).toHaveTextContent('Step 2 of 3');
+
+    range.value = '3';
+    range.dispatchEvent(new Event('input', { bubbles: true }));
+    expect(demo.querySelector('[data-history-step="3"]')).toBeVisible();
+    expect(demo.querySelector('[data-history-action="next"]')).toBeDisabled();
+    expect(demo.querySelector('[data-history-current-ring]')).toHaveAttribute('cx', '50');
+  });
+
+  it('steps backward and stops an active replay after manual input', () => {
+    vi.useFakeTimers();
+    const demo = mountDemo();
+    const play = demo.querySelector<HTMLButtonElement>('[data-history-action="play"]')!;
+    const next = demo.querySelector<HTMLButtonElement>('[data-history-action="next"]')!;
+    const previous = demo.querySelector<HTMLButtonElement>('[data-history-action="previous"]')!;
+
+    play.click();
+    expect(play).toHaveTextContent('Pause');
+    vi.advanceTimersByTime(1600);
+    expect(demo.querySelector('[data-history-step-output]')).toHaveTextContent('2 / 3');
+    next.click();
+    expect(demo.querySelector('[data-history-step-output]')).toHaveTextContent('3 / 3');
+    expect(play).toHaveTextContent('Play');
+    previous.click();
+    expect(demo.querySelector('[data-history-step-output]')).toHaveTextContent('2 / 3');
+    expect(demo.querySelector('[data-history-demo-status]')).toHaveTextContent('Replay paused.');
+  });
+
+  it('restarts at the first commit and pauses when playback reaches the end', () => {
+    vi.useFakeTimers();
+    const demo = mountDemo();
+    const play = demo.querySelector<HTMLButtonElement>('[data-history-action="play"]')!;
+    const next = demo.querySelector<HTMLButtonElement>('[data-history-action="next"]')!;
+
+    next.click();
+    next.click();
+    play.click();
+    expect(demo.querySelector('[data-history-step-output]')).toHaveTextContent('1 / 3');
+    vi.advanceTimersByTime(3200);
+    expect(demo.querySelector('[data-history-step-output]')).toHaveTextContent('3 / 3');
+    expect(play).toHaveTextContent('Play');
+    expect(demo.querySelector('[data-history-demo-status]')).toHaveTextContent('Replay complete.');
+  });
+
+  it('honors reduced motion and lets the preference change during use', () => {
+    const descriptor = Object.getOwnPropertyDescriptor(window, 'matchMedia');
+    const listeners: ((event: MediaQueryListEvent) => void)[] = [];
+    const mediaQuery = {
+      matches: true,
+      addEventListener: (_type: string, listener: (event: MediaQueryListEvent) => void) => listeners.push(listener),
+      removeEventListener: vi.fn(),
+    } as unknown as MediaQueryList;
+    Object.defineProperty(window, 'matchMedia', { configurable: true, value: vi.fn(() => mediaQuery) });
+
+    try {
+      const demo = mountDemo();
+      const play = demo.querySelector<HTMLButtonElement>('[data-history-action="play"]')!;
+      expect(play).toBeDisabled();
+      expect(demo.querySelector('[data-history-demo-status]')).toHaveTextContent('Reduced motion is enabled');
+      listeners[0](Object.assign(new Event('change'), { matches: false }) as MediaQueryListEvent);
+      expect(play).toBeEnabled();
+      expect(demo.querySelector('[data-history-demo-status]')).toHaveTextContent('Use the slider');
+    } finally {
+      if (descriptor) Object.defineProperty(window, 'matchMedia', descriptor);
+      else Reflect.deleteProperty(window, 'matchMedia');
+    }
+  });
+
+  it('supports manual stepping when no browser window is available', () => {
+    document.body.innerHTML = demoFixture;
+    mountHistoryReplay(document, null);
+    const demo = document.querySelector<HTMLElement>('[data-history-demo]')!;
+    expect(demo.querySelector('[data-history-action="play"]')).toBeDisabled();
+    demo.querySelector<HTMLButtonElement>('[data-history-action="next"]')!.click();
+    expect(demo.querySelector('[data-history-step-output]')).toHaveTextContent('2 / 3');
+  });
+
+  it('leaves malformed or non-contiguous demo markup safely static', () => {
+    document.body.innerHTML = '<section data-history-demo><input data-history-range><div data-history-controls hidden></div></section>';
+    expect(() => mountHistoryReplay(document)).not.toThrow();
+    expect(document.querySelector('[data-history-controls]')).toHaveAttribute('hidden');
+
+    document.body.innerHTML = demoFixture.replace('data-history-step="2"', 'data-history-step="4"');
+    expect(() => mountHistoryReplay(document)).not.toThrow();
+    expect(document.querySelector('[data-history-controls]')).toHaveAttribute('hidden');
   });
 });
